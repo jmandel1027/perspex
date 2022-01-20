@@ -1,0 +1,94 @@
+{{ $fullname := include "backend.fullname" . }}
+{{- if .Values.canary.enabled }}
+apiVersion: flagger.app/v1beta1
+kind: Canary
+metadata:
+  name: {{ $fullname }}
+  labels:
+    {{- include "backend.labels" . | nindent 4 }}
+spec:
+  {{- if .Values.canary.provider }}
+  provider: {{ .Values.canary.provider }}
+  {{- end }}
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name:  {{ $fullname }}
+  autoscalerRef:
+    apiVersion: autoscaling/v2beta1
+    kind: HorizontalPodAutoscaler
+    name:  {{ $fullname }}
+  {{- if .Values.ingress.enabled }}
+  ingressRef:
+    apiVersion: {{ .Values.canary.ingressRef.apiVersion }}
+    kind: {{ .Values.canary.ingressRef.kind }}
+    name:  {{ .Values.canary.ingressRef.name | default $fullname }}
+  {{- end }}
+  service:
+    port: {{ .Values.service.port }}
+    {{- if .Values.contour.enabled }}
+    timeout: {{ .Values.canary.retries.timeout }}
+    retries:
+      attempts: {{ .Values.canary.retries.attempts }}
+      perTryTimeout: {{ .Values.canary.retries.perTryTimeout }}
+    {{- with .Values.canary.service }}
+    {{ toYaml . | nindent 4 }}
+    {{- end }}
+    {{- end }}
+  analysis:
+    interval: {{ .Values.canary.analysis.interval }}
+    threshold: {{ .Values.canary.analysis.threshold }}
+    {{- if eq .Values.canary.type "A/B" }}
+    iterations: {{ .Values.canary.analysis.iterations }}
+    {{- with .Values.canary.matchHeaders -}}
+    match:
+      {{ toYaml . | nindent 6 }}
+    {{- end }}
+    {{- else }}
+    maxWeight: {{ .Values.canary.analysis.maxWeight }}
+    stepWeight: {{ .Values.canary.analysis.stepWeight }}
+    {{- end }}
+    metrics:
+    {{- if .Values.canary.defaultMetrics.enabled }}
+    {{- with .Values.canary.defaultMetrics.metrics }}
+    {{ toYaml . | nindent 6 }}
+    {{- end }}
+    {{- end }}
+    {{ if .Values.canary.customMetrics.enabled }}
+    {{ range $metrics := .Values.canary.customMetrics.metrics }}
+    - name: {{ $metrics.name }}
+      templateRef:
+        name: {{ $metrics.name }}
+        namespace: {{ $metrics.namespace }}
+      thresholdRange:
+        {{- if $metrics.maxThreshold }}
+        max: {{ $metrics.maxThreshold }}
+        {{- end }}
+        {{- if $metrics.minThreshold }}
+        min: {{ $metrics.minThreshold }}
+        {{- end }}
+      interval: {{ $metrics.interval }}
+    {{- end }}
+    {{- end }}
+    webhooks:
+      {{- if .Values.canary.helmtest.enabled }}
+      - name: "helm test"
+        type: pre-rollout
+        url: {{ .Values.canary.helmtest.url }}
+        timeout: 3m
+        metadata:
+          type: "helmv3"
+          cmd: "test {{ .Release.Name }} -n {{ .Release.Namespace }}"
+      {{- end }}
+      {{- if .Values.canary.loadtest.enabled }}
+      - name: load-test-get
+        url: {{ .Values.canary.loadtest.url }}
+        timeout: 5s
+        metadata:
+        {{- if .Values.canary.loadtest.command }}
+          cmd: {{ .Values.canary.loadtest.command | quote }}
+        {{- else }}
+          cmd: "hey -z 1m -q 10 -c 2 -H 'X-Canary: {{ .Values.canary.headerValue }}' http://{{ $fullname }}-canary.{{ .Release.Namespace }}:{{ .Values.service.port }}{{ .Values.canary.loadtest.path }}"
+        {{- end }}
+      {{- end }}
+{{- end }}

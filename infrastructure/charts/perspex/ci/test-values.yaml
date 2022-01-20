@@ -1,0 +1,27 @@
+# These are chart value overrides ONLY for CI (chart-testing will apply these when it installs the chart)
+
+fullnameOverride: "perspex"
+
+serviceAccount:
+  create: false
+
+global:
+  config:
+    backend:
+      host: "0.0.0.0"
+
+backend:
+  # Because we can't patch the SA after chart-testing starts the install, we need to use the default SA
+  serviceAccount:
+    create: false
+  # Basically set dummy secrets so the backend starts
+  extraEnv:
+    POSTGRES_PASSWORD: "pass"
+
+migration:
+  serviceAccount:
+    create: false
+  forward:
+    enabled: true
+  extraEnv:
+    POSTGRES_PASSWORD: "pass"

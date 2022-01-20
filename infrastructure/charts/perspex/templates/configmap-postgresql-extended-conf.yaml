@@ -1,0 +1,20 @@
+{{- if and .Values.postgresql.enabled .Values.postgresql.extended.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgresql-extended-conf
+  labels:
+
+data:
+  extended_postgres.conf: |
+    log_connections = {{ .Values.postgresql.extended.settings.logConnections | default "on" }}
+    log_duration = {{ .Values.postgresql.extended.settings.logDuration | default "off" }}
+    log_line_prefix = '[%m [%p] %q%u@%d:%a:%c] '
+    log_min_duration_statement = {{ .Values.postgresql.extended.settings.logMinDurationStatement | default 1000 }}
+    log_statement = {{ .Values.postgresql.extended.settings.logStatement | default "all" }}
+    log_timezone = 'UTC'
+    max_parallel_workers_per_gather = {{ .Values.postgresql.extended.settings.maxParallelWorkersPerGather | default 4 }}
+    max_worker_processes = {{ .Values.postgresql.extended.settings.maxWorkerProcesses | default 2 }}
+    timezone = 'UTC'
+    work_mem = {{ .Values.postgresql.extended.settings.workMem | default "128MB" }}
+{{- end }}

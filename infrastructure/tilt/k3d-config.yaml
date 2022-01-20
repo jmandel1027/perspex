@@ -1,0 +1,14 @@
+apiVersion: k3d.io/v1alpha3
+kind: Simple
+name: perspex-local
+servers: 1
+registries:
+  create:
+    name: registry.localhost
+    host: "0.0.0.0"
+    hostPort: "50000"
+  config: |
+    mirrors:
+      "registry.local":
+        endpoint:
+          - http://registry.local:5000

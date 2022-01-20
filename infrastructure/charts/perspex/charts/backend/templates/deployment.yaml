@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "backend.fullname" . }}
+  labels:
+    {{- include "backend.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "backend.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "backend.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "backend.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}" {{ .Values.image.policyMarker }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            {{ include "backend.environmentVariables" . | nindent 12 }}
+          {{- if .Values.secretsManager.enabled }}
+          envFrom:
+            - secretRef:
+                name: {{ .Values.secretsManager.secretName | default "backend-secrets" }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          {{- if .Values.healthcheck.liveness.enabled }}
+          livenessProbe:
+            {{- if .Values.healthcheck.liveness.http.enabled }}
+            httpGet:
+              path: {{ .Values.healthcheck.liveness.http.path }} 
+              port: http
+            {{- else }}
+            tcpSocket:
+              port: {{ .Values.service.port }}
+            {{- end }}
+            initialDelaySeconds: {{ .Values.healthcheck.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.healthcheck.liveness.periodSeconds }}
+            failureThreshold: {{ .Values.healthcheck.liveness.failureThreshold }}
+          {{- end }}
+          {{- if .Values.healthcheck.readiness.enabled }}
+          readinessProbe:
+            {{- if .Values.healthcheck.readiness.http.enabled }}
+            httpGet:
+              path: {{ .Values.healthcheck.readiness.http.path }} 
+              port: http
+            {{- else }}
+            tcpSocket:
+              port: {{ .Values.service.port }}
+            {{- end }}
+            initialDelaySeconds: {{ .Values.healthcheck.readiness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.healthcheck.readiness.periodSeconds }}
+            failureThreshold: {{ .Values.healthcheck.readiness.failureThreshold }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

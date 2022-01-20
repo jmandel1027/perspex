@@ -1,0 +1,20 @@
+{{ $fullname := include "perspex.fullname" . }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $fullname }}-scripts
+data:
+  {{- if .Values.migration.forward.enabled }}
+  {{ $forwardMigration := concat .Values.migration.forward.command .Values.migration.forward.extraArgs }}
+  migrate.sh: |
+    #!/usr/bin/env bash
+    echo "Running migrations using '{{- join " " .Values.migration.forward.command }}'"
+    {{ join " " $forwardMigration }}
+  {{- end }}
+  {{- if .Values.migration.rollback.enabled }}
+  {{ $rollbackMigration := concat .Values.migration.rollback.command .Values.migration.rollback.extraArgs }}
+  migrate_rollback.sh: |
+    #!/usr/bin/env bash
+    echo "Beginning migration rollback with command '{{- join " " .Values.migration.rollback.command }}'"
+    {{ join " " $rollbackMigration }}
+  {{- end }}

@@ -1,0 +1,117 @@
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+backend:
+  enabled: true
+
+# Global config that applies to all subcharts
+global:
+  environment: "development"
+  config:
+    backend:
+      scheme: "http"
+      host: "0.0.0.0"
+    database:
+      host: "postgresql.perspex"
+      port: 5432
+      user: "postgres"
+      name: "pg"
+      schema: "public"
+      maxIdleConnections: 128
+      maxOpenConnections: 4096
+      connectionLifespan: 128
+      debug: false
+
+# Enable or disable database migrations Helm Hooks
+migration:
+  image:
+    repository: "registry.local:5000/migration"
+    pullPolicy: Always
+    tag: "latest"
+  secretsManager:
+    enabled: false
+    secretName: ""
+  forward:
+    enabled: true
+    command: ["migration", "-p", "/mnt/db", "-e", "tilt", "-m", "up"]
+    extraArgs: []
+    hook:
+      # migration.forward.hook.deletePolicy -- Delete policy for helm hook
+      deletePolicy: "before-hook-creation"
+      # migration.forward.hook.types - When to run the foward migration hook (see https://helm.sh/docs/topics/charts_hooks/#the-available-hooks)
+      types: "post-install,post-upgrade"
+      # migration.forward.hook.weight - Hook weight to use for forward migrations to determine hook order (see https://helm.sh/docs/topics/charts_hooks/#writing-a-hook)
+      weight: 10
+  rollback:
+    # migration.rollback.enabled -- Enable automatic rollback database migrations
+    enabled: false
+    # migration.rollback.command -- Database migration rollback command to run
+    command: []
+    # migration.rollback.extraArgs -- Extra command line arguments for rollback migration command
+    extraArgs: []
+    hook:
+      # migration.forward.hook.deletePolicy -- Delete policy for helm hook
+      deletePolicy: "before-hook-creation"
+      # migration.rollback.hook.types - When to run the foward migration hook (see https://helm.sh/docs/topics/charts_hooks/#the-available-hooks)
+      types: "pre-rollback"
+      # migration.rollback.hook.weight - Hook weight to use for rollback migrations to determine hook order (see https://helm.sh/docs/topics/charts_hooks/#writing-a-hook)
+      weight: 10
+  extraEnv: {}
+
+envFromSecret:
+  enabled: false
+  secretName: "env-configmap"
+
+# Enable or disable secrets from AWS SecretsManager
+secretsManager:
+  enabled: false
+  secretName: ""
+
+# Enable or disable the postgres subchart
+postgresql:
+  enabled: false
+  persistence:
+    enabled: true
+  metrics:
+    enabled: true
+  postgresqlDatabase: pg
+  postgresqlPassword: "pass"
+  postgresqlMaxConnections: "512"
+  postgresqlPostgresConnectionLimit: "512"
+  postgresqlDbUserConnectionLimit: "512"
+  pgHbaConfiguration: |-
+    local all all trust
+    host all all localhost trust
+    host all all 10.0.0.0/8 trust
+  extendedConfConfigMap: postgresql-extended-conf
+  extended:
+    enabled: true
+    settings:
+      logConnections: "on"
+      logDuration: "off"
+      logMinDurationStatement: 1000
+      logStatement: "all"
+      maxParallelWorkersPerGather: 2
+      maxWorkerProcesses: 4
+      sharedBuffers: "512MB"
+      workMem: "512MB"
+
+ingress:
+  enabled: false
+  annotations: {}
+  hosts:
+    - host: app.development.perspex.com
+      paths:
+        - path: /api/*
+          serviceName: backend
+          servicePort: 8080
+        - path: /*
+          serviceName: frontend
+          servicePort: 80
+  tls: []

@@ -1,0 +1,66 @@
+# These are chart value overrides ONLY for local dev 
+
+fullnameOverride: "perspex"
+
+serviceAccount:
+  create: false
+
+# Global config that applies to all subcharts
+global:
+  environment: "development"
+  config:
+    backend:
+      scheme: "http"
+      host: "0.0.0.0"
+    database:
+      host: "postgresql.perspex"
+      port: 5432
+      user: "postgres"
+      name: "pg"
+      schema: "public"
+      maxIdleConnections: 128
+      maxOpenConnections: 4096
+      connectionLifespan: 128
+      debug: false
+
+backend:
+  enabled: true
+  image:
+    repository: "registry.local:5000/backend"
+    pullPolicy: Always
+  # Because we can't patch the SA after chart-testing starts the install, we need to use the default SA
+  serviceAccount:
+    create: false
+  # Basically set dummy secrets so the backend starts
+  secretsManager:
+    enabled: false
+    secretName: "local-secrets"
+  
+migration:
+  enabled: false
+  image:
+    repository: "registry.local:5000/migration"
+    pullPolicy: Always
+  serviceAccount:
+    create: false
+  forward:
+    enabled: false
+
+postgresql:
+  enabled: true
+  fullnameOverride: "postgresql"
+  extendedConfConfigMap: postgresql-extended-conf
+  postgresqlConfiguration:
+    "sharedBuffers": "'512MB'"
+    "workMem": "'512MB'"
+    "maxConnections": 2048
+    "listenAddresses": "'*'"
+  extended:
+    enabled: true
+    settings:
+      logConnections: "on"
+      logDuration: "off"
+      logMinDurationStatement: 1000
+      logStatement: "all"
+      maxParallelWorkersPerGather: 16
+      maxWorkerProcesses: 32

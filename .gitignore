@@ -1,0 +1,37 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# JavaScript packages
+node_modules
+npm-debug.log*
+
+# Environment and dotenv
+.venv
+.env
+.envr
+.env-tilt
+
+# Editor
+.vscode/*
+.idea/*
+
+# misc
+.DS_Store
+
+*/**/.vscode/*
+
+*/**/.terraform
+
+*/**/*.tfstate
+
+*/**/*.tfstate.backup
+
+terraform/**/*.zip
+
+.helm/**/*
+
+tilt_modules
+tilt_modules/**/*
+
+**/.idea

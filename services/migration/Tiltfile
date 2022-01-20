@@ -1,0 +1,61 @@
+load('ext://restart_process', 'custom_build_with_restart', 'docker_build_with_restart')
+load('ext://local_output', 'local_output')
+
+enable_feature("labels")
+
+image_repo = os.getenv('TILT_IMAGE_REPO','registry.local:5000')
+
+utils={
+    # set this to false for a more native dev env
+    "migration": "false"
+}
+
+# Activate this if we need to toggle the migrations via helm hook 
+if utils["migration"] == "true":
+    custom_build(
+    "{image_repo}/migration".format(image_repo=image_repo),
+    command="docker build --tag ${EXPECTED_REF} .",
+    entrypoint=["sh", "/usr/local/bin/entrypoint"],
+    deps=['./db'],  
+)
+
+if utils["migration"] == "false":
+    local_resource(
+      "version",
+      auto_init=False,
+      trigger_mode=TRIGGER_MODE_MANUAL,
+      cmd="bin/migration.sh -p db -l -m version",
+      labels=["migrations"]
+    )
+
+    local_resource(
+      "create",
+      auto_init=False,
+      trigger_mode=TRIGGER_MODE_MANUAL,
+      cmd="bin/migration.sh -p db -c",
+      labels=["migrations"]
+    )
+
+    local_resource(
+      "upgrade-head",
+      auto_init=False,
+      trigger_mode=TRIGGER_MODE_MANUAL,
+      cmd="bin/migration.sh -p db -l -m up",
+      labels=["migrations"]
+    )
+
+    local_resource(
+      "downgrade-last",
+      auto_init=False,
+      trigger_mode=TRIGGER_MODE_MANUAL,
+      cmd="bin/migration.sh -p db -l -n 1 -m down",
+      labels=["migrations"]
+    )
+
+    local_resource(
+      "drop-all",
+      auto_init=False,
+      trigger_mode=TRIGGER_MODE_MANUAL,
+      cmd="bin/migration.sh -p db -l -d",
+      labels=["migrations"]
+    )
