@@ -18,6 +18,7 @@ global:
       scheme: "http"
       host: "0.0.0.0"
     database:
+      
       host: "postgresql.perspex"
       port: 5432
       user: "postgres"
@@ -75,13 +76,18 @@ secretsManager:
 
 # Enable or disable the postgres subchart
 postgresql:
+  image:
+    # set to the latest compatible version with RDS Aurora
+    tag: 13.1.0-debian-10-r85
   enabled: false
   persistence:
     enabled: true
   metrics:
     enabled: true
-  postgresqlDatabase: pg
-  postgresqlPassword: "pass"
+  auth:
+    postgresqlDatabase: "pg"
+    postgresqlPassword: "pass"
+    database: "perspex"
   postgresqlMaxConnections: "512"
   postgresqlPostgresConnectionLimit: "512"
   postgresqlDbUserConnectionLimit: "512"

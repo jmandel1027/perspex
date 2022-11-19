@@ -3,8 +3,6 @@ load("ext://restart_process", "docker_build_with_restart")
 load("ext://helm_remote", "helm_remote")
 load("ext://local_output", "local_output")
 
-enable_feature("labels")
-
 image_repo="registry.local:5000"
 k8s_context="perspex-local"
 deploy_namespace="perspex"
@@ -55,5 +53,6 @@ local_resource(
   "postgresql-port-forward",
   serve_cmd="kubectl -n {deploy_namespace} port-forward service/postgresql 5433:5432".format(deploy_namespace=deploy_namespace),
   trigger_mode=TRIGGER_MODE_MANUAL,
+  auto_init=False,
   labels=["postgres"]
 )

@@ -1,8 +1,6 @@
 load('ext://restart_process', 'custom_build_with_restart', 'docker_build_with_restart')
 load('ext://local_output', 'local_output')
 
-enable_feature("labels")
-
 image_repo = os.getenv('TILT_IMAGE_REPO','registry.local:5000')
 
 utils={
