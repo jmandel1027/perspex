@@ -5,6 +5,16 @@ set -e
 BASE_BRANCH="unset"
 MIGRATION_PATH="services/migration/db"
 
+function display_help() {
+    echo "This script will run a database migration validation service"
+    echo ""
+    echo "Parameters:"
+    echo "    -h                      Display this help message."
+    echo "    -b                      Specifies the branch to validate migration against main"
+    echo "Usage:"
+    echo "   bin/migration-validation.sh -b <FEATURE_BRANCH>"
+}
+
 function validate_migration() {
     # Sets the diff filter to look for added, deleted, and modified files
     # See the docs for more info on other options https://git-scm.com/docs/git-diff
@@ -41,6 +51,24 @@ function validate_migration() {
 function main() {
     validate_migration
 }
+
+while [[ "$#" -gt 0 ]]; do 
+  case $1 in
+    -b | --branch) 
+        BASE_BRANCH="$2"
+        shift
+        ;;
+    -h | --help )
+        display_help
+        shift
+        ;;
+    \? )
+        display_help
+        exit 1
+        ;;
+    esac;
+    shift;
+done
 
 while getopts ":b:" option; do
    case $option in

@@ -12,19 +12,18 @@ utils={
 
 # Activate this if we need to toggle the migrations via helm hook 
 if utils["migration"] == "true":
-    custom_build(
+  custom_build(
     "{image_repo}/migration".format(image_repo=image_repo),
     command="docker build --tag ${EXPECTED_REF} .",
-    entrypoint=["sh", "/usr/local/bin/entrypoint"],
-    deps=['./db'],  
-)
+    deps=['src/db'],  
+  )
 
 if utils["migration"] == "false":
     local_resource(
       "version",
       auto_init=False,
       trigger_mode=TRIGGER_MODE_MANUAL,
-      cmd="bin/migration.sh -p db -l -m version",
+      cmd="bin/migration.sh -p src/db -l -m version",
       labels=["migrations"]
     )
 
@@ -32,7 +31,7 @@ if utils["migration"] == "false":
       "create",
       auto_init=False,
       trigger_mode=TRIGGER_MODE_MANUAL,
-      cmd="bin/migration.sh -p db -c",
+      cmd="bin/migration.sh -p src/db -c",
       labels=["migrations"]
     )
 
@@ -40,7 +39,7 @@ if utils["migration"] == "false":
       "upgrade-head",
       auto_init=False,
       trigger_mode=TRIGGER_MODE_MANUAL,
-      cmd="bin/migration.sh -p db -l -m up",
+      cmd="bin/migration.sh -p src/db -l -m up",
       labels=["migrations"]
     )
 
@@ -48,7 +47,7 @@ if utils["migration"] == "false":
       "downgrade-last",
       auto_init=False,
       trigger_mode=TRIGGER_MODE_MANUAL,
-      cmd="bin/migration.sh -p db -l -n 1 -m down",
+      cmd="bin/migration.sh -p src/db -l -n 1 -m down",
       labels=["migrations"]
     )
 
@@ -56,6 +55,6 @@ if utils["migration"] == "false":
       "drop-all",
       auto_init=False,
       trigger_mode=TRIGGER_MODE_MANUAL,
-      cmd="bin/migration.sh -p db -l -d",
+      cmd="bin/migration.sh -p src/db -l -d",
       labels=["migrations"]
     )

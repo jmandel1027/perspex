@@ -70,6 +70,10 @@ main() {
                 drop
                 shift
                 ;;
+            -h | --help )
+                display_help
+                shift
+                ;;
             \? )
                 display_help
                 exit 1

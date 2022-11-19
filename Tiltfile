@@ -54,5 +54,6 @@ if services["backend"] == "true":
 local_resource(
   "postgresql-port-forward",
   serve_cmd="kubectl -n {deploy_namespace} port-forward service/postgresql 5433:5432".format(deploy_namespace=deploy_namespace),
+  trigger_mode=TRIGGER_MODE_MANUAL,
   labels=["postgres"]
 )
