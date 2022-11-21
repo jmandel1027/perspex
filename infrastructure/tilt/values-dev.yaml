@@ -16,7 +16,7 @@ global:
       host: "postgresql.perspex"
       port: 5432
       user: "postgres"
-      name: "pg"
+      name: "perspex"
       schema: "public"
       maxIdleConnections: 128
       maxOpenConnections: 4096
@@ -37,13 +37,15 @@ backend:
     secretName: "local-secrets"
   
 migration:
-  enabled: false
   image:
     repository: "registry.local:5000/migration"
     pullPolicy: Always
   serviceAccount:
     create: false
   forward:
+    enabled: true
+    command: [ "/usr/local/bin/migration", "-p", "/mnt/src/perspex", "-m", "up" ]
+  rollback:
     enabled: false
 
 postgresql:

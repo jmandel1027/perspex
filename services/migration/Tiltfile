@@ -4,8 +4,9 @@ load('ext://local_output', 'local_output')
 image_repo = os.getenv('TILT_IMAGE_REPO','registry.local:5000')
 
 utils={
-    # set this to false for a more native dev env
-    "migration": "false"
+    # set this to false for utilizing the container based migrations
+    # useful when not working directrly on migration workflows
+    "migration": "true"
 }
 
 # Activate this if we need to toggle the migrations via helm hook 
@@ -13,7 +14,7 @@ if utils["migration"] == "true":
   custom_build(
     "{image_repo}/migration".format(image_repo=image_repo),
     command="docker build --tag ${EXPECTED_REF} .",
-    deps=['src/db'],  
+    deps=['./services/migration/src/perspex'],
   )
 
 if utils["migration"] == "false":
@@ -21,7 +22,7 @@ if utils["migration"] == "false":
       "version",
       auto_init=False,
       trigger_mode=TRIGGER_MODE_MANUAL,
-      cmd="bin/migration.sh -p src/db -l -m version",
+      cmd="bin/migration.sh -p src/perspex -l -m version",
       labels=["migrations"]
     )
 
@@ -29,7 +30,7 @@ if utils["migration"] == "false":
       "create",
       auto_init=False,
       trigger_mode=TRIGGER_MODE_MANUAL,
-      cmd="bin/migration.sh -p src/db -c",
+      cmd="bin/migration.sh -p src/perspex -c",
       labels=["migrations"]
     )
 
@@ -37,7 +38,7 @@ if utils["migration"] == "false":
       "upgrade-head",
       auto_init=False,
       trigger_mode=TRIGGER_MODE_MANUAL,
-      cmd="bin/migration.sh -p src/db -l -m up",
+      cmd="bin/migration.sh -l -p src/perspex -m up ",
       labels=["migrations"]
     )
 
@@ -45,7 +46,7 @@ if utils["migration"] == "false":
       "downgrade-last",
       auto_init=False,
       trigger_mode=TRIGGER_MODE_MANUAL,
-      cmd="bin/migration.sh -p src/db -l -n 1 -m down",
+      cmd="bin/migration.sh -p src/perspex -l -n 1 -m down",
       labels=["migrations"]
     )
 
@@ -53,6 +54,6 @@ if utils["migration"] == "false":
       "drop-all",
       auto_init=False,
       trigger_mode=TRIGGER_MODE_MANUAL,
-      cmd="bin/migration.sh -p src/db -l -d",
+      cmd="bin/migration.sh -p src/perspex -l -d",
       labels=["migrations"]
     )

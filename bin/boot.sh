@@ -98,6 +98,12 @@ function install_deps() {
     echo ""
   fi
 
+  if ! command -v migrate &> /dev/null ; then
+    echo "installing migration util"
+    brew install golang-migrate
+    echo ""
+  fi
+
   exit 0
 }
 
@@ -121,26 +127,28 @@ function display_help() {
     echo "   bin/boot.sh -h"
 }
 
+main() {
+  while [[ "$#" -gt 0 ]]; do 
+    case $1 in
+      -o | --on )
+        activate_cluster
+        shift
+        ;;
+      -i | --install )
+        install_deps
+        shift
+        ;;
+      -h | --help )
+        display_help
+        shift
+        ;;
+      \? )
+        display_help
+        exit 1
+        ;;
+    esac;
+    shift;
+  done
+}
 
-
-while [[ "$#" -gt 0 ]]; do 
-  case $1 in
-    -o | --on )
-      activate_cluster
-      shift
-      ;;
-    -i | --install )
-      install_deps
-      shift
-      ;;
-    -h | --help )
-      display_help
-      shift
-      ;;
-    \? )
-      display_help
-      exit 1
-      ;;
-  esac;
-  shift;
-done
+main "${@}"

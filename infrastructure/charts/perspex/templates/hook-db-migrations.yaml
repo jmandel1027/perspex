@@ -1,4 +1,3 @@
-{{- if .Values.migration.forward.enabled }}
 {{ $fullname := include "perspex.fullname" . }}
 {{- $jobName := include "perspex.uniqueName" (dict "root" . "job" "forward-migrations" "unique" true ) }}
 apiVersion: batch/v1
@@ -47,6 +46,10 @@ spec:
           {{- end }}
           image: "{{ .Values.migration.image.repository }}:{{ .Values.migration.image.tag }}"
           imagePullPolicy: {{ .Values.migration.image.pullPolicy }}
+          {{- if .Values.migration.forward.enabled }} 
+          command: [ {{ join "," .Values.migration.forward.command }} ]
+          extraArgs: [ {{ join "," .Values.migration.forward.extraArgs }} ]
+          {{- end }}
           volumeMounts:
             - name: scripts
               mountPath: /usr/src/app/scripts
@@ -54,5 +57,4 @@ spec:
         - name: scripts
           configMap:
             name: {{ $fullname }}-scripts
-            defaultMode: 0755
-{{- end }}
+            defaultMode: 0777

@@ -4,5 +4,4 @@ RUN apk add --no-cache bash
 
 COPY src/ /mnt/src/
 
-COPY bin/entrypoint.sh /usr/local/bin/entrypoint
 COPY bin/migration.sh /usr/local/bin/migration

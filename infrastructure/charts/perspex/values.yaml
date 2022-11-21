@@ -18,11 +18,10 @@ global:
       scheme: "http"
       host: "0.0.0.0"
     database:
-      
       host: "postgresql.perspex"
       port: 5432
-      user: "postgres"
-      name: "pg"
+      user: "perspex"
+      name: "perspex"
       schema: "public"
       maxIdleConnections: 128
       maxOpenConnections: 4096
@@ -31,6 +30,7 @@ global:
 
 # Enable or disable database migrations Helm Hooks
 migration:
+  enabled:
   image:
     repository: "registry.local:5000/migration"
     pullPolicy: Always
@@ -39,8 +39,11 @@ migration:
     enabled: false
     secretName: ""
   forward:
-    enabled: true
-    command: ["migration", "-p", "/mnt/db", "-e", "tilt", "-m", "up"]
+    # migration.forward.enabled -- Enable automatic forward database migrations
+    enabled: false
+    # migration.forward.command -- Database migration forward command to run
+    command: [ "/usr/local/bin/migration", "-p", "/mnt/src/perspex", "-m", "up" ]
+    # migration.forward.extraArgs -- Extra command line arguments for forward migration command
     extraArgs: []
     hook:
       # migration.forward.hook.deletePolicy -- Delete policy for helm hook
@@ -50,10 +53,10 @@ migration:
       # migration.forward.hook.weight - Hook weight to use for forward migrations to determine hook order (see https://helm.sh/docs/topics/charts_hooks/#writing-a-hook)
       weight: 10
   rollback:
-    # migration.rollback.enabled -- Enable automatic rollback database migrations
+    # migration.rollback.enabled -- Enable automatic rollback database migrations on failure of latest up
     enabled: false
     # migration.rollback.command -- Database migration rollback command to run
-    command: []
+    command: [ "/usr/local/bin/migration", "-p", "/mnt/src/perspex", "-m", "down", "-n", "1" ] 
     # migration.rollback.extraArgs -- Extra command line arguments for rollback migration command
     extraArgs: []
     hook:
@@ -76,26 +79,35 @@ secretsManager:
 
 # Enable or disable the postgres subchart
 postgresql:
-  image:
-    # set to the latest compatible version with RDS Aurora
-    tag: 13.1.0-debian-10-r85
   enabled: false
   persistence:
     enabled: true
   metrics:
     enabled: true
   auth:
-    postgresqlDatabase: "pg"
-    postgresqlPassword: "pass"
+    enablePostgresUser: true
+    postgresPassword: "pass"
+    username: "perspex"
+    password: "pass"
     database: "perspex"
   postgresqlMaxConnections: "512"
   postgresqlPostgresConnectionLimit: "512"
   postgresqlDbUserConnectionLimit: "512"
-  pgHbaConfiguration: |-
-    local all all trust
-    host all all localhost trust
-    host all all 10.0.0.0/8 trust
-  extendedConfConfigMap: postgresql-extended-conf
+  audit:
+    logHostname: false
+    logConnections: true
+    logDisconnections: false
+    pgAuditLog: ""
+    pgAuditLogCatalog: "off"
+    clientMinMessages: error
+    logLinePrefix: ""
+    logTimezone: ""
+  primary:
+    name: "primary"
+    pgHbaConfiguration: |-
+      local all all trust
+      host all all localhost trust
+      host all all 10.0.0.0/8 trust
   extended:
     enabled: true
     settings:
