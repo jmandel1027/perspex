@@ -9,10 +9,27 @@ This command will spin up the entire stack, verifying that docker is active and 
 ```sh
 bin/boot.sh -o
 ```
-
-
+If you would like to operate the stack manually and have tilt, k3d, and helm installed, please perform the following 
 
 ```sh
-    cd perspex
-    tilt up
+
+dir=$(pwd)
+
+cd infrastructure/charts/perspex
+
+# this installs third party helm deps
+helm dep update
+
+cd "${dir}"
+
+# provisioons the k3d cluster and registry
+k3d cluster create -c infrastructure/tilt/k3d-config.yaml
+
+# spin up tilt
+tilt up
+```
+
+To teardown the entire stack, please run the following:
+```
+bin/boot.sh -d
 ```

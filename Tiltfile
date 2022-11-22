@@ -33,7 +33,6 @@ perspex = helm(
 
 k8s_yaml(perspex)
 k8s_resource(workload="postgresql", labels=["postgres"])
-#k8s_resource(workload="perspex-migration", labels=["postgres"])
 
 #########################
 # Services
