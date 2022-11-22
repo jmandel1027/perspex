@@ -1,0 +1,29 @@
+# Changes applying to all services get the "service/*" label.
+service:
+  - services/*
+
+utils:
+  - bin/**/*
+
+# Changes within service directories get matching service labels.
+service/migration:
+  - services/migration/**/*
+
+
+# Changes applying to all infrastructure get the "infrastructure" label.
+infrastructure:
+  - infrastructure/*
+
+infrastructure/charts:
+  - infrastructure/charts/*
+  - infrastructure/ci/*
+
+infrastructure/tilt:
+  - infrastructure/tilt/*
+  - ./*/**/Tiltfile
+
+infrastructure/terraform:
+  - infrastructure/terraform/*
+
+infrastructure/workflows:
+  - .github/**/*
