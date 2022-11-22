@@ -37,6 +37,7 @@ backend:
     secretName: "local-secrets"
   
 migration:
+  enabled: true
   image:
     repository: "registry.local:5000/migration"
     pullPolicy: Always
@@ -47,6 +48,7 @@ migration:
     command: [ "/usr/local/bin/migration", "-p", "/mnt/src/perspex", "-m", "up" ]
   rollback:
     enabled: false
+    command: [ "/usr/local/bin/migration", "-p", "/mnt/src/perspex", "-m", "down", "-n", "1" ]
 
 postgresql:
   enabled: true

@@ -1,3 +1,4 @@
+{{ if .Values.migration.enabled }}
 {{ $fullname := include "perspex.fullname" . }}
 apiVersion: v1
 kind: ConfigMap
@@ -18,3 +19,4 @@ data:
     echo "Beginning migration rollback with command '{{- join " " .Values.migration.rollback.command }}'"
     {{ join " " $rollbackMigration }}
   {{- end }}
+{{- end }}

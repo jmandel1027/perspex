@@ -30,7 +30,7 @@ global:
 
 # Enable or disable database migrations Helm Hooks
 migration:
-  enabled:
+  enabled: false
   image:
     repository: "registry.local:5000/migration"
     pullPolicy: Always
@@ -56,11 +56,11 @@ migration:
     # migration.rollback.enabled -- Enable automatic rollback database migrations on failure of latest up
     enabled: false
     # migration.rollback.command -- Database migration rollback command to run
-    command: [ "/usr/local/bin/migration", "-p", "/mnt/src/perspex", "-m", "down", "-n", "1" ] 
+    command: [ "/usr/local/bin/migration", "-p", "/mnt/src/perspex", "-m", "down", "-n", "1" ]
     # migration.rollback.extraArgs -- Extra command line arguments for rollback migration command
     extraArgs: []
     hook:
-      # migration.forward.hook.deletePolicy -- Delete policy for helm hook
+      # migration.rollback.hook.deletePolicy -- Delete policy for helm hook
       deletePolicy: "before-hook-creation"
       # migration.rollback.hook.types - When to run the foward migration hook (see https://helm.sh/docs/topics/charts_hooks/#the-available-hooks)
       types: "pre-rollback"

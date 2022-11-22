@@ -55,11 +55,10 @@ main() {
         shift
         ;;
       -l | --local )
-        dsn="postgresql://perspex:pass@127.0.0.1:5433/perspex?sslmode=disable"
-        echo $dsn
+        dsn="postgresql://postgres:pass@127.0.0.1:5433/perspex?sslmode=disable"
         ;;
       -n | --num )
-        number="${2}"
+        number=$(echo "${2}" | bc -l)
         shift
         ;;
       -m | --command )

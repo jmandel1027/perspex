@@ -1,5 +1,6 @@
+{{- if .Values.migration.enabled }}
 {{ $fullname := include "perspex.fullname" . }}
-{{- $jobName := include "perspex.uniqueName" (dict "root" . "job" "forward-migrations" "unique" true ) }}
+{{- $jobName := include "perspex.uniqueName" (dict "root" . "job" "migration" "unique" true ) }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -27,9 +28,7 @@ spec:
       {{- if .Values.postgresql.enabled }}
         - name: check-db-ready
           image: postgres:alpine
-          command: ['sh', '-c',
-            'until pg_isready -U postgres -h postgresql.{{ $fullname }} -p 5432;
-            do echo waiting for database; sleep 2; done;']
+          command: [ 'sh', '-c', 'until pg_isready -U postgres -h postgresql.{{ $fullname }} -p 5432; do echo waiting for database; sleep 2; done;' ]
       {{- end }}
       containers:
         - name: {{ $jobName }}
@@ -47,8 +46,12 @@ spec:
           image: "{{ .Values.migration.image.repository }}:{{ .Values.migration.image.tag }}"
           imagePullPolicy: {{ .Values.migration.image.pullPolicy }}
           {{- if .Values.migration.forward.enabled }} 
-          command: [ {{ join "," .Values.migration.forward.command }} ]
-          extraArgs: [ {{ join "," .Values.migration.forward.extraArgs }} ]
+          command: {{ .Values.migration.forward.command | toJson }}
+          extraArgs: {{ .Values.migration.forward.extraArgs | toJson }}
+          {{- end }}
+          {{- if .Values.migration.rollback.enabled }} 
+          command: {{ .Values.migration.rollback.command | toJson }}
+          extraArgs: {{ .Values.migration.rollback.extraArgs | toJson }}
           {{- end }}
           volumeMounts:
             - name: scripts
@@ -58,3 +61,4 @@ spec:
           configMap:
             name: {{ $fullname }}-scripts
             defaultMode: 0777
+{{- end }}

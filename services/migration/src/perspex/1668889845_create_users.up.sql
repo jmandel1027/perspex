@@ -1,5 +1,5 @@
 CREATE TABLE users (
-  id         BIGSERIAL NOT NULL CONSTRAINT user_pk PRIMARY KEY,
+  id         BIGSERIAL NOT NULL CONSTRAINT users_pk PRIMARY KEY,
   email      VARCHAR NOT NULL,
   full_name  VARCHAR NOT NULL,
   first_name VARCHAR NOT NULL,
