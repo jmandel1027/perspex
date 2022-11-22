@@ -24,3 +24,6 @@ infrastructure/tilt:
 
 infrastructure/terraform:
   - infrastructure/terraform/*
+
+infrastructure/workflows:
+  - .github/**/*
