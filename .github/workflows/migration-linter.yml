@@ -25,7 +25,7 @@ jobs:
             does_file_exist=$(git cat-file -e origin/main:${i})
 
             echo "${does_file_exist}"
-            if [[ -z "${does_file_exist}" ]]; then
+            if [[ -v "${does_file_exist}" ]]; then
               echo "Error: this pr touches ${i}, which is a file already in history"
               exit 1;
             fi
