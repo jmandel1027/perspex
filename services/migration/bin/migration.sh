@@ -5,7 +5,7 @@ set -e
 # change this when we implement a proper secrets integration flow w/ secrets-manager
 POSTGRES_PASSWORD="pass"
 
-dsn="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable"
+dsn="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable&x-multi-statement=true"
 
 function display_help() {
   echo "This script will run a database migration service"
@@ -55,7 +55,7 @@ main() {
         shift
         ;;
       -l | --local )
-        dsn="postgresql://postgres:pass@127.0.0.1:5433/perspex?sslmode=disable"
+        dsn="postgresql://postgres:pass@127.0.0.1:5433/perspex?sslmode=disable&x-multi-statement=true"
         ;;
       -n | --num )
         number=$(echo "${2}" | bc -l)
