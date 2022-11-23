@@ -16,3 +16,4 @@ CREATE UNIQUE INDEX CONCURRENTLY IF NOT EXISTS users_email_uindex
 	ON "users" (email);
 
 --
+--

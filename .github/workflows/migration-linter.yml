@@ -21,6 +21,18 @@ jobs:
           modified_migrations=$(git diff --name-only origin/$GITHUB_BASE_REF...origin/$GITHUB_HEAD_REF 'services/migration/src/**/*.sql')
           echo "$modified_migrations"
           echo "::set-output name=file_names::$modified_migrations"
+          
+          for i in "${modified_migrations[@]}"; do
+            echo "${i}"
+            # or do whatever with individual element of the array
+            does_file_exist=$(git ls-tree -r HEAD~1 --name-only "${i}")
+
+            if [[ -n "${does_file_exist}" ]]; then
+              echo "Error: this pr touches a branch already in history"
+            fi
+            
+          done
+
         id: modified-migrations
       - uses: sbdchd/squawk-action@v1
         with:
