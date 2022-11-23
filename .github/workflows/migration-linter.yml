@@ -27,7 +27,8 @@ jobs:
             # or do whatever with individual element of the array
             does_file_exist=$(git cat-file -e origin/main:${i})
 
-            if [[ -n "${does_file_exist}" ]]; then
+            echo "${does_file_exist}"
+            if [[ -z "${does_file_exist}" ]]; then
               echo "Error: this pr touches a branch already in history"
               exit 1;
             fi
