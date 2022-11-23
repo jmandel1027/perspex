@@ -43,6 +43,9 @@ function validate_migration() {
     exit 1
   fi
 
+  echo $NEWEST_EXISTING_MIGRATION_FILE
+  
+
   echo "new migration(s) are safe to merge"
   exit 0
 }
