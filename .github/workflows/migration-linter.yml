@@ -25,7 +25,7 @@ jobs:
           for i in "${modified_migrations[@]}"; do
             echo "${i}"
             # or do whatever with individual element of the array
-            does_file_exist=$(git cat-file -e origin/main:${i} --name-only)
+            does_file_exist=$(git cat-file -e origin/main:${i})
 
             if [[ -n "${does_file_exist}" ]]; then
               echo "Error: this pr touches a branch already in history"
