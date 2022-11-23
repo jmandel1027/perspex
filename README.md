@@ -1,5 +1,11 @@
 # Perspex
 
+![Alt text](.github/media/perspex.jpg?raw=true "perspex-icon")
+
+## What is this?
+
+I'm not entirely sure, just experimenting with various toolings and infrastructure. I'm mostly just having fun and thowing paint at the wall.
+
 ## Getting started
 
 If this is your first time running the project you'll need to install `helm`, `k3d` and `tilt` to set up local development environment
