@@ -3,7 +3,7 @@
 set -e
 
 BASE_BRANCH="unset"
-MIGRATION_PATH="services/migration/db"
+MIGRATION_PATH="services/migration/perspex"
 
 function display_help() {
   echo "This script will run a database migration validation service"
