@@ -5,5 +5,5 @@ CREATE TABLE IF NOT EXISTS organizations (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS organizations_id_uindex
+CREATE UNIQUE INDEX CONCURRENTLY IF NOT EXISTS organizations_id_uindex
 	ON "organizations" (id);
