@@ -1,4 +1,4 @@
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
   id         BIGSERIAL NOT NULL CONSTRAINT users_pk PRIMARY KEY,
   email      VARCHAR NOT NULL,
   full_name  VARCHAR NOT NULL,
@@ -7,8 +7,8 @@ CREATE TABLE users (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE UNIQUE INDEX users_id_uindex
+CREATE UNIQUE INDEX IF NOT EXISTS users_id_uindex
 	ON "users" (id);
 
-CREATE UNIQUE INDEX users_email_uindex
+CREATE UNIQUE INDEX IF NOT EXISTS users_email_uindex
 	ON "users" (email);
