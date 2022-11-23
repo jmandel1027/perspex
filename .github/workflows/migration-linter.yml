@@ -26,7 +26,7 @@ jobs:
 
             echo "${does_file_exist}"
             if [[ -z "${does_file_exist}" ]]; then
-              echo "Error: this pr touches a branch already in history"
+              echo "Error: this pr touches ${i}, which is a file already in history"
               exit 1;
             fi
             
