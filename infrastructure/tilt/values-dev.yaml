@@ -35,7 +35,12 @@ backend:
   secretsManager:
     enabled: false
     secretName: "local-secrets"
-  
+  healthcheck:
+    liveness:
+      enabled: false
+    readiness:
+      enabled: false
+
 migration:
   enabled: true
   image:

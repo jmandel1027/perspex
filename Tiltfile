@@ -12,8 +12,9 @@ allow_k8s_contexts(k8s_context)
 namespace_create(deploy_namespace)
 
 services={
-  "backend": "false",
-  "migration": "true"
+  "backend": "true",
+  "migration": "true",
+  "postgres": "true"
 }
 
 #########################
@@ -28,6 +29,7 @@ perspex = helm(
   set=[
     "backend.enabled={s}".format(s=services["backend"]),
     "migration.enabled={s}".format(s=services["migration"]),
+    "postgres.enabled={s}".format(s=services["postgres"])
   ]
 )
 
@@ -38,21 +40,17 @@ k8s_resource(workload="postgresql", labels=["postgres"])
 # Services
 #########################
 
-# this doesn't  have a conditional block because we have settings inside this service
-include("services/migration/Tiltfile")
+if services["migration"] == "true": 
+  include("services/migration/Tiltfile")
 
 if services["backend"] == "true": 
     include('services/backend/Tiltfile')
 
-
-#########################
-# Utils
-#########################
-
-local_resource(
-  "postgresql-port-forward",
-  serve_cmd="kubectl -n {deploy_namespace} port-forward service/postgresql 5433:5432".format(deploy_namespace=deploy_namespace),
-  trigger_mode=TRIGGER_MODE_MANUAL,
-  auto_init=False,
-  labels=["postgres"]
-)
+if services["postgres"] == "true": 
+  local_resource(
+    "postgresql-port-forward",
+    serve_cmd="kubectl -n {deploy_namespace} port-forward service/postgresql 5433:5432".format(deploy_namespace=deploy_namespace),
+    trigger_mode=TRIGGER_MODE_MANUAL,
+    auto_init=False,
+    labels=["postgres"]
+  )

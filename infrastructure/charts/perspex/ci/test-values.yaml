@@ -19,9 +19,12 @@ backend:
     POSTGRES_PASSWORD: "pass"
 
 migration:
+  enabled: true
   serviceAccount:
     create: false
   forward:
     enabled: true
+  rollback:
+    enabled: false
   extraEnv:
     POSTGRES_PASSWORD: "pass"

@@ -1,0 +1,16 @@
+
+output   = "pkg/models"
+wipe     = true
+no-tests = true
+debug    = false
+
+[psql]
+  dbname  = "${POSTGRES_DB}"
+  host    = "${POSTGRES_HOST}"
+  port    = ${POSTGRES_PORT}
+  user    = "${POSTGRES_USER}"
+  sslmode = "disable"
+  pass    = "${POSTGRES_PASSWORD}"
+  schema  = "public"
+  blacklist = []
+
