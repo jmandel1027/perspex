@@ -10,7 +10,7 @@ function ping_docker() {
   echo "Verifying that docker daemon is active"
   if (! docker stats --no-stream ); then
     # On Mac OS this would be the terminal command to launch Docker
-    open /Applications/Docker.app
+     open "/Applications/Rancher Desktop.app" || open "/Applications/Docker.app"
     # Wait until Docker daemon is running and has completed initialisation
     while (! docker stats --no-stream ); do
       # Docker takes a few seconds to initialize

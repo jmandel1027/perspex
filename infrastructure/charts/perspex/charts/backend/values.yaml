@@ -23,21 +23,13 @@ serviceAccount:
 # DO NOT EDIT - To be passed in by parent chart
 global:
   config:
-    auth0: {}
     aws: {}
     backend: {}
-    google: {}
-    export: {}
-    ingestion: {}
     database: {}
-    dynamo: {}
     redis: {}
     kafka: {}
-    sqsTopic: {}
+
 config:
-  auth0:
-    domain: "1build-stagings.auth0.com"
-    issuer: "1build-stagings.auth0.com"
   aws:
     endpoint: ""
   backend:
@@ -49,38 +41,22 @@ config:
   kafka: 
     enabled: false
     brokers: ""
-  google:
-    bqProjectID: "onebuild-1566453616550"
-    bqPrivateKeyID: "ba718ae75133a285ebfdca8962bb9a1eb5e158d6"
-    bqClientEmail: "backend-bigquery-integration@onebuild-1566453616550.iam.gserviceaccount.com"
-    bqClientID: "104478768359491634681"
-    bqClientX509CertURL: "https://www.googleapis.com/robot/v1/metadata/x509/backend-bigquery-integration%40onebuild-1566453616550.iam.gserviceaccount.com"
-  dataLakeBucket: "1b-development-lake"
-  s3PlanBucket: "1b-development-ingestion"
-  sqsTopic:
-    export: "1b-development-export"
-    exportCollation: "1b-development-export-collation-normal"
-    predictor: "1b-development-predictor"
-    predictorProjectPricing: "1b-development-predictor-project-pricing-normal"
-    ingestion: "1b-development-ingestion"
-  dynamo:
-    exportTable: "1b-development-export"
-    assetTable: "1b-development-asset"
   database:
-    host: "portal-postgresql"
+    host: "perspex-postgresql"
     port: 5432
-    user: "postgres"
-    db: "pg"
+    user: "perspex"
+    db: "perspex"
     schema: "public"
     maxIdleConnections: 128
     maxOpenConnections: 4096
     connectionLifespan: 128
     debug: false
   redis:
-    host: "portal-redis-master"
+    host: "perspex-redis-writer"
     port: 6379
     tls: false
     skipVerify: false
+
 healthcheck:
   liveness:
     enabled: true
@@ -120,7 +96,7 @@ canary:
   provider: "contour"
   # Only used with nginx provider
   ingressRef:
-    name: "portal-backend"
+    name: "perspex-backend"
     apiVersion: networking.k8s.io/v1beta1
     kind: Ingress
   analysis:
@@ -185,11 +161,11 @@ service:
 traefik:
   enabled: false
   path: "/api"
-  host: "svc.development.1build.com"
+  host: "svc.perspex.us"
   # Middlewares managed in flux as they're shared in most cases
   middlewares:
     - name: cors-configuration
-      namespace: portal
+      namespace: perspex
   entrypoints:
     - web
   # Should adhere to Traefik's Rule kind spec
@@ -216,7 +192,6 @@ autoscaling:
   minReplicas: 1
   maxReplicas: 20
   targetCPUUtilizationPercentage: 80
-  # targetMemoryUtilizationPercentage: 80
 
 nodeSelector: {}
 
