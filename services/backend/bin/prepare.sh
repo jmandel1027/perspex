@@ -94,57 +94,97 @@ run_mac() {
     exit 0
 }
 
-while [[ "$#" -gt 0 ]]; do
-  case $1 in
-    -sp|--source-path)
-      srcPath="$2"
-      shift
-      ;;
-    -pf|--package-file)
-      pkgFile="$2"
-      shift
-      ;;
-    -op|--output-path)
-      outputPath="$2"
-      shift
-      ;;
-    -an|--app-name)
-      app="$2"
-      shift
-      ;;
-    -bl|--build-linux)
-      build_linux
-      shift
-    ;;
-    -bb|--build-boil)
-      build_boil
-      shift
-    ;;
-    -bg|--build-gql)
-      build_gql
-      shift
-    ;;
-    -bm|--build-mac)
-      build_mac
-      shift
-    ;;
+run_tilt() {
 
-    -dt|--docker-test)
-      docker_test
-      shift
-    ;;
-    -rl|--run-linux)
-      run_linux
-      shift
-    ;;
-    -rm|--run-mac)
-      run_mac
-      shift
-    ;;
-    *)
-      echo "Unknown parameter passed: $1";
-      exit 1
-    ;;
-  esac;
-  shift;
-done
+  # Getting sqlboiler/gqlgen dependencies
+  go get \
+    github.com/volatiletech/sqlboiler \
+    github.com/volatiletech/sqlboiler/drivers/sqlboiler-psql \
+    github.com/99designs/gqlgen
+
+  # Download go dependencies
+  go mod download
+
+  echo "Checking if $(pwd)/schema exists and creating if not"
+  if [ ! -d schema ]; then
+    echo "Creating $(pwd)/schema"
+    mkdir -p schema
+  else
+    echo "$(pwd)/schema exists, emptying it"
+    rm -rf schema/*
+  fi
+
+  echo "Grabbing all schema files served using the python http.server (localhost:8000)"
+  cd schema && wget -q -r -np -nH --cut-dirs=3 -R index.html http://localhost:8000/
+
+  echo "The following schema files are now present:"
+  ls
+  cd ..
+
+  build_gql
+  
+  exit 0
+}
+
+main() {
+  while [[ "$#" -gt 0 ]]; do
+    case $1 in
+      -sp|--source-path)
+        srcPath="$2"
+        shift
+        ;;
+      -pf|--package-file)
+        pkgFile="$2"
+        shift
+        ;;
+      -op|--output-path)
+        outputPath="$2"
+        shift
+        ;;
+      -an|--app-name)
+        app="$2"
+        shift
+        ;;
+      -bl|--build-linux)
+        build_linux
+        shift
+      ;;
+      -bb|--build-boil)
+        build_boil
+        shift
+      ;;
+      -bg|--build-gql)
+        build_gql
+        shift
+      ;;
+      -bm|--build-mac)
+        build_mac
+        shift
+      ;;
+  
+      -dt|--docker-test)
+        docker_test
+        shift
+      ;;
+      -rl|--run-linux)
+        run_linux
+        shift
+      ;;
+      -rt|--run-tilt)
+        run_tilt
+        shift
+      ;;
+      -rm|--run-mac)
+        run_mac
+        shift
+      ;;
+      *)
+        echo "Unknown parameter passed: $1";
+        exit 1
+      ;;
+    esac;
+    shift;
+  done
+}
+
+main "${@}"
