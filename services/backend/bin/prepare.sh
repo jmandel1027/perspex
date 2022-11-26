@@ -4,23 +4,23 @@ set -e
 
 
 build_boil() {
-  tpl="sqlboiler.tpl.toml"
-  tom="sqlboiler.toml"
-
-  name="s|${POSTGRES_DB}|'${POSTGRES_DB}'|g;"
-  user="s|${POSTGRES_USER}|'${POSTGRES_USER}'|g;"
-  pass="s|${POSTGRES_PASSWORD}|'${POSTGRES_PASSWORD}'|g;"
-  host="s|${POSTGRES_HOST}|'${POSTGRES_HOST}'|g;"
-  port="s|${POSTGRES_PORT}|'${POSTGRES_PORT}'|g;"
-
-  replacer="${name} ${user} ${pass} ${host} ${port}"
-
-  sed "${replacer}" ${tpl} > ${tom}
-
+# tpl="sqlboiler.tpl.toml"
+# tom="sqlboiler.toml"
+# 
+# name="s|${POSTGRES_DB}|'${POSTGRES_DB}'|g;"
+# user="s|${POSTGRES_USER}|'${POSTGRES_USER}'|g;"
+# pass="s|${POSTGRES_PASSWORD}|'${POSTGRES_PASSWORD}'|g;"
+# host="s|${POSTGRES_HOST}|'${POSTGRES_HOST}'|g;"
+# port="s|${POSTGRES_PORT}|'${POSTGRES_PORT}'|g;"
+# 
+# replacer="${name} ${user} ${pass} ${host} ${port}"
+# 
+# sed "${replacer}" ${tpl} > ${tom}
+# 
   sqlboiler psql
 
   printf "\nDone.\n\n"
-  exit 0
+  # exit 0
 }
 
 build_gql() {
@@ -31,7 +31,7 @@ build_gql() {
   time go generate ./...
 
   printf "\nDone.\n\n"
-  exit 0
+  #exit 0
 }
 
 build_linux() {
@@ -122,6 +122,8 @@ run_tilt() {
   cd ..
 
   build_gql
+  echo "done, generating db models"
+  build_boil
   
   exit 0
 }
