@@ -4,14 +4,14 @@ image_repo = os.getenv("TILT_IMAGE_REPO", default="registry.local:5000")
 
 compile_cmd = "CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o bin/backend ./cmd/backend/main.go"
 
-# local_resource(
-#   "backend-generate-gql",
-#   "bin/setup.sh",
-#   dir=".",
-#   deps=["./pkg", "./cmd/backend/main.go", "./bin/setup.sh"],
-#   ignore=["./pkg/**/*"],
-#   labels=["backend"]
-# )
+local_resource(
+  "backend-generate-gql",
+  "bin/prepare.sh -rt",
+  dir=".",
+  deps=["./pkg", "./cmd/backend/main.go", "./bin/prepare.sh"],
+  ignore=["./pkg/**/*"],
+  labels=["backend"]
+)
 
 local_resource(
   "backend-compile",

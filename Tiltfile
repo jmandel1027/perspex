@@ -44,7 +44,7 @@ if services["migration"] == "true":
   include("services/migration/Tiltfile")
 
 if services["backend"] == "true": 
-    include('services/backend/Tiltfile')
+  include('services/backend/Tiltfile')
 
 if services["postgres"] == "true": 
   local_resource(
@@ -54,3 +54,8 @@ if services["postgres"] == "true":
     auto_init=False,
     labels=["postgres"]
   )
+
+# Needs Python3 
+# Serves schema on port 8000 so we don't need a global docker context
+# Not super ideal
+local_resource('schema-http', serve_cmd='python3 -m http.server -d schemas/graphql', labels=["utils"])

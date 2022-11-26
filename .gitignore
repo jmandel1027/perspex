@@ -35,3 +35,6 @@ tilt_modules
 tilt_modules/**/*
 
 **/.idea
+
+services/backend/bin/backend
+services/backend/schema

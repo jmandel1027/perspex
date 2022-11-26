@@ -1,0 +1,37 @@
+# go-gql-server gqlgen.yml file
+# Refer to https://gqlgen.com/config/
+# for detailed .gqlgen.yml documentation.
+
+# Pick up all the schema files you put in this directory
+schema:
+    - ./schema/schema.graphql
+
+# Let gqlgen know where to put the generated server
+exec:
+  filename: pkg/graphql/source/generated.go
+  package: source
+
+federation:
+  filename: pkg/graphql/source/federation.go
+  package: source
+
+# Let gqlgen know where to put the generated models (if any)
+model:
+  filename: pkg/graphql/model/generated.go
+  package: model
+
+# Let gqlgen know where to put the generated resolvers
+resolver:
+  filename: pkg/resolvers/generated/generated.go
+  type: Resolver
+  package: generated
+
+models:
+
+  #PageArgs:
+  #  model: github.com/jay-manday/perspex/services/backend/pkg/paginator.PageArgs
+
+  #PageInfo:
+  #  model: github.com/jay-manday/perspex/services/backend/pkg/paginator.PageInfo
+
+autobind: []
