@@ -39,6 +39,14 @@ jobs:
           curl -fsSL https://github.com/tilt-dev/tilt/releases/download/v0.23.1/tilt.0.23.1.linux.x86_64.tar.gz | tar -xzv tilt && \
           mv tilt /usr/local/bin/tilt
 
+      - name: Install k3d
+        run: |
+          curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
+
+      - name: Spin up k3d
+        run: |
+          k3d cluster create -c infrastructure/tilt/k3d-config.yaml
+
       - name: Run tilt up
         run: |
           tilt ci -f Tiltfile
