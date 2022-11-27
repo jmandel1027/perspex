@@ -13,9 +13,9 @@ allow_k8s_contexts(k8s_context)
 namespace_create(deploy_namespace)
 
 services={
-  "backend":   os.getenv('TILT_BACKEND_ENABLED', default=True),
-  "migration": os.getenv('TILT_MIGRATION_ENABLED', default=True),
-  "postgres":  os.getenv('TILT_POSTGRES_ENABLED', default=True),
+  "backend":   os.getenv('TILT_BACKEND_ENABLED', default="true"),
+  "migration": os.getenv('TILT_MIGRATION_ENABLED', default="true"),
+  "postgres":  os.getenv('TILT_POSTGRES_ENABLED', default="true"),
 }
 
 #########################
@@ -41,13 +41,13 @@ k8s_resource(workload="postgresql", labels=["postgres"])
 # Services
 #########################
 
-if services["migration"]: 
+if services["migration"] == "true": 
   include("services/migration/Tiltfile")
 
-if services["backend"]: 
+if services["backend"] == "true": 
   include('services/backend/Tiltfile')
 
-if services["postgres"]: 
+if services["postgres"] == "true":
   local_resource(
     "postgresql-port-forward",
     serve_cmd="kubectl -n {deploy_namespace} port-forward service/postgresql 5433:5432".format(deploy_namespace=deploy_namespace),
