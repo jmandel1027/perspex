@@ -49,10 +49,13 @@ jobs:
       - name: Network
         run: |
           docker network inspect -f '{{json .Containers}}' k3d-perspex-ci | jq -r '.[] | .Name + ":" + .IPv4Address' | grep -o 'registry.localhost:[^"]*'
-          #registry_host=$(docker network inspect -f '{{json .Containers}}' k3d-perspex-ci | jq -r '.[] | .Name + ":" + .IPv4Address' | grep -o 'registry.localhost:[^"]*' | cut -d ":" -f2- | tr -d /16)
-          sed -i 's/registry.local:5000/172.22.0.5:5000/g' infrastructure/tilt/values-dev.yaml
+          registry_host=$(docker network inspect -f '{{json .Containers}}' k3d-perspex-ci | jq -r '.[] | .Name + ":" + .IPv4Address' | grep -o 'registry.localhost:[^"]*' | cut -d ":" -f2 | cut -d "/" -f1)
+          sed -i 's/registry.local:5000/${registry_host}:5000/g' infrastructure/tilt/values-dev.yaml
 
       - name: Run tilt up
         run: |
           tilt ci -f Tiltfile
 
+#registry_host=$(docker network inspect -f '{{json .Containers}}' k3d-perspex-local | jq -r '.[] | .Name + ":" + .IPv4Address' | grep -o 'registry.localhost:[^"]*' | cut -d ":" -f2- | tr -d /16)
+#docker network inspect -f '{{json .Containers}}' k3d-perspex-local | jq -r '.[] | .Name + ":" + .IPv4Address' | grep -o 'registry.localhost:[^"]*' | cut -d ":" -f2 | cut -d "/" -f1
+#| tr -d /16
