@@ -42,13 +42,12 @@ jobs:
       - uses: AbsaOSS/k3d-action@v2
         name: "Spin up k3d"
         with:
-          cluster-name: "test-cluster-1"
+          cluster-name: "perspex-ci"
           args: >-
             -c infrastructure/tilt/k3d-config.yaml
 
       - name: Network
-        run: docker network ls
-        #inspect nw01
+        run: docker network inspect k3d-perspex-ci
 
       - name: Run tilt up
         run: |
