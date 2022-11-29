@@ -39,11 +39,6 @@ jobs:
           curl -fsSL https://github.com/tilt-dev/tilt/releases/download/v0.23.1/tilt.0.23.1.linux.x86_64.tar.gz | tar -xzv tilt && \
           mv tilt /usr/local/bin/tilt
 
-      - name: Install k3d
-        run: |
-          curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
-
-
       - uses: AbsaOSS/k3d-action@v2
         name: "Spin up k3d"
         with:
@@ -52,7 +47,8 @@ jobs:
             -c infrastructure/tilt/k3d-config.yaml
 
       - name: Network
-        run: docker network inspect nw01
+        run: docker network ls
+        #inspect nw01
 
       - name: Run tilt up
         run: |
