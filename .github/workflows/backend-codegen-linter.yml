@@ -6,7 +6,7 @@ on:
       - main
 jobs:
   backend-codegen-linter:
-    name: migration-linter
+    name: Backend Codegen Linter
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -49,8 +49,8 @@ jobs:
       - name: Network
         run: |
 
-          registry_host=$(docker network inspect -f '{{json .Containers}}' k3d-perspex-ci | jq -r '.[] | .Name + ":" + .IPv4Address' | grep -o 'registry.localhost:[^"]*' | cut -d ":" -f2- | tr -d /16)
-          sed -i 's/registry.local:5000/${registry_host}/g' infrastructure/tilt/values-dev.yaml
+          #registry_host=$(docker network inspect -f '{{json .Containers}}' k3d-perspex-ci | jq -r '.[] | .Name + ":" + .IPv4Address' | grep -o 'registry.localhost:[^"]*' | cut -d ":" -f2- | tr -d /16)
+          sed -i 's/registry.local:5000/172.22.0.5:5000/g' infrastructure/tilt/values-dev.yaml
 
       - name: Run tilt up
         run: |

@@ -7,19 +7,20 @@ on:
       - main
 jobs:
   migration-linter:
-    name: migration-linter
+    name: Migration Linter
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: update checkout
         run: git fetch --prune
         shell: bash
-      - name: Find modified migrations
+      - id: modified-migrations
+        name: Find modified migrations
         run: |
           modified_migrations=$(git diff --name-only origin/$GITHUB_BASE_REF...origin/$GITHUB_HEAD_REF 'services/migration/src/**/*.sql')
           echo "$modified_migrations"
           echo "::set-output name=file_names::$modified_migrations"
-          
+
           for i in "${modified_migrations[@]}"; do
             # or do whatever with individual element of the array
             does_file_exist=$(git cat-file -e origin/main:${i})
@@ -29,10 +30,8 @@ jobs:
               echo "Error: this pr touches ${i}, which is a file already in history"
               exit 1;
             fi
-            
-          done
 
-        id: modified-migrations
+          done
       - uses: sbdchd/squawk-action@v1
         with:
           pattern: ${{ steps.modified-migrations.outputs.file_names }}
