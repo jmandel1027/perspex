@@ -10,8 +10,8 @@ update_settings(suppress_unused_image_warnings=["registry.local:5000/migration"]
 if remote_cluster:
   docker_build(
   "{image_repo}/migration".format(image_repo=image_repo),
-    context="services/migration",
-    dockerfile="services/migration/Dockerfile",
+    context=".",
+    dockerfile="Dockerfile",
     target="deployable"
   )
 else:

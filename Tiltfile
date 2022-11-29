@@ -3,8 +3,6 @@ load("ext://restart_process", "docker_build_with_restart")
 load("ext://helm_remote", "helm_remote")
 load("ext://local_output", "local_output")
 
-
-
 image_repo = os.getenv("TILT_IMAGE_REPO", default="registry.local:5000")
 k8s_context = os.getenv("TILT_K8S_CONTEXT", default="perspex-local")
 deploy_namespace = os.getenv("TILT_DEPLOY_NAMESPACE", default="perspex")
