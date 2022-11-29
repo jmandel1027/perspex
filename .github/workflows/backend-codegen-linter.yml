@@ -31,7 +31,7 @@ jobs:
         id: set-environment-variables
         run: |
           echo "TILT_BACKEND_ENABLED=true" >> $GITHUB_ENV
-          echo "TILT_REMOTE_CLUSTER=True >> $GITHUB_ENV
+          echo "TILT_REMOTE_CLUSTER=True" >> $GITHUB_ENV
 
       - name: Run helm dependency update
         run: |
