@@ -4,6 +4,11 @@ on:
     types: [opened, synchronize, edited, reopened]
     branches:
       - main
+    paths:
+      - "services/migration/**/*.sql"
+      - "schemas/graphql/**.graphql"
+      - ".github/workflows/**/*"
+
 jobs:
   backend-codegen-linter:
     name: Backend Codegen Linter
@@ -32,7 +37,7 @@ jobs:
         run: |
           echo "TILT_BACKEND_ENABLED=false" >> $GITHUB_ENV
           echo "TILT_MIGRATION_ENABLED=true" >> $GITHUB_ENV
-          echo "TILT_REMOTE_CLUSTER=True" >> $GITHUB_ENV
+          echo "TILT_REMOTE_CLUSTER=False" >> $GITHUB_ENV
 
       - name: Run helm dependency update
         run: |
@@ -66,10 +71,8 @@ jobs:
 
       - name: Update image repo in helm values
         run: |
-          sed -i "s/registry.local:5000/450613976047.dkr.ecr.us-east-1.amazonaws.com\/development/g" infrastructure/tilt/values-dev.yaml
+          #sed -i "s/registry.local:5000/450613976047.dkr.ecr.us-east-1.amazonaws.com\/development/g" infrastructure/tilt/values-dev.yaml
 
       - name: Run tilt up
         run: |
-          echo $GITHUB_ENV
-          printenv
           tilt ci -f Tiltfile
