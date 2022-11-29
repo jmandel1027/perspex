@@ -45,8 +45,8 @@ jobs:
 
       - name: Spin up k3d
         run: |
-          k3d cluster create -c infrastructure/tilt/k3d-config.yaml
+          k3d cluster create -c infrastructure/tilt/k3d-config.yaml && tilt ci -f Tiltfile
 
-      - name: Run tilt up
-        run: |
-          tilt ci -f Tiltfile
+      #- name: Run tilt up
+      #  run: |
+      #    tilt ci -f Tiltfile
