@@ -12,7 +12,7 @@ values_file="infrastructure/tilt/values-dev.yaml"
 allow_k8s_contexts(k8s_context)
 namespace_create(deploy_namespace)
 
-if remote_cluster:
+if remote_cluster == True :
   docker_login_cmd="aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 450613976047.dkr.ecr.us-east-1.amazonaws.com"
   local(docker_login_cmd)
 
