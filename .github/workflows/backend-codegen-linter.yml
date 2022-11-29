@@ -51,7 +51,7 @@ jobs:
           docker network inspect -f '{{json .Containers}}' k3d-perspex-ci | jq -r '.[] | .Name + ":" + .IPv4Address' | grep -o 'registry.localhost:[^"]*'
           registry_host=$(docker network inspect -f '{{json .Containers}}' k3d-perspex-ci | jq -r '.[] | .Name + ":" + .IPv4Address' | grep -o 'registry.localhost:[^"]*' | cut -d ":" -f2 | cut -d "/" -f1)
           echo ${registry_host}
-          sed -i 's/registry.local:5000/${registry_host}:5000/g' infrastructure/tilt/values-dev.yaml
+          sed -i "s/registry.local:5000/${registry_host}:5000/g" infrastructure/tilt/values-dev.yaml
           cat infrastructure/tilt/values-dev.yaml
       - name: Run tilt up
         run: |
