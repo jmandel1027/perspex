@@ -14,6 +14,13 @@ jobs:
         run: git fetch --prune
         shell: bash
 
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
       - name: Setup yq
         uses: chrisdickinson/setup-yq@latest
         with:
@@ -56,18 +63,10 @@ jobs:
         run: |
           yq eval -i '.backend.enabled = "${TILT_BACKEND_ENABLED}"' infrastructure/tilt/values-dev.yaml
 
-      - name: Network
+      - name: Update image repo in helm values
         run: |
-          docker network inspect -f '{{json .Containers}}' k3d-perspex-ci | jq -r '.[] | .Name + ":" + .IPv4Address' | grep -o 'registry.localhost:[^"]*'
-          registry_host=$(docker network inspect -f '{{json .Containers}}' k3d-perspex-ci | jq -r '.[] | .Name + ":" + .IPv4Address' | grep -o 'registry.localhost:[^"]*' | cut -d ":" -f2 | cut -d "/" -f1)
-          echo ${registry_host}
-          #sed -i "s/registry.local:5000/${registry_host}:5000/g" infrastructure/tilt/values-dev.yaml
-          sed -i "s/registry.local:5000/0.0.0.0:50000/g" infrastructure/tilt/values-dev.yaml
-          cat infrastructure/tilt/values-dev.yaml
+          sed -i "s/registry.local:5000/450613976047.dkr.ecr.us-east-1.amazonaws.com\/development/g" infrastructure/tilt/values-dev.yaml
+
       - name: Run tilt up
         run: |
           tilt ci -f Tiltfile
-
-#registry_host=$(docker network inspect -f '{{json .Containers}}' k3d-perspex-local | jq -r '.[] | .Name + ":" + .IPv4Address' | grep -o 'registry.localhost:[^"]*' | cut -d ":" -f2- | tr -d /16)
-#docker network inspect -f '{{json .Containers}}' k3d-perspex-local | jq -r '.[] | .Name + ":" + .IPv4Address' | grep -o 'registry.localhost:[^"]*' | cut -d ":" -f2 | cut -d "/" -f1
-#| tr -d /16
