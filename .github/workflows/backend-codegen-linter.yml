@@ -46,6 +46,16 @@ jobs:
           args: >-
             -c infrastructure/tilt/k3d-config.yaml
 
+      - name: Setup yq
+        uses: chrisdickinson/setup-yq@latest
+        with:
+          yq-version: '4.14.2'
+          yq-url: 'https://github.com/mikefarah/yq/releases/download/v4.14.2/yq_linux_amd64'
+
+      - name: Do some yaml substitutions
+        run: |
+          yq eval -i '.backend.enabled = "${TILT_BACKEND_ENABLED}"' infrastructure/tilt/values-dev.yaml
+
       - name: Network
         run: |
           docker network inspect -f '{{json .Containers}}' k3d-perspex-ci | jq -r '.[] | .Name + ":" + .IPv4Address' | grep -o 'registry.localhost:[^"]*'
