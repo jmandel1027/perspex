@@ -2,13 +2,26 @@ load('ext://restart_process', 'custom_build_with_restart', 'docker_build_with_re
 load('ext://local_output', 'local_output')
 
 image_repo = os.getenv('TILT_IMAGE_REPO','registry.local:5000')
+remote_cluster = os.getenv("TILT_REMOTE_CLUSTER", default=False)
+
 update_settings(suppress_unused_image_warnings=["registry.local:5000/migration"])
 
-custom_build(
+
+if remote_cluster:
+  docker_build(
   "{image_repo}/migration".format(image_repo=image_repo),
-  command="docker build --tag ${EXPECTED_REF} .",
-  deps=['./services/migration/src/perspex'],
-)
+    context="services/migration",
+    dockerfile="services/migration/Dockerfile",
+    target="deployable"
+  )
+else:
+  custom_build(
+    "{image_repo}/migration".format(image_repo=image_repo),
+    command="docker build --tag ${EXPECTED_REF} .",
+    deps=['./services/migration/src/perspex'],
+  )
+
+  
 
 local_resource(
   "version",
