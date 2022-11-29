@@ -24,7 +24,7 @@ global:
       debug: false
 
 backend:
-  enabled: true
+  enabled: false
   image:
     repository: "registry.local:5000/backend"
     pullPolicy: Always
