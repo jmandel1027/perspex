@@ -3,11 +3,11 @@
 set -e
 
 function verify_hashes() {
-  branch=$(find -s "${path}" -type f -exec md5sum {} \; | md5sum)
+  branch=$(tar -cf - "${path}" | md5sum)
 
   git checkout main "${path}"
   
-  main=$(find -s "${path}" -type f -exec md5sum {} \; | md5sum)
+  main=$(tar -cf - "${path}" | md5sum)
 
   if [[ "${branch}" == "${main}" ]]; then
     echo "Error: Generated ${tool} code is out of phase, please commit generated code."
