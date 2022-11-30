@@ -4,34 +4,37 @@ set -e
 
 
 build_boil() {
-# tpl="sqlboiler.tpl.toml"
-# tom="sqlboiler.toml"
-# 
-# name="s|${POSTGRES_DB}|'${POSTGRES_DB}'|g;"
-# user="s|${POSTGRES_USER}|'${POSTGRES_USER}'|g;"
-# pass="s|${POSTGRES_PASSWORD}|'${POSTGRES_PASSWORD}'|g;"
-# host="s|${POSTGRES_HOST}|'${POSTGRES_HOST}'|g;"
-# port="s|${POSTGRES_PORT}|'${POSTGRES_PORT}'|g;"
-# 
-# replacer="${name} ${user} ${pass} ${host} ${port}"
-# 
-# sed "${replacer}" ${tpl} > ${tom}
-# 
+  cd ../../schemas/perspex
+  
+  go mod download
+
+  go get \
+    github.com/volatiletech/sqlboiler \
+    github.com/volatiletech/sqlboiler/drivers/sqlboiler-psql
+
   sqlboiler psql
+  
+  cd ../../services/backend
 
   printf "\nDone.\n\n"
-  # exit 0
 }
 
 build_gql() {
+  cd ../../schemas/graphql
+
+  go mod download
+
+  go get github.com/99designs/gqlgen
+
   rm -rf pkg/resolvers/generated
   rm -rf pkg/graphql/*
 
   time go run -v github.com/99designs/gqlgen generate
   time go generate ./...
 
+  cd ../../services/backend
+
   printf "\nDone.\n\n"
-  #exit 0
 }
 
 build_linux() {
@@ -58,12 +61,6 @@ build_mac() {
   exit 0
 }
 
-docker_test() {
-    backend_container=$(docker container ls --filter name='backend' --quiet)
-    docker exec -it ${backend_container} bash -c "go test ./... -cover"
-
-    exit 0
-}
 
 run_linux() {
   buildPath="bin"
@@ -96,33 +93,13 @@ run_mac() {
 
 run_tilt() {
 
-  # Getting sqlboiler/gqlgen dependencies
-  go get \
-    github.com/volatiletech/sqlboiler \
-    github.com/volatiletech/sqlboiler/drivers/sqlboiler-psql \
-    github.com/99designs/gqlgen
-
   # Download go dependencies
   go mod download
 
-  echo "Checking if $(pwd)/schema exists and creating if not"
-  if [ ! -d schema ]; then
-    echo "Creating $(pwd)/schema"
-    mkdir -p schema
-  else
-    echo "$(pwd)/schema exists, emptying it"
-    rm -rf schema/*
-  fi
-
-  echo "Grabbing all schema files served using the python http.server (localhost:8000)"
-  cd schema && wget -q -r -np -nH --cut-dirs=3 -R index.html http://localhost:8000/
-
-  echo "The following schema files are now present:"
-  ls
-  cd ..
-
   build_gql
-  echo "done, generating db models"
+
+  echo "Done, generating db models"
+
   build_boil
   
   exit 0
@@ -161,11 +138,6 @@ main() {
       ;;
       -bm|--build-mac)
         build_mac
-        shift
-      ;;
-  
-      -dt|--docker-test)
-        docker_test
         shift
       ;;
       -rl|--run-linux)

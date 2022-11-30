@@ -17,7 +17,7 @@ function verify_hashes() {
 
 function lint_codegen() {
   if [[ "$(git diff --quiet HEAD main -- services/migration/src/perspex || echo $?)" == 1 ]]; then
-    path="services/backend/pkg/models"
+    path="schemas/perspex/pkg/models"
     tool="sqlboiler"
     verify_hashes
   elif [[ "$(git diff --quiet HEAD main -- schemas/graphql || echo $?)" == 1 ]]; then

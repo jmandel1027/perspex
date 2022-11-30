@@ -9,7 +9,6 @@ utils:
 service/migration:
   - services/migration/**/*
 
-
 # Changes applying to all infrastructure get the "infrastructure" label.
 infrastructure:
   - infrastructure/*
@@ -27,3 +26,13 @@ infrastructure/terraform:
 
 infrastructure/workflows:
   - .github/**/*
+
+# Changes applying to all schemas get the "schema" label.
+schema:
+  - schemas/*
+
+schema/graphql:
+  - schemas/graphql/*
+
+schema/perspex:
+  - schemas/perspex/*
