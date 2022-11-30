@@ -3,18 +3,23 @@ load("ext://restart_process", "docker_build_with_restart")
 load("ext://helm_remote", "helm_remote")
 load("ext://local_output", "local_output")
 
-image_repo="registry.local:5000"
-k8s_context="perspex-local"
-deploy_namespace="perspex"
+image_repo = os.getenv("TILT_IMAGE_REPO", default="registry.local:5000")
+k8s_context = os.getenv("TILT_K8S_CONTEXT", default="perspex-local")
+deploy_namespace = os.getenv("TILT_DEPLOY_NAMESPACE", default="perspex")
+remote_cluster = os.getenv("TILT_REMOTE_CLUSTER", default=False)
 values_file="infrastructure/tilt/values-dev.yaml"
 
 allow_k8s_contexts(k8s_context)
 namespace_create(deploy_namespace)
 
+if remote_cluster == True :
+  docker_login_cmd="aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 450613976047.dkr.ecr.us-east-1.amazonaws.com"
+  local(docker_login_cmd)
+
 services={
-  "backend": "true",
-  "migration": "true",
-  "postgres": "true"
+  "backend":   os.getenv("TILT_BACKEND_ENABLED", default="true"),
+  "migration": os.getenv("TILT_MIGRATION_ENABLED", default="true"),
+  "postgres":  os.getenv("TILT_POSTGRES_ENABLED", default="true"),
 }
 
 #########################
@@ -46,7 +51,7 @@ if services["migration"] == "true":
 if services["backend"] == "true": 
   include('services/backend/Tiltfile')
 
-if services["postgres"] == "true": 
+if services["postgres"] == "true":
   local_resource(
     "postgresql-port-forward",
     serve_cmd="kubectl -n {deploy_namespace} port-forward service/postgresql 5433:5432".format(deploy_namespace=deploy_namespace),
@@ -58,4 +63,4 @@ if services["postgres"] == "true":
 # Needs Python3 
 # Serves schema on port 8000 so we don't need a global docker context
 # Not super ideal
-local_resource('schema-http', serve_cmd='python3 -m http.server -d schemas/graphql', labels=["utils"])
+local_resource("schema-http", serve_cmd="python3 -m http.server -d schemas/graphql", labels=["utils"])

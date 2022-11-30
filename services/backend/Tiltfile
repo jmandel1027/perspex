@@ -5,17 +5,18 @@ image_repo = os.getenv("TILT_IMAGE_REPO", default="registry.local:5000")
 compile_cmd = "CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o bin/backend ./cmd/backend/main.go"
 
 local_resource(
-  "backend-generate-gql",
-  "bin/prepare.sh -rt",
+  name="backend-generate-gql",
+  cmd="bin/prepare.sh -rt",
   dir=".",
   deps=["./pkg", "./cmd/backend/main.go", "./bin/prepare.sh"],
+  trigger_mode=TRIGGER_MODE_MANUAL,
   ignore=["./pkg/**/*"],
   labels=["backend"]
 )
 
 local_resource(
-  "backend-compile",
-  compile_cmd,
+  name="backend-compile",
+  cmd=compile_cmd,
   trigger_mode=TRIGGER_MODE_AUTO,
   deps=["./pkg", "./cmd/backend/main.go"],
   labels=["backend"],
@@ -38,4 +39,4 @@ docker_build_with_restart(
   ]
 )
 
-k8s_resource(workload="perspex-backend", labels=["backend"])
+k8s_resource(workload="perspex-backend", labels=["backend"], resource_deps=['postgresql'])

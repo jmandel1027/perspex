@@ -111,6 +111,35 @@ function install_deps() {
   exit 0
 }
 
+create_local_sectets() {
+  # CHECK IF .ENV EXISTS
+  # IF NOT CREATE .ENV BY
+    # SEED FROM HERE DIRECTLY?
+    # SEED BY PARSING VALUES IN TILT?
+  if [[ ! -f ".env" ]]; then
+    echo ""
+  fi
+  echo ""
+}
+
+generate_local_kube_secrets() {
+  NAMESPACE=${1}
+  MAX=10
+  COUNTER=0
+
+  while [ $COUNTER -le $MAX ]; do
+    if [ "$(kubectl get ns "${NAMESPACE}" -o json | jq .status.phase -r)" == "Active" ]; then
+        break
+    fi
+    echo "Namespace ${NAMESPACE}" not ready
+    kubectl create ns "${NAMESPACE}"
+  done
+
+  echo "Namespace ${NAMESPACE} ready - creating local secrets"
+
+  kubectl create secret generic perspex-local-secrets -n "${NAMESPACE}" --save-config --dry-run=client --from-env-file=.env -o yaml | kubectl apply -f -
+}
+
 function teardown() {
   echo "Tearing down ${cluster_name}"
   k3d cluster delete "${cluster_name}"
@@ -118,7 +147,6 @@ function teardown() {
 
   exit 0
 }
-
 
 function display_help() {
     echo "This script will run a database migration validation service"
