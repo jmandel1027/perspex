@@ -21,7 +21,7 @@ function lint_codegen() {
     tool="sqlboiler"
     verify_hashes
   elif [[ "$(git diff --quiet HEAD main -- schemas/graphql || echo $?)" == 1 ]]; then
-    path="schemas/graphql/pkg"
+    path="services/backend/pkg/graphql"
     tool="gqlgen"
     verify_hashes
   else

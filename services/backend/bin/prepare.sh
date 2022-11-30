@@ -12,7 +12,6 @@ build_boil() {
     github.com/volatiletech/sqlboiler \
     github.com/volatiletech/sqlboiler/drivers/sqlboiler-psql
 
-
   sqlboiler psql
   
   cd ../../services/backend
@@ -100,7 +99,7 @@ run_tilt() {
   build_gql
 
   echo "Done, generating db models"
-  
+
   build_boil
   
   exit 0
