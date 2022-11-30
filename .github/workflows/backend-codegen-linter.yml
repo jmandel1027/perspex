@@ -7,7 +7,7 @@ on:
     paths:
       - "services/migration/**/*.sql"
       - "schemas/graphql/**.graphql"
-      - ".github/workflows/**/*"
+      - ".github/workflows/backend-codegen-linter.yml"
 
 jobs:
   backend-codegen-linter:
@@ -65,3 +65,7 @@ jobs:
       - name: Run tilt up
         run: |
           tilt ci -f Tiltfile
+
+      - name: Verify Codegen is committed
+        run: |
+          bin/codegen-linter.sh

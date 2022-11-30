@@ -21,13 +21,13 @@ connect_to_postgres() {
 }
 
 usage() {
-    echo "Usage: $0 [option...]" >&2
-    echo
-    echo "   -local, --localhost        Connect to postgres locally"
-    echo "   -dev, --development        Connect to postgres in development"
-    echo "   -stag, --staging           Connect to postgres in staging"
-    echo "   -prod, --production        Connect to postgres in production"
-    echo
+  echo "Usage: $0 [option...]" >&2
+  echo
+  echo "   -local, --localhost        Connect to postgres locally"
+  echo "   -dev, --development        Connect to postgres in development"
+  echo "   -stag, --staging           Connect to postgres in staging"
+  echo "   -prod, --production        Connect to postgres in production"
+  echo
   exit 0
 }
 
