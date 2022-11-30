@@ -2,37 +2,28 @@
 
 set -e
 
-function verify_sqlboiler_hashes() {
-  branch=$(find -s services/backend -type f -exec md5sum {} \; | md5sum)
+function verify_hashes() {
+  branch=$(find -s "${path}" -type f -exec md5sum {} \; | md5sum)
 
-  git checkout main services/backend
+  git checkout main "${path}"
   
-  main=$(find -s services/backend -type f -exec md5sum {} \; | md5sum)
+  main=$(find -s "${path}" -type f -exec md5sum {} \; | md5sum)
 
-  if [[ "${branch}" != "${main}" ]]; then
-    echo "Error: Generated sqlboiler code is out of phase, please commit generated code."
-    exit 1;
-  fi
-}
-
-function verify_gqlgen_hashes() {
-  branch=$(find -s services/backend -type f -exec md5sum {} \; | md5sum)
-
-  git checkout main services/backend
-  
-  main=$(find -s services/backend -type f -exec md5sum {} \; | md5sum)
-
-  if [[ "${branch}" != "${main}" ]]; then
-    echo "Error: Generated gqlgen code is out of phase, please commit generated code."
+  if [[ "${branch}" == "${main}" ]]; then
+    echo "Error: Generated ${tool} code is out of phase, please commit generated code."
     exit 1;
   fi
 }
 
 function lint_codegen() {
   if [[ "$(git diff --quiet HEAD main -- services/migration/src/perspex || echo $?)" == 1 ]]; then
-    verify_sqlboiler_hashes
+    path="services/backend/pkg/models"
+    tool="sqlboiler"
+    verify_hashes
   elif [[ "$(git diff --quiet HEAD main -- schemas/graphql || echo $?)" == 1 ]]; then
-    verify_gqlgen_hashes
+    path="services/backend/pkg/graphql"
+    tool="gqlgen"
+    verify_hashes
   else
     echo "Generated code is up to date"
   fi
