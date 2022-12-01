@@ -1,4 +1,4 @@
-name: backend-codegen-linter
+name: codegen-linter
 on:
   pull_request:
     types: [opened, synchronize, edited, reopened]
@@ -7,11 +7,11 @@ on:
     paths:
       - "services/migration/**/*.sql"
       - "schemas/graphql/**.graphql"
-      - ".github/workflows/backend-codegen-linter.yml"
+      - ".github/workflows/codegen-linter.yml"
 
 jobs:
-  backend-codegen-linter:
-    name: Backend Codegen Linter
+  codegen-linter:
+    name: Codegen Linter
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -19,32 +19,21 @@ jobs:
         run: git fetch --prune
         shell: bash
 
-      - name: Setup yq
-        uses: chrisdickinson/setup-yq@latest
-        with:
-          yq-version: '4.14.2'
-          yq-url: 'https://github.com/mikefarah/yq/releases/download/v4.14.2/yq_linux_amd64'
-
       - name: Set environment variables
         id: set-environment-variables
         run: |
           echo "TILT_BACKEND_ENABLED=false" >> ${GITHUB_ENV}
           echo "TILT_MIGRATION_ENABLED=true" >> ${GITHUB_ENV}
           echo "TILT_REMOTE_CLUSTER=False" >> ${GITHUB_ENV}
-          echo "TILT_BACKEND_IMAGE_TARGET=tilt" >> ${GITHUB_ENV}
+          echo "TILT_BACKEND_IMAGE_TARGET=deployable" >> ${GITHUB_ENV}
 
       - name: Run helm dependency update
         run: |
-          helm dependency update infrastructure/charts/perspex
+          bin/helm dependency update infrastructure/charts/perspex
 
       - uses: actions/setup-python@v2
         with:
           python-version: '3.9.7'
-
-      - name: Install tilt
-        run: |
-          curl -fsSL https://github.com/tilt-dev/tilt/releases/download/v0.23.1/tilt.0.23.1.linux.x86_64.tar.gz | tar -xzv tilt && \
-          mv tilt /usr/local/bin/tilt
 
       - uses: AbsaOSS/k3d-action@v2
         name: "Spin up k3d"
@@ -53,19 +42,13 @@ jobs:
           args: >-
             -c infrastructure/tilt/k3d-config.yaml
 
-      - name: Setup yq
-        uses: chrisdickinson/setup-yq@latest
-        with:
-          yq-version: '4.14.2'
-          yq-url: 'https://github.com/mikefarah/yq/releases/download/v4.14.2/yq_linux_amd64'
-
       - name: Do some yaml substitutions
         run: |
-          yq eval -i '.backend.enabled = "${TILT_BACKEND_ENABLED}"' infrastructure/tilt/values-dev.yaml
+          bin/yq eval -i '.backend.enabled = "${TILT_BACKEND_ENABLED}"' infrastructure/tilt/values-dev.yaml
 
       - name: Run tilt up
         run: |
-          tilt ci -f Tiltfile
+          bin/tilt ci -f Tiltfile
 
       - name: Verify Codegen is committed
         run: |

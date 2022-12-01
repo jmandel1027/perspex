@@ -6,9 +6,9 @@ set -e
 build_boil() {
   cd ../../schemas/perspex
   
-  go mod download
+  ../../bin/go mod download
 
-  go get \
+  ../../bin/go get \
     github.com/volatiletech/sqlboiler \
     github.com/volatiletech/sqlboiler/drivers/sqlboiler-psql
 
@@ -22,9 +22,9 @@ build_boil() {
 build_gql() {
   cd ../../schemas/graphql
 
-  go mod download
+  ../../bin/go mod download
 
-  go get github.com/99designs/gqlgen
+  ../../bin/go get github.com/99designs/gqlgen
 
   rm -rf pkg/resolvers/generated
   rm -rf pkg/graphql/*
@@ -42,7 +42,7 @@ build_linux() {
   src="$srcPath/$app/$pkgFile"
 
   echo "Building: ${app}"
-  GOOS=linux GOARCH=amd64 go build -ldflags="-w -s" -o "${output}" "${src}"
+  GOOS=linux GOARCH=amd64 ../../bin/go build -ldflags="-w -s" -o "${output}" "${src}"
   echo "Built: ${app} size:"
   ls -lah "${output}" | awk '{print $5}'
   echo "Done building: ${app}"
@@ -54,7 +54,7 @@ build_mac() {
   src="$srcPath/$app/$pkgFile"
 
   printf "\nBuilding: $app\n"
-  go build -o $output $src
+  ../../bin/go build -o $output $src
   printf "\nBuilt: $app size:"
   ls -lah $output | awk '{print $5}'
   printf "\nDone building: $app\n\n"
@@ -94,7 +94,7 @@ run_mac() {
 run_tilt() {
 
   # Download go dependencies
-  go mod download
+  ../../bin/go mod download
 
   build_gql
 
