@@ -2,6 +2,7 @@ load('ext://restart_process', 'custom_build_with_restart', 'docker_build_with_re
 load('ext://local_output', 'local_output')
 
 image_repo = os.getenv('TILT_IMAGE_REPO','registry.local:5000')
+image_target = os.getenv("TILT_MIGRATION_IMAGE_TARGET", default="deployable")
 remote_cluster = os.getenv("TILT_REMOTE_CLUSTER", default=False)
 
 update_settings(suppress_unused_image_warnings=["registry.local:5000/migration"])
@@ -10,7 +11,7 @@ docker_build(
   "{image_repo}/migration".format(image_repo=image_repo),
   context=".",
   dockerfile="Dockerfile",
-  target="deployable"
+  target=image_target
 )
 
 local_resource(

@@ -39,7 +39,6 @@ perspex = helm(
 )
 
 k8s_yaml(perspex)
-k8s_resource(workload="postgresql", labels=["postgres"])
 
 #########################
 # Services
@@ -52,6 +51,7 @@ if services["backend"] == "true":
   include('services/backend/Tiltfile')
 
 if services["postgres"] == "true":
+  k8s_resource(workload="postgresql", labels=["postgres"])
   local_resource(
     "postgresql-port-forward",
     serve_cmd="kubectl -n {deploy_namespace} port-forward service/postgresql 5433:5432".format(deploy_namespace=deploy_namespace),
@@ -59,8 +59,3 @@ if services["postgres"] == "true":
     auto_init=False,
     labels=["postgres"]
   )
-
-# Needs Python3 
-# Serves schema on port 8000 so we don't need a global docker context
-# Not super ideal
-local_resource("schema-http", serve_cmd="python3 -m http.server -d schemas/graphql", labels=["utils"])

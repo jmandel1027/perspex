@@ -28,9 +28,10 @@ jobs:
       - name: Set environment variables
         id: set-environment-variables
         run: |
-          echo "TILT_BACKEND_ENABLED=false" >> $GITHUB_ENV
-          echo "TILT_MIGRATION_ENABLED=true" >> $GITHUB_ENV
-          echo "TILT_REMOTE_CLUSTER=False" >> $GITHUB_ENV
+          echo "TILT_BACKEND_ENABLED=false" >> ${GITHUB_ENV}
+          echo "TILT_MIGRATION_ENABLED=true" >> ${GITHUB_ENV}
+          echo "TILT_REMOTE_CLUSTER=False" >> ${GITHUB_ENV}
+          echo "TILT_BACKEND_IMAGE_TARGET=tilt" >> ${GITHUB_ENV}
 
       - name: Run helm dependency update
         run: |
