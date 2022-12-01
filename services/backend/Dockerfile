@@ -1,4 +1,4 @@
-FROM golang:1.17.1-buster AS tilt
+FROM golang:1.19.3-buster AS tilt
 
 ENV GO111MODULE="on"
 ENV GOROOT /usr/local/go
@@ -8,7 +8,7 @@ ENV PATH /go/bin:$PATH
 COPY bin/backend /usr/local/bin/backend
 ENTRYPOINT /usr/local/bin/backend
 
-FROM golang:1.17.1-buster AS common
+FROM golang:1.19.3-buster AS common
 
 ARG release="not-set"
 
