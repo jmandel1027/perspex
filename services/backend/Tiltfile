@@ -16,6 +16,14 @@ local_resource(
 )
 
 local_resource(
+  "protobuf-generate",
+  "../../bin/buf generate",
+  trigger_mode=TRIGGER_MODE_MANUAL,
+  labels=["backend"],
+  auto_init=False,
+)
+
+local_resource(
   name="backend-compile",
   cmd=compile_cmd,
   trigger_mode=TRIGGER_MODE_AUTO,
