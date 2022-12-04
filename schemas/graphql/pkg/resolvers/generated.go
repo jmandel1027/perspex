@@ -5,8 +5,8 @@ package generated
 import (
 	"context"
 
-	"github.com/jay-manday/perspex/schemas/graphql/pkg/graphql/model"
-	"github.com/jay-manday/perspex/schemas/graphql/pkg/graphql/source"
+	"github.com/jmandel1027/perspex/schemas/graphql/pkg/model"
+	"github.com/jmandel1027/perspex/schemas/graphql/pkg/source"
 )
 
 type Resolver struct{}

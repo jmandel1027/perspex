@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             (unknown)
-// source: users/v1/users.proto
+// source: users/v1/user.proto
 
 package users
 
@@ -35,7 +35,7 @@ func NewUserServiceClient(cc grpc.ClientConnInterface) UserServiceClient {
 
 func (c *userServiceClient) Echo(ctx context.Context, in *EchoRequest, opts ...grpc.CallOption) (*EchoResponse, error) {
 	out := new(EchoResponse)
-	err := c.cc.Invoke(ctx, "/users.v1.UserService/Echo", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/user.v1.UserService/Echo", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -80,7 +80,7 @@ func _UserService_Echo_Handler(srv interface{}, ctx context.Context, dec func(in
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/users.v1.UserService/Echo",
+		FullMethod: "/user.v1.UserService/Echo",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).Echo(ctx, req.(*EchoRequest))
@@ -92,7 +92,7 @@ func _UserService_Echo_Handler(srv interface{}, ctx context.Context, dec func(in
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var UserService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "users.v1.UserService",
+	ServiceName: "user.v1.UserService",
 	HandlerType: (*UserServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -101,5 +101,5 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "users/v1/users.proto",
+	Metadata: "users/v1/user.proto",
 }

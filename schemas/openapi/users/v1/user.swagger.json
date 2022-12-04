@@ -1,12 +1,12 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "users/v1/users.proto",
+    "title": "users/v1/user.proto",
     "version": "1.0"
   },
   "tags": [
     {
-      "name": "UsersService"
+      "name": "UserService"
     }
   ],
   "schemes": [
@@ -19,9 +19,9 @@
     "application/json"
   ],
   "paths": {
-    "/v1/users/echo": {
+    "/v1/user/echo": {
       "post": {
-        "operationId": "UsersService_Echo",
+        "operationId": "UserService_Echo",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -47,7 +47,7 @@
           }
         ],
         "tags": [
-          "UsersService"
+          "UserService"
         ]
       }
     }
