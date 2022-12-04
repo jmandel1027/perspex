@@ -4,18 +4,19 @@ import (
 	"context"
 	"sync"
 
-	user "github.com/jmandel1027/perspex/schemas/proto/goproto/pkg/users/v1"
+	users "github.com/jmandel1027/perspex/schemas/proto/goproto/pkg/users/v1"
 )
 
 // IUserService for interacting with Users
 type IUserService interface {
-	Echo(ctx context.Context, in *user.EchoRequest) (*user.EchoResponse, error)
+	RegisterUser(ctx context.Context, in *users.RegisterUserRequest) (*users.User, error)
+	RetrieveUser(ctx context.Context, in *users.RetrieveUserRequest) (*users.User, error)
 }
 
 // UserService structs
 type UserService struct {
 	mu *sync.RWMutex
-	user.UnimplementedUserServiceServer
+	users.UnimplementedUserServiceServer
 }
 
 // NewUserService for connecting to the repository
@@ -27,7 +28,12 @@ func NewUserService() *UserService {
 	return service
 }
 
-// Echo for testing
-func (svc *UserService) Echo(ctx context.Context, in *user.EchoRequest) (*user.EchoResponse, error) {
-	return &user.EchoResponse{}, nil
+// RegisterUser by RegisterUserRequest
+func (svc *UserService) RegisterUser(ctx context.Context, in *users.RegisterUserRequest) (*users.User, error) {
+	return &users.User{}, nil
+}
+
+// RetrieveUser fetches a user by ID
+func (svc *UserService) RetrieveUser(ctx context.Context, in *users.RetrieveUserRequest) (*users.User, error) {
+	return &users.User{}, nil
 }

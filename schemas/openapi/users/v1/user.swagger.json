@@ -19,14 +19,16 @@
     "application/json"
   ],
   "paths": {
-    "/v1/user/echo": {
+    "/v1/user": {
       "post": {
-        "operationId": "UserService_Echo",
+        "summary": "Register a user",
+        "description": "This endpoint registers a user.",
+        "operationId": "UserService_RegisterUser",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1EchoResponse"
+              "$ref": "#/definitions/v1User"
             }
           },
           "default": {
@@ -38,16 +40,49 @@
         },
         "parameters": [
           {
-            "name": "body",
+            "name": "user",
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/v1EchoRequest"
+              "$ref": "#/definitions/v1User"
             }
           }
         ],
         "tags": [
-          "UserService"
+          "Users"
+        ]
+      }
+    },
+    "/v1/user/{id}": {
+      "get": {
+        "summary": "Retrieve a user by ID",
+        "description": "This endpoint returns a user by ID via Query Params.",
+        "operationId": "UserService_RetrieveUser",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1User"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "Users"
         ]
       }
     }
@@ -80,19 +115,39 @@
         }
       }
     },
-    "v1EchoRequest": {
+    "v1User": {
       "type": "object",
       "properties": {
-        "value": {
-          "type": "string"
-        }
-      }
-    },
-    "v1EchoResponse": {
-      "type": "object",
-      "properties": {
-        "value": {
-          "type": "string"
+        "id": {
+          "type": "string",
+          "format": "int64",
+          "description": "User ID."
+        },
+        "authId": {
+          "type": "string",
+          "description": "Auth ID."
+        },
+        "email": {
+          "type": "string",
+          "description": "User Email"
+        },
+        "firstName": {
+          "type": "string",
+          "description": "User First Name"
+        },
+        "lastName": {
+          "type": "string",
+          "description": "User Last Name"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "User Creation Timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "User Updated Timestamp"
         }
       }
     }

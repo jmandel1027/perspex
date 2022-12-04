@@ -41,19 +41,20 @@ func Serve() {
 // GRPC -- Handler
 func GRPC(cfg *config.BackendConfig, l net.Listener) {
 
-	svr := grpc.NewServer(
-		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
-			grpc_prometheus.UnaryServerInterceptor,
-			grpc_opentracing.UnaryServerInterceptor(),
-		)),
+	middleware := grpc_middleware.ChainUnaryServer(
+		grpc_prometheus.UnaryServerInterceptor,
+		grpc_opentracing.UnaryServerInterceptor(),
 	)
 
+	unary := grpc.UnaryInterceptor(middleware)
+	sever := grpc.NewServer(unary)
+
 	userService := userService.NewUserService()
-	users.RegisterUserServiceServer(svr, userService)
+	users.RegisterUserServiceServer(sever, userService)
 
-	reflection.Register(svr)
+	reflection.Register(sever)
 
-	if err := svr.Serve(l); err != nil {
+	if err := sever.Serve(l); err != nil {
 		log.Panicf("[Server.GRPC] grpc serve error: %s", err)
 	}
 
