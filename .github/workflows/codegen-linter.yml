@@ -5,11 +5,11 @@ on:
     branches:
       - main
     paths:
+      - ".github/workflows/codegen-linter.yml"
       - "services/migration/**/*.sql"
       - "schemas/graphql/**.graphql"
-      - "schemas/proto/**/*"
       - "schemas/openapi/**/*"
-      - ".github/workflows/codegen-linter.yml"
+      - "schemas/proto/**/*"
 
 jobs:
   codegen-linter:
@@ -37,12 +37,9 @@ jobs:
         with:
           python-version: '3.9.7'
 
-      - uses: AbsaOSS/k3d-action@v2
-        name: "Spin up k3d"
-        with:
-          cluster-name: "perspex-ci"
-          args: >-
-            -c infrastructure/tilt/k3d-config.yaml
+      - name: Spin up k3d cluster
+        run: |
+          bin/k3d -c infrastructure/tilt/k3d-config.yaml
 
       - name: Do some yaml substitutions
         run: |

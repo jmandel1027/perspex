@@ -30,11 +30,11 @@ function lint_codegen() {
     path="services/backend/pkg/graphql"
     tool="gqlgen"
     verify_hashes
-  # elif [[ "$(git diff --quiet HEAD main -- schemas/proto/**/*.proto || echo $?)" == 1 ]]; then
-  #   path="schemas/proto/goproto"
-  #   tool="buf"
-  #   verify_hashes
-  #   buf_lint
+  elif [[ "$(git diff --quiet HEAD main -- schemas/proto/**/*.proto || echo $?)" == 1 ]]; then
+    path="schemas/proto/goproto"
+    tool="buf"
+    verify_hashes
+    buf_lint
   else
     echo "Generated code is up to date"
   fi
