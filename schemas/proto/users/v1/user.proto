@@ -1,0 +1,71 @@
+syntax="proto3";
+
+package user.v1;
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+// Defines the import path that should be used to import the generated package and name.
+option go_package = "github.com/jmandel1027/perspex/schemas/proto/goproto/pkg/users;users";
+
+// These annotations are used when generating the OpenAPI file.
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    version: "1.0";
+  };
+  external_docs: {
+    url: "https://github.com/jmandel1027/perspex";
+    description: "pespex";
+  }
+  schemes: HTTPS;
+};
+
+service UserService {
+  rpc RegisterUser (RegisterUserRequest) returns (User) {
+    option (google.api.http) = {
+      post: "/v1/user"
+      body: "user"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Register a user";
+      description: "This endpoint registers a user.";
+      tags: "Users"
+    };
+  }
+
+  rpc RetrieveUser(RetrieveUserRequest) returns (User) {
+    option (google.api.http) = {
+      get: "/v1/user/{id}"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Retrieve a user by ID";
+      description: "This endpoint returns a user by ID via Query Params.";
+      tags: "Users"
+    };
+  }
+}
+
+message RetrieveUserRequest {
+  int64 id = 1;
+}
+
+message RegisterUserRequest {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    example: "{\"id\": \"1\", \"authId\": \"auth:1234\", \"email\": \"johndoe@gmai.com\", \"first_name\": \"John\", \"last_name\": \"Doe\"}";
+  };
+
+  User user = 1;
+}
+
+message User {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {};
+
+  int64 id = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {description: "User ID."}];
+  string auth_id = 2 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {description: "Auth ID."}];
+  string email = 3 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {description: "User Email"}];
+  string first_name = 4 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {description: "User First Name"}];
+  string last_name = 5 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {description: "User Last Name"}];
+  google.protobuf.Timestamp created_at = 6 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {description: "User Creation Timestamp"}];
+  google.protobuf.Timestamp updated_at = 7 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {description: "User Updated Timestamp"}];
+}

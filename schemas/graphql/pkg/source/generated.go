@@ -15,7 +15,7 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
 	"github.com/99designs/gqlgen/plugin/federation/fedruntime"
-	"github.com/jay-manday/perspex/schemas/graphql/pkg/graphql/model"
+	"github.com/jmandel1027/perspex/schemas/graphql/pkg/model"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
 )
@@ -273,7 +273,7 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
-	{Name: "../../../schema/schema.graphql", Input: `scalar Time
+	{Name: "../../schema/schema.graphql", Input: `scalar Time
 
 enum Direction {
   FORWARD
@@ -347,7 +347,7 @@ type Subscription {
   nodeSubscription: Node!
 }
 `, BuiltIn: false},
-	{Name: "../../../federation/directives.graphql", Input: `
+	{Name: "../../federation/directives.graphql", Input: `
 	scalar _Any
 	scalar _FieldSet
 
@@ -358,7 +358,7 @@ type Subscription {
 
 	directive @key(fields: _FieldSet!) repeatable on OBJECT | INTERFACE
 `, BuiltIn: true},
-	{Name: "../../../federation/entity.graphql", Input: `
+	{Name: "../../federation/entity.graphql", Input: `
 type _Service {
   sdl: String
 }
@@ -543,7 +543,7 @@ func (ec *executionContext) _Mutation_nodeMutation(ctx context.Context, field gr
 	}
 	res := resTmp.(model.Node)
 	fc.Result = res
-	return ec.marshalNNode2githubᚗcomᚋjayᚑmandayᚋperspexᚋschemasᚋgraphqlᚋpkgᚋgraphqlᚋmodelᚐNode(ctx, field.Selections, res)
+	return ec.marshalNNode2githubᚗcomᚋjmandel1027ᚋperspexᚋschemasᚋgraphqlᚋpkgᚋmodelᚐNode(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_nodeMutation(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -807,7 +807,7 @@ func (ec *executionContext) _Query_nodeQuery(ctx context.Context, field graphql.
 	}
 	res := resTmp.(model.Node)
 	fc.Result = res
-	return ec.marshalNNode2githubᚗcomᚋjayᚑmandayᚋperspexᚋschemasᚋgraphqlᚋpkgᚋgraphqlᚋmodelᚐNode(ctx, field.Selections, res)
+	return ec.marshalNNode2githubᚗcomᚋjmandel1027ᚋperspexᚋschemasᚋgraphqlᚋpkgᚋmodelᚐNode(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_nodeQuery(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1036,7 +1036,7 @@ func (ec *executionContext) _Subscription_nodeSubscription(ctx context.Context, 
 				w.Write([]byte{'{'})
 				graphql.MarshalString(field.Alias).MarshalGQL(w)
 				w.Write([]byte{':'})
-				ec.marshalNNode2githubᚗcomᚋjayᚑmandayᚋperspexᚋschemasᚋgraphqlᚋpkgᚋgraphqlᚋmodelᚐNode(ctx, field.Selections, res).MarshalGQL(w)
+				ec.marshalNNode2githubᚗcomᚋjmandel1027ᚋperspexᚋschemasᚋgraphqlᚋpkgᚋmodelᚐNode(ctx, field.Selections, res).MarshalGQL(w)
 				w.Write([]byte{'}'})
 			})
 		case <-ctx.Done():
@@ -3600,7 +3600,7 @@ func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.Selecti
 	return res
 }
 
-func (ec *executionContext) marshalNNode2githubᚗcomᚋjayᚑmandayᚋperspexᚋschemasᚋgraphqlᚋpkgᚋgraphqlᚋmodelᚐNode(ctx context.Context, sel ast.SelectionSet, v model.Node) graphql.Marshaler {
+func (ec *executionContext) marshalNNode2githubᚗcomᚋjmandel1027ᚋperspexᚋschemasᚋgraphqlᚋpkgᚋmodelᚐNode(ctx context.Context, sel ast.SelectionSet, v model.Node) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")

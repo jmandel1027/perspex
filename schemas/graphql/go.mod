@@ -1,4 +1,4 @@
-module github.com/jay-manday/perspex/schemas/graphql
+module github.com/jmandel1027/perspex/schemas/graphql
 
 go 1.19
 

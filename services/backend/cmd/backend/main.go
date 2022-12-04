@@ -1,11 +1,10 @@
 package main
 
-import "fmt"
+import "github.com/jmandel1027/perspex/services/backend/pkg/server"
 
 func main() {
 
-	fmt.Printf("mic check")
+	go server.Serve()
 
-	for {
-	}
+	select {}
 }
