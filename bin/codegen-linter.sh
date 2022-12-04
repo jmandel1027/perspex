@@ -15,6 +15,12 @@ function verify_hashes() {
   fi
 }
 
+function buf_lint() {
+  cd schemas/proto
+  ../../bin/buf lint
+  cd ../..
+}
+
 function lint_codegen() {
   if [[ "$(git diff --quiet HEAD main -- services/migration/src/perspex || echo $?)" == 1 ]]; then
     path="schemas/perspex/pkg/models"
@@ -24,6 +30,11 @@ function lint_codegen() {
     path="services/backend/pkg/graphql"
     tool="gqlgen"
     verify_hashes
+  # elif [[ "$(git diff --quiet HEAD main -- schemas/proto/**/*.proto || echo $?)" == 1 ]]; then
+  #   path="schemas/proto/goproto"
+  #   tool="buf"
+  #   verify_hashes
+  #   buf_lint
   else
     echo "Generated code is up to date"
   fi

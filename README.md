@@ -15,15 +15,8 @@ bin/boot.sh -o
 ```
 
 ```sh
-
-dir=$(pwd)
-
-cd infrastructure/charts/perspex
-
 # this installs third party helm deps
 bin/helm dependency update infrastructure/charts/perspex
-
-cd "${dir}"
 
 # provisioons the k3d cluster and registry
 bin/k3d cluster create -c infrastructure/tilt/k3d-config.yaml
@@ -35,4 +28,30 @@ bin/tilt up
 To teardown the entire stack, please run the following:
 ```
 bin/boot.sh -d
+```
+##
+
+Project Structure
+
+```
+├── .github
+├── README.md
+├── bin
+|  ├── activate-hermit
+|  └── etc ...
+├── schema
+|  ├── graphql
+|  └── etc ...
+├── services
+|  ├── backend
+|  └── etc ...
+├── infrastructure
+|  ├── charts
+|  |  ├── perspex
+|  |  └── etc ...
+|  ├── terraform
+|  |  └── modules
+|  ├── terragrunt
+|  └── etc ...
+└── Tiltfile
 ```

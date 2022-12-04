@@ -12,7 +12,16 @@ local_resource(
   deps=["./pkg", "./cmd/backend/main.go", "./bin/prepare.sh"],
   trigger_mode=TRIGGER_MODE_MANUAL,
   ignore=["./pkg/**/*"],
-  labels=["backend"]
+  labels=["backend"],
+  auto_init=False
+)
+
+local_resource(
+  "protobuf-generate",
+  "../../bin/buf generate",
+  trigger_mode=TRIGGER_MODE_MANUAL,
+  labels=["backend"],
+  auto_init=False,
 )
 
 local_resource(

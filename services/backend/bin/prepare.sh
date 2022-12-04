@@ -37,6 +37,14 @@ build_gql() {
   printf "\nDone.\n\n"
 }
 
+build_proto() {
+  cd ../../schemas/proto
+
+  ../../bin/buf generate
+
+  cd ../../services/backend
+}
+
 build_linux() {
   output="$outputPath/$app"
   src="$srcPath/$app/$pkgFile"
@@ -99,9 +107,13 @@ run_tilt() {
   build_gql
 
   echo "Done, generating db models"
-
+  
   build_boil
   
+  echo "Done, generating proto"
+
+  build_proto
+
   exit 0
 }
 
@@ -138,6 +150,10 @@ main() {
       ;;
       -bm|--build-mac)
         build_mac
+        shift
+      ;;
+      -bp|--build-proto)
+        build_proto
         shift
       ;;
       -rl|--run-linux)
