@@ -1,14 +1,17 @@
 version: v1
 plugins:
-  # Product plugins
-  - remote: buf.build/library/plugins/go:v1.27.1-1
+  - name: go
     out: goproto/pkg
-    opt: paths=source_relative
-  - remote: buf.build/library/plugins/go-grpc:v1.1.0-2
+    opt:
+      - paths=source_relative
+  - name: go-grpc
     out: goproto/pkg
-    opt: paths=source_relative,require_unimplemented_servers=false
-  - remote: buf.build/grpc-ecosystem/plugins/grpc-gateway:v2.14.0-1
+    opt:
+      - paths=source_relative
+  - name: grpc-gateway
     out: goproto/pkg
-    opt: paths=source_relative
-  - remote: buf.build/grpc-ecosystem/plugins/openapiv2:v2.14.0-1
+    opt:
+      - paths=source_relative
+      - generate_unbound_methods=true
+  - name: openapiv2
     out: ../openapi
