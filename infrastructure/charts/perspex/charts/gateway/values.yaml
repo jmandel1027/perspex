@@ -9,11 +9,11 @@ helmTest:
   path: "/"
 
 image:
-  repository: "registry.local:5000/backend"
+  repository: "registry.local:5000/gateway"
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
-  policyMarker: '# {"$imagepolicy": "flux-system:backend:tag"}'
+  policyMarker: '# {"$imagepolicy": "flux-system:gateway:tag"}'
 
 serviceAccount:
   create: true
@@ -30,15 +30,14 @@ global:
     kafka: {}
     redis: {}
 
+
 config:
   aws:
     endpoint: ""
-  backend:
+  gateway:
     gqlPath: "/api/graphql"
     scheme: "http"
     host: "backend"
-    ingestionPool: 12
-    cutomerTrialPeriod: 7
   kafka: 
     enabled: false
     brokers: ""
@@ -81,7 +80,7 @@ healthcheck:
 # Enable or disable secrets from AWS SecretsManager
 secretsManager:
   enabled: false
-  secretName: "backend-secrets"
+  secretName: "gateway-secrets"
   createSecret: false
 
 # Flagger canary or A/B settings

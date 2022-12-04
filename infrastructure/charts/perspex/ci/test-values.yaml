@@ -18,6 +18,11 @@ backend:
   extraEnv:
     POSTGRES_PASSWORD: "pass"
 
+gateway:
+  # Because we can't patch the SA after chart-testing starts the install, we need to use the default SA
+  serviceAccount:
+    create: false
+
 migration:
   enabled: true
   serviceAccount:
