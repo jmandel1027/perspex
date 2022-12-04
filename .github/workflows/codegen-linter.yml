@@ -39,7 +39,7 @@ jobs:
 
       - name: Spin up k3d cluster
         run: |
-          bin/k3d -c infrastructure/tilt/k3d-config.yaml
+          bin/k3d cluser create -c infrastructure/tilt/k3d-config.yaml
 
       - name: Do some yaml substitutions
         run: |
