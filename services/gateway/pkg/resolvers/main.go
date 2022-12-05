@@ -1,15 +1,17 @@
 package resolvers
 
-// THIS CODE IS A STARTING POINT ONLY. IT WILL NOT BE UPDATED WITH SCHEMA CHANGES.
-
 import (
 	"context"
 
 	"github.com/jmandel1027/perspex/schemas/graphql/pkg/model"
 	"github.com/jmandel1027/perspex/schemas/graphql/pkg/source"
+	"github.com/jmandel1027/perspex/services/gateway/pkg/config"
 )
 
-type Resolver struct{}
+// Resolver --
+type Resolver struct {
+	Config *config.GatewayConfig
+}
 
 // // foo
 func (r *mutationResolver) NodeMutation(ctx context.Context) (model.Node, error) {

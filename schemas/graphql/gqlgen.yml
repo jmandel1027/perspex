@@ -23,8 +23,8 @@ model:
 # Let gqlgen know where to put the generated resolvers
 resolver:
   filename: pkg/resolvers/generated.go
+  package: resolvers
   type: Resolver
-  package: generated
 
 models:
 
