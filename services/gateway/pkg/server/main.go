@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -10,12 +9,22 @@ import (
 	"time"
 
 	"github.com/jmandel1027/perspex/services/gateway/pkg/config"
+	"github.com/jmandel1027/perspex/services/gateway/pkg/logger"
 	"github.com/jmandel1027/perspex/services/gateway/pkg/router"
+	"go.uber.org/zap"
 )
 
 // HTTP server
 func HTTP(cfg *config.GatewayConfig) {
 	ctx := context.Background()
+
+	z := logger.New()
+	defer z.Sync()
+
+	undo := logger.ReplaceGlobals(z)
+	defer undo()
+
+	logger.Info(ctx, "scaffolded global logger")
 
 	rtr := router.Route(cfg)
 
@@ -36,7 +45,7 @@ func HTTP(cfg *config.GatewayConfig) {
 		// Here is a non blocking go routine that runs forever
 		// it's our listener that exposes the entire app
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("[Server.HTTP] Error: %s\n", err)
+			logger.Fatal(ctx, "[Server.HTTP] Error:", zap.String("err", err.Error()))
 		}
 	}()
 
@@ -46,7 +55,7 @@ func HTTP(cfg *config.GatewayConfig) {
 	// and anything below done will run.
 	<-done
 
-	log.Print("[Server.HTTP] Backend Server Stopped")
+	logger.Info(ctx, "[Server.HTTP] Backend Server Stopped")
 
 	defer func() {
 		// Here is where we'd safely close out any connections
@@ -57,10 +66,10 @@ func HTTP(cfg *config.GatewayConfig) {
 	}()
 
 	if err := srv.Shutdown(ctx); err != nil {
-		log.Fatalf("[Server.HTTP] Server Shutdown Failed: %+v", err)
+		logger.Fatal(ctx, "[Server.HTTP] Server Shutdown Failed:", zap.String("err", err.Error()))
 	}
 
-	log.Print("[Server.HTTP] Server Exited Properly")
+	logger.Info(ctx, "[Server.HTTP] Server Exited Properly")
 
 	defer os.Exit(0)
 }
