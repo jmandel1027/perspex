@@ -24,21 +24,20 @@ function buf_lint() {
 function lint_codegen() {
   echo "about to lint codegen"
   main_branch=$(git rev-parse --short main)
-  current_branch=$(git rev-parse --short HEAD)
-  echo $(git diff --quiet ${main_branch}..${current_branch} -- services/migration/src/perspex || echo $?)
-  if [[ "$(git diff --quiet  ${main_branch}..${current_branch} -- services/migration/src/perspex || echo $?)" == "1" ]]; then
+  echo $(git diff --quiet ${main_branch} -- services/migration/src/perspex || echo $?)
+  if [[ "$(git diff --quiet  ${main_branch} -- services/migration/src/perspex || echo $?)" == "1" ]]; then
     echo "perspex changed"
     genpath="schemas/perspex/pkg/models"
     tool="sqlboiler"
     verify_hashes
-  echo $(git diff --quiet ${main_branch}..${current_branch} -- schemas/graphql || echo $?)
-  elif [[ "$(git diff --quiet ${main_branch}..${current_branch} -- schemas/graphql || echo $?)" == "1" ]]; then
+  echo $(git diff --quiet ${main_branch} -- schemas/graphql || echo $?)
+  elif [[ "$(git diff --quiet ${main_branch} -- schemas/graphql || echo $?)" == "1" ]]; then
     echo "graphql changed"
     genpath="schemas/graphql/pkg"
     tool="gqlgen"
     verify_hashes
-  echo $(git diff --quiet ${main_branch}..${current_branch} -- schemas/proto/**/*.proto || echo $?)
-  elif [[ "$(git diff --quiet ${main_branch}..${current_branch} -- schemas/proto/**/*.proto || echo $?)" == "1" ]]; then
+  echo $(git diff --quiet ${main_branch} -- schemas/proto/**/*.proto || echo $?)
+  elif [[ "$(git diff --quiet ${main_branch} -- schemas/proto/**/*.proto || echo $?)" == "1" ]]; then
     echo "proto changed"
     genpath="schemas/proto/goproto"
     tool="buf"
