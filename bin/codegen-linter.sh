@@ -5,9 +5,20 @@ set -e
 function verify_hashes() {
   branch=$(tar -cf - "${path}" | md5sum)
 
-  git checkout main "${path}"
-  
+  echo "${branch}"
+
+  hash=$(git rev-parse --short HEAD)
+  changes=$(git checkout main schemas/graphql/pkg/ || echo $?)
+
+  echo "${changes}"
+
+  if [[ "${changes}" == "Updated 0 paths from ${hash}" ]]; then 
+    echo "Error: Generated ${tool} code is out of phase, please commit generated code."
+    exit 1;
+  fi
+
   main=$(tar -cf - "${path}" | md5sum)
+  echo "${main}"
 
   if [[ "${branch}" == "${main}" ]]; then
     echo "Error: Generated ${tool} code is out of phase, please commit generated code."
@@ -27,7 +38,7 @@ function lint_codegen() {
     tool="sqlboiler"
     verify_hashes
   elif [[ "$(git diff --quiet HEAD main -- schemas/graphql || echo $?)" == 1 ]]; then
-    path="services/backend/pkg/graphql"
+    path="schemas/graphql/pkg"
     tool="gqlgen"
     verify_hashes
   elif [[ "$(git diff --quiet HEAD main -- schemas/proto/**/*.proto || echo $?)" == 1 ]]; then
