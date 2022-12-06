@@ -1,6 +1,9 @@
 package config
 
-import "github.com/jmandel1027/perspex/services/backend/pkg/utils"
+import (
+	"github.com/jmandel1027/perspex/services/backend/pkg/logger"
+	"github.com/jmandel1027/perspex/services/backend/pkg/utils"
+)
 
 // RedisConfig defines a redis connection configuration.
 type RedisConfig struct {
@@ -26,6 +29,13 @@ type BackendConfig struct {
 
 // New return all constants using in Project
 func New() (BackendConfig, error) {
+
+	z := logger.New()
+	defer z.Sync()
+
+	undo := logger.ReplaceGlobals(z)
+	defer undo()
+
 	return BackendConfig{
 		Host:     utils.MustGet("BACKEND_HOST", "0.0.0.0"),
 		HttpPort: utils.MustGet("BACKEND_HTTP_PORT", "8080"),

@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"log"
 	"net"
 
@@ -8,11 +9,13 @@ import (
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_opentracing "github.com/grpc-ecosystem/go-grpc-middleware/tracing/opentracing"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
+	"github.com/uptrace/opentelemetry-go-extra/otelzap"
+	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
 	users "github.com/jmandel1027/perspex/schemas/proto/goproto/pkg/users/v1"
-	"github.com/jmandel1027/perspex/services/backend/pkg/config"
+	config "github.com/jmandel1027/perspex/services/backend/pkg/config"
 	userService "github.com/jmandel1027/perspex/services/backend/pkg/user/service"
 )
 
@@ -55,11 +58,14 @@ func GRPC(cfg *config.BackendConfig, l net.Listener) {
 	reflection.Register(sever)
 
 	if err := sever.Serve(l); err != nil {
-		log.Panicf("[Server.GRPC] grpc serve error: %s", err)
+		otelzap.L().Ctx(context.TODO()).Panic("gRPC Serve Error: %s", zap.Error(err))
 	}
+
+	otelzap.L().Ctx(context.TODO()).Info("gRPC Server Stopped")
 
 	defer func() {
 		// Here is where we'd safely close out any connections
 		// eg: redis, grpc, etc..
 	}()
+
 }
