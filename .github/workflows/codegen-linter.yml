@@ -21,34 +21,35 @@ jobs:
         run: git fetch --prune
         shell: bash
 
-      - name: Set environment variables
-        id: set-environment-variables
-        run: |
-          echo "TILT_BACKEND_ENABLED=false" >> ${GITHUB_ENV}
-          echo "TILT_MIGRATION_ENABLED=true" >> ${GITHUB_ENV}
-          echo "TILT_REMOTE_CLUSTER=False" >> ${GITHUB_ENV}
-          echo "TILT_BACKEND_IMAGE_TARGET=deployable" >> ${GITHUB_ENV}
-
-      - name: Run helm dependency update
-        run: |
-          bin/helm dependency update infrastructure/charts/perspex
-
-      - uses: actions/setup-python@v2
-        with:
-          python-version: '3.9.7'
-
-      - name: Spin up k3d cluster
-        run: |
-          bin/k3d cluster create -c infrastructure/tilt/k3d-config.yaml
-
-      - name: Do some yaml substitutions
-        run: |
-          bin/yq eval -i '.backend.enabled = "${TILT_BACKEND_ENABLED}"' infrastructure/tilt/values-dev.yaml
-
-      - name: Run tilt up
-        run: |
-          bin/tilt ci -f Tiltfile
-
       - name: Verify Codegen is committed
         run: |
           bin/codegen-linter.sh -l
+
+      # - name: Set environment variables
+      #   id: set-environment-variables
+      #   run: |
+      #     echo "TILT_BACKEND_ENABLED=false" >> ${GITHUB_ENV}
+      #     echo "TILT_MIGRATION_ENABLED=true" >> ${GITHUB_ENV}
+      #     echo "TILT_REMOTE_CLUSTER=False" >> ${GITHUB_ENV}
+      #     echo "TILT_BACKEND_IMAGE_TARGET=deployable" >> ${GITHUB_ENV}
+
+      # - name: Run helm dependency update
+      #   run: |
+      #     bin/helm dependency update infrastructure/charts/perspex
+
+      # - uses: actions/setup-python@v2
+      #   with:
+      #     python-version: '3.9.7'
+
+      # - name: Spin up k3d cluster
+      #   run: |
+      #     bin/k3d cluster create -c infrastructure/tilt/k3d-config.yaml
+
+      # - name: Do some yaml substitutions
+      #   run: |
+      #     bin/yq eval -i '.backend.enabled = "${TILT_BACKEND_ENABLED}"' infrastructure/tilt/values-dev.yaml
+
+      # - name: Run tilt up
+      #   run: |
+      #     bin/tilt ci -f Tiltfile
+
