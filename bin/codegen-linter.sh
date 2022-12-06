@@ -22,15 +22,22 @@ function buf_lint() {
 }
 
 function lint_codegen() {
+  echo "about to lint codegen"
+  echo $(git diff --quiet main -- services/migration/src/perspex || echo $?)
   if [[ "$(git diff --quiet main -- services/migration/src/perspex || echo $?)" == "1" ]]; then
+    echo "perspex changed"
     genpath="schemas/perspex/pkg/models"
     tool="sqlboiler"
     verify_hashes
+  echo $(git diff --quiet main -- schemas/graphql || echo $?)
   elif [[ "$(git diff --quiet main -- schemas/graphql || echo $?)" == "1" ]]; then
+    echo "graphql changed"
     genpath="schemas/graphql/pkg"
     tool="gqlgen"
     verify_hashes
+  echo $(git diff --quiet main -- schemas/proto/**/*.proto || echo $?)
   elif [[ "$(git diff --quiet main -- schemas/proto/**/*.proto || echo $?)" == "1" ]]; then
+    echo "proto changed"
     genpath="schemas/proto/goproto"
     tool="buf"
     verify_hashes
