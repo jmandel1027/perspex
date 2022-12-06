@@ -20,9 +20,9 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: update checkout
-        run: git fetch --prune
-        shell: bash
+      #- name: update checkout
+      #  run: git fetch
+      #  shell: bash
 
       - name: Verify Codegen is committed
         run: |
