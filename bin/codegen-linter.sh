@@ -3,24 +3,17 @@
 set -e
 
 function verify_hashes() {
-  branch=$(tar -cf - "${path}" | md5sum)
+  current_hash=$(git rev-parse --short HEAD)
+  main_hash=$(git rev-parse --short main)
 
-  echo "${branch}"
+  echo $current_hash
+  echo $main_hash
 
-  hash=$(git rev-parse --short HEAD)
-  changes=$(git checkout main schemas/graphql/pkg/ || echo $?)
+  changes=$(git checkout main "${path}" || echo $?)
 
   echo "${changes}"
 
-  if [[ "${changes}" == "Updated 0 paths from ${hash}" ]]; then 
-    echo "Error: Generated ${tool} code is out of phase, please commit generated code."
-    exit 1;
-  fi
-
-  main=$(tar -cf - "${path}" | md5sum)
-  echo "${main}"
-
-  if [[ "${branch}" == "${main}" ]]; then
+  if [[ "${changes}" == "Updated 0 paths from ${main_hash}" ]]; then 
     echo "Error: Generated ${tool} code is out of phase, please commit generated code."
     exit 1;
   fi
