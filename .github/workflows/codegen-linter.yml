@@ -26,7 +26,6 @@ jobs:
 
       - name: Verify Codegen is committed
         run: |
-          git diff HEAD~1
           bin/codegen-linter.sh -l
 
       # - name: Set environment variables
