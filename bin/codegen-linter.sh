@@ -24,6 +24,11 @@ function buf_lint() {
 function lint_codegen() {
   echo "about to lint codegen"
   main_branch=$(git rev-parse --short main)
+  changes=$(git diff --name-only ${main_branch})
+  for change in ${changes}; do
+    echo "change: ${change}"
+  done
+
   echo $(git diff --quiet ${main_branch} -- services/migration/src/perspex || echo $?)
   if [[ "$(git diff --quiet  ${main_branch} -- services/migration/src/perspex || echo $?)" == "1" ]]; then
     echo "perspex changed"
