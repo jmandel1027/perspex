@@ -23,11 +23,11 @@ function buf_lint() {
 
 function lint_codegen() {
   if [[ "$(git diff --quiet HEAD main -- services/migration/src/perspex || echo $?)" == 1 ]]; then
-    path="schemas/perspex/pkg/models"
+    genpath="schemas/perspex/pkg/models"
     tool="sqlboiler"
     verify_hashes
   elif [[ "$(git diff --quiet HEAD main -- schemas/graphql || echo $?)" == 1 ]]; then
-    co
+    genpath="schemas/graphql/pkg"
     tool="gqlgen"
     verify_hashes
   elif [[ "$(git diff --quiet HEAD main -- schemas/proto/**/*.proto || echo $?)" == 1 ]]; then
