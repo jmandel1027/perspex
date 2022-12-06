@@ -24,6 +24,9 @@ jobs:
         run: git fetch
         shell: bash
 
+      - name: fetch from main
+        run: git fetch origin main
+
       - name: Verify Codegen is committed
         run: |
           bin/codegen-linter.sh -l
