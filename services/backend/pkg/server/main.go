@@ -16,6 +16,7 @@ import (
 
 	users "github.com/jmandel1027/perspex/schemas/proto/goproto/pkg/users/v1"
 	config "github.com/jmandel1027/perspex/services/backend/pkg/config"
+	"github.com/jmandel1027/perspex/services/backend/pkg/tracing"
 	userService "github.com/jmandel1027/perspex/services/backend/pkg/user/service"
 )
 
@@ -43,6 +44,16 @@ func Serve() {
 
 // GRPC -- Handler
 func GRPC(cfg *config.BackendConfig, l net.Listener) {
+	trace, err := tracing.NewTracerProvider()
+	if err != nil {
+		otelzap.L().Ctx(context.TODO()).Error("Tracer Provider Error: %s", zap.Error(err))
+	}
+
+	defer func() {
+		if err := trace.Shutdown(context.Background()); err != nil {
+			otelzap.L().Ctx(context.TODO()).Error("Error shutting down tracer provider")
+		}
+	}()
 
 	middleware := grpc_middleware.ChainUnaryServer(
 		grpc_prometheus.UnaryServerInterceptor,
