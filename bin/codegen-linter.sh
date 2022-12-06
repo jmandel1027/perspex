@@ -3,17 +3,13 @@
 set -e
 
 function verify_hashes() {
-  current_hash=$(git rev-parse --short HEAD)
-  main_hash=$(git rev-parse --short main)
+  branch=$(tar -cf - "${path}" | md5sum)
 
-  echo $current_hash
-  echo $main_hash
+  git checkout main "${path}"
+  
+  main=$(tar -cf - "${path}" | md5sum)
 
-  changes=$(git checkout main "${path}" || echo $?)
-
-  echo "${changes}"
-
-  if [[ "${changes}" == "Updated 0 paths from ${main_hash}" ]]; then 
+  if [[ "${branch}" == "${main}" ]]; then
     echo "Error: Generated ${tool} code is out of phase, please commit generated code."
     exit 1;
   fi
