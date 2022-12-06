@@ -20,18 +20,11 @@ jobs:
         with:
           fetch-depth: 0
 
-
+      - run: git diff HEAD~1
 
       - name: update checkout
-        run: |
-          commits=${{ github.event.pull_request.commits }}
-          if [[ -n "$commits" ]]; then
-            # Prepare enough depth for diffs with master
-            git fetch --depth="$(( commits + 1 ))"
-          fi
-        #run: git fetch
-        #shell: bash
-
+        run: git fetch
+        shell: bash
 
       - name: Verify Codegen is committed
         run: |
