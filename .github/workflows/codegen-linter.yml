@@ -18,11 +18,20 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          fetch-depth: 5
+          fetch-depth: 0
 
-      #- name: update checkout
-      #  run: git fetch
-      #  shell: bash
+
+
+      - name: update checkout
+        run: |
+          commits=${{ github.event.pull_request.commits }}
+          if [[ -n "$commits" ]]; then
+            # Prepare enough depth for diffs with master
+            git fetch --depth="$(( commits + 1 ))"
+          fi
+        #run: git fetch
+        #shell: bash
+
 
       - name: Verify Codegen is committed
         run: |
