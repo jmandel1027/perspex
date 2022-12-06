@@ -14,7 +14,6 @@ import (
 // GraphQL --
 func GraphQL(cfg *config.GatewayConfig) http.HandlerFunc {
 
-	resolvers
 	c := source.Config{
 		Resolvers: &resolvers.Resolver{},
 	}

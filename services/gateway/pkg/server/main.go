@@ -8,23 +8,18 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/jmandel1027/perspex/services/gateway/pkg/config"
-	"github.com/jmandel1027/perspex/services/gateway/pkg/logger"
-	"github.com/jmandel1027/perspex/services/gateway/pkg/router"
+	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 	"go.uber.org/zap"
+
+	"github.com/jmandel1027/perspex/services/gateway/pkg/config"
+	"github.com/jmandel1027/perspex/services/gateway/pkg/router"
 )
 
 // HTTP server
 func HTTP(cfg *config.GatewayConfig) {
 	ctx := context.Background()
 
-	z := logger.New()
-	defer z.Sync()
-
-	undo := logger.ReplaceGlobals(z)
-	defer undo()
-
-	logger.Info(ctx, "scaffolded global logger")
+	otelzap.L().Ctx(ctx).Info("Scaffolded global logger")
 
 	rtr := router.Route(cfg)
 
@@ -45,7 +40,7 @@ func HTTP(cfg *config.GatewayConfig) {
 		// Here is a non blocking go routine that runs forever
 		// it's our listener that exposes the entire app
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			logger.Fatal(ctx, "[Server.HTTP] Error:", zap.String("err", err.Error()))
+			otelzap.L().Ctx(ctx).Fatal("Error:", zap.String("err", err.Error()))
 		}
 	}()
 
@@ -55,7 +50,7 @@ func HTTP(cfg *config.GatewayConfig) {
 	// and anything below done will run.
 	<-done
 
-	logger.Info(ctx, "[Server.HTTP] Backend Server Stopped")
+	otelzap.L().Ctx(ctx).Info("Backend Server Stopped")
 
 	defer func() {
 		// Here is where we'd safely close out any connections
@@ -66,10 +61,10 @@ func HTTP(cfg *config.GatewayConfig) {
 	}()
 
 	if err := srv.Shutdown(ctx); err != nil {
-		logger.Fatal(ctx, "[Server.HTTP] Server Shutdown Failed:", zap.String("err", err.Error()))
+		otelzap.L().Ctx(ctx).Fatal("Server Shutdown Failed:", zap.String("err", err.Error()))
 	}
 
-	logger.Info(ctx, "[Server.HTTP] Server Exited Properly")
+	otelzap.L().Ctx(ctx).Info("Server Exited Properly")
 
 	defer os.Exit(0)
 }

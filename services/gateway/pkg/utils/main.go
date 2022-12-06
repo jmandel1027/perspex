@@ -1,10 +1,14 @@
 package utils
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
 	"strconv"
+
+	"github.com/uptrace/opentelemetry-go-extra/otelzap"
+	"go.uber.org/zap"
 )
 
 func getEnv(key string, fallback string) string {
@@ -13,7 +17,7 @@ func getEnv(key string, fallback string) string {
 	}
 
 	if fallback == "" {
-		log.Print(key, fmt.Sprintf("ENV missing, no fallback for var '%s'", key))
+		otelzap.L().Ctx(context.TODO()).Info(zap.String(key, "env missing, no fallback").String)
 	}
 
 	return fallback
