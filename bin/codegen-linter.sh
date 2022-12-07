@@ -4,17 +4,17 @@ set -e
 
 function verify_hashes() {
   branch=$(tar -cf - "${genpath}" | md5sum)
-  changes=$(git pull origin main --quiet || echo $?)
-
-  if [[ "${changes}" == "Already up to date." ]]; then
-    echo "Error: Generated ${tool} code is out of phase, please commit generated code."
-    exit 1;
-  fi
+  echo "Branch hash: ${branch}"
+  #changes=$(git pull origin main --quiet || echo $?)
+  #if [[ "${changes}" == "Already up to date." ]]; then
+  #  echo "Error: Generated ${tool} code is out of phase, please commit generated code."
+  #  exit 1;
+  #fi
 
   git checkout -q origin/main -- "${genpath}"
   
   main=$(tar -cf - "${genpath}" | md5sum)
-
+  echo "Main hash: ${main}"
   if [[ "${branch}" == "${main}" ]]; then
     echo "Error: Generated ${tool} code is out of phase, please commit generated code."
     exit 1;
