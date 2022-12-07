@@ -5,6 +5,8 @@ set -e
 function verify_hashes() {
   branch=$(tar -cf - "${genpath}" | md5sum)
   
+  git pull origin main
+
   git checkout main "${genpath}"
   
   main=$(tar -cf - "${genpath}" | md5sum)
