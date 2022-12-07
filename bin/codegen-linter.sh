@@ -3,34 +3,28 @@
 set -e
 
 function verify_hashes() {
-  echo "about to verify hashes"
   branch=$(tar -cf - "${genpath}" | md5sum)
-  echo "branch: ${branch}"
-
   changes=$(git pull origin main --quiet || echo $?)
-  echo "changes: ${changes}"
+
   if [[ "${changes}" == "Already up to date." ]]; then
     echo "Error: Generated ${tool} code is out of phase, please commit generated code."
     exit 1;
   fi
 
-  echo "about to checkout ${genpath} main"
   git checkout -q origin/main -- "${genpath}"
   
   main=$(tar -cf - "${genpath}" | md5sum)
-  echo "main: ${main}"
 
   if [[ "${branch}" == "${main}" ]]; then
     echo "Error: Generated ${tool} code is out of phase, please commit generated code."
     exit 1;
   fi
 
-  echo "about to run buf lint"
   if [[ "${tool}" == "buf" ]]; then
     buf_lint
   fi
 
-  echo "done"
+  exit 0;
 }
 
 function buf_lint() {
