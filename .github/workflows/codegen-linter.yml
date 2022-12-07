@@ -46,7 +46,7 @@ jobs:
 
       - name: Verify graphql generated code
         if: steps.filter.outputs.graphql == 'true'
-        run: bin/codegen-linter.sh -g schemas/graphql/pkg -t gqlgen -l
+        run: ls -lah && bin/codegen-linter.sh -g schemas/graphql/pkg -t gqlgen -l
 
       # - name: Set environment variables
       #   id: set-environment-variables
