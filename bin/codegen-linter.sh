@@ -15,7 +15,7 @@ function verify_hashes() {
   fi
 
   echo "about to checkout ${genpath} main"
-  git checkout --theirs "${genpath}" --quiet main
+  git checkout -q origin/main -- "${genpath}"
   
   main=$(tar -cf - "${genpath}" | md5sum)
   echo "main: ${main}"
