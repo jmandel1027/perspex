@@ -35,6 +35,7 @@ jobs:
               - "schemas/proto/**/*.proto"
             graphql:
               - "schemas/graphql/schema/*.graphql"
+              - "schemas/graphql/schema/pkg/**/*.go"
 
       - name: Verify perspex generated code
         if: steps.filter.outputs.perspex == 'true'
