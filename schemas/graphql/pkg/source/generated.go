@@ -304,6 +304,7 @@ input PageArguments {
   last: Int
   # Read all values in the set before (above) this cursor.
   before: ID
+  test: Int
 }
 
 
@@ -2879,7 +2880,7 @@ func (ec *executionContext) unmarshalInputPageArguments(ctx context.Context, obj
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"first", "after", "last", "before"}
+	fieldsInOrder := [...]string{"first", "after", "last", "before", "test"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -2915,6 +2916,14 @@ func (ec *executionContext) unmarshalInputPageArguments(ctx context.Context, obj
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
 			it.Before, err = ec.unmarshalOID2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "test":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("test"))
+			it.Test, err = ec.unmarshalOInt2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}

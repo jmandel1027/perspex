@@ -6,7 +6,6 @@ function verify_hashes() {
   branch=$(tar -cf - "${genpath}" | md5sum)
   
   changes=$(git pull origin main || echo $?)
-  echo $changes
   if [[ "${changes}" == "Already up to date." ]]; then
     echo "Error: Generated ${tool} code is out of phase, please commit generated code."
     exit 1;

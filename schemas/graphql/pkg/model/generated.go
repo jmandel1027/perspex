@@ -38,6 +38,7 @@ type PageArguments struct {
 	After  *string `json:"after"`
 	Last   *int    `json:"last"`
 	Before *string `json:"before"`
+	Test   *int    `json:"test"`
 }
 
 type PageInfo struct {
