@@ -29,7 +29,6 @@ input PageArguments {
   last: Int
   # Read all values in the set before (above) this cursor.
   before: ID
-  test: Int
 }
 
 
