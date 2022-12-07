@@ -38,19 +38,15 @@ jobs:
 
       - name: Verify perspex generated code
         if: steps.filter.outputs.perspex == 'true'
-        run: echo "Perspex changes"
+        run: "bin/codegen-linter.sh -g schemas/perspex/pkg/models -t sqlboiler -l"
 
       - name: Verify proto generated code
         if: steps.filter.outputs.proto == 'true'
-        run: echo "Proto changes"
+        run: bin/codegen-linter.sh -g schemas/proto/goproto -t proto -l
 
       - name: Verify graphql generated code
         if: steps.filter.outputs.graphql == 'true'
-        run: echo "Graphql changes"
-
-      - name: Verify Codegen is committed
-        run: |
-          bin/codegen-linter.sh -l
+        run: bin/codegen-linter.sh -g schemas/graphql/pkg -t gqlgen -l
 
       # - name: Set environment variables
       #   id: set-environment-variables
