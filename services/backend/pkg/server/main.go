@@ -7,8 +7,12 @@ import (
 
 	"github.com/cockroachdb/cmux"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
+	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
+	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
+	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
 	grpc_opentracing "github.com/grpc-ecosystem/go-grpc-middleware/tracing/opentracing"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
+
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -56,8 +60,11 @@ func GRPC(cfg *config.BackendConfig, l net.Listener) {
 	}()
 
 	middleware := grpc_middleware.ChainUnaryServer(
+		grpc_ctxtags.UnaryServerInterceptor(),
 		grpc_prometheus.UnaryServerInterceptor,
 		grpc_opentracing.UnaryServerInterceptor(),
+		grpc_zap.UnaryServerInterceptor(otelzap.L().Logger),
+		grpc_recovery.UnaryServerInterceptor(),
 	)
 
 	unary := grpc.UnaryInterceptor(middleware)
