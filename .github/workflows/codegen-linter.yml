@@ -35,7 +35,7 @@ jobs:
               - "schemas/proto/**/*.proto"
             graphql_schema:
               - "schemas/graphql/schema/*.graphql"
-            graphql_go
+            graphql_go:
               - "schemas/graphql/pkg/**/*.go"
 
       - name: Verify perspex generated code
