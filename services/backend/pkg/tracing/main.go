@@ -1,6 +1,8 @@
 package tracing
 
 import (
+	"context"
+
 	"go.opentelemetry.io/otel"
 	stdout "go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
 	"go.opentelemetry.io/otel/propagation"
@@ -8,7 +10,7 @@ import (
 )
 
 // NewTracerProvider configures an OpenTelemetry exporter and trace provider.
-func NewTracerProvider() (*trace.TracerProvider, error) {
+func NewTracerProvider(ctx context.Context) (*trace.TracerProvider, error) {
 	exporter, err := stdout.New(stdout.WithPrettyPrint())
 	if err != nil {
 		return nil, err

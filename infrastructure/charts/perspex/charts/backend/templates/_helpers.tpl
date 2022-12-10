@@ -82,6 +82,8 @@ Define default environment variables
   value: {{ .Values.global.config.backend.host | default .Values.config.backend.host | quote }}
 - name: BACKEND_PORT
   value: {{ .Values.service.port | quote }}
+- name: BACKEND_PORT
+  value: {{ .Values.service.grpcPort | quote }}
 - name: BACKEND_SCHEME
   value: {{ .Values.global.config.backend.scheme | default  .Values.config.backend.scheme | quote }}
 - name: POSTGRES_HOST

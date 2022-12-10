@@ -21,6 +21,9 @@ spec:
         - name: {{ include "backend.fullname" . }}
           kind: {{ if .Values.canary.enabled -}}TraefikService{{- else -}}Service{{- end}}
           port: {{ .Values.service.port }}
+        - name: {{ include "backend.fullname.grpc" . }}
+          kind: {{ if .Values.canary.enabled -}}TraefikService{{- else -}}Service{{- end}}
+          port: {{ .Values.service.grpcPort }}
     {{- with .Values.traefik.additionalRoutes }}
     {{ toYaml . | nindent 4 }}
     {{- end }}
