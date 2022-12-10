@@ -113,7 +113,7 @@ Define default environment variables
 - name: READER_POSTGRES_SCHEMA
   value: {{ .Values.global.config.database.reader.schema | default .Values.config.database.reader.schema | quote }}
 - name: READER_POSTGRES_DB
-  value: {{ .Values.global.config.database.reader.name | default .Values.config.database.rreader.name | quote }}
+  value: {{ .Values.global.config.database.reader.name | default .Values.config.database.reader.name | quote }}
 - name: READER_POSTGRES_MAX_OPEN_CONNECTIONS
   value: {{ .Values.global.config.database.reader.maxOpenConnections | default  .Values.config.database.reader.maxOpenConnections | quote }}
 - name: READER_POSTGRES_MAX_IDLE_CONNECTIONS
