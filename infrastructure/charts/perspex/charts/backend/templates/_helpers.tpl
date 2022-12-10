@@ -80,30 +80,48 @@ Define default environment variables
 {{- define "backend.environmentVariables" -}}
 - name: BACKEND_HOST
   value: {{ .Values.global.config.backend.host | default .Values.config.backend.host | quote }}
-- name: BACKEND_PORT
+- name: BACKEND_HTTP_PORT
   value: {{ .Values.service.port | quote }}
-- name: BACKEND_PORT
+- name: BACKEND_GRPC_PORT
   value: {{ .Values.service.grpcPort | quote }}
-- name: BACKEND_SCHEME
-  value: {{ .Values.global.config.backend.scheme | default  .Values.config.backend.scheme | quote }}
-- name: POSTGRES_HOST
-  value: {{ .Values.global.config.database.host | default .Values.config.database.host | quote }}
-- name: POSTGRES_PORT
-  value: {{ .Values.global.config.database.port | default .Values.config.database.port | quote }}
-- name: POSTGRES_USER
-  value: {{ .Values.global.config.database.user | default .Values.config.database.user | quote }}
-- name: POSTGRES_SCHEMA
-  value: {{ .Values.global.config.database.schema | default .Values.config.database.schema | quote }}
-- name: POSTGRES_DB
-  value: {{ .Values.global.config.database.name | default .Values.config.database.name | quote }}
-- name: POSTGRES_MAX_OPEN_CONNECTIONS
-  value: {{ .Values.global.config.database.maxOpenConnections | default  .Values.config.database.maxOpenConnections | quote }}
-- name: POSTGRES_MAX_IDLE_CONNECTIONS
-  value: {{ .Values.global.config.database.maxIdleConnections | default .Values.config.database.maxIdleConnections | quote }}
-- name: POSTGRES_CONNECTION_LIFESPAN
-  value: {{ .Values.global.config.database.connectionLifespan | default .Values.config.database.connectionLifespan | quote }}
-- name: POSTGRES_DEBUG
-  value: {{ .Values.global.config.database.debug | default .Values.config.database.debug | quote }}
+- name: BACKEND_LOG_MODE
+  value: {{ .Values.global.config.backend.logmode | default  .Values.config.backend.logmode | quote }}
+- name: WRITER_POSTGRES_HOST
+  value: {{ .Values.global.config.database.writer.host | default .Values.config.database.writer.host | quote }}
+- name: WRITER_POSTGRES_PORT
+  value: {{ .Values.global.config.database.writer.port | default .Values.config.database.writer.port | quote }}
+- name: WRITER_POSTGRES_USER
+  value: {{ .Values.global.config.database.writer.user | default .Values.config.database.writer.user | quote }}
+- name: WRITER_POSTGRES_SCHEMA
+  value: {{ .Values.global.config.database.writer.schema | default .Values.config.database.writer.schema | quote }}
+- name: WRITER_POSTGRES_DB
+  value: {{ .Values.global.config.database.writer.name | default .Values.config.database.writer.name | quote }}
+- name: WRITER_POSTGRES_MAX_OPEN_CONNECTIONS
+  value: {{ .Values.global.config.database.writer.maxOpenConnections | default  .Values.config.database.writer.maxOpenConnections | quote }}
+- name: WRITER_POSTGRES_MAX_IDLE_CONNECTIONS
+  value: {{ .Values.global.config.database.writer.maxIdleConnections | default .Values.config.database.writer.maxIdleConnections | quote }}
+- name: WRITER_POSTGRES_CONNECTION_LIFESPAN
+  value: {{ .Values.global.config.database.writer.connectionLifespan | default .Values.config.database.writer.connectionLifespan | quote }}
+- name: WRITER_POSTGRES_DEBUG
+  value: {{ .Values.global.config.database.writer.debug | default .Values.config.database.writer.debug | quote }}
+- name: READER_POSTGRES_HOST
+  value: {{ .Values.global.config.database.reader.host | default .Values.config.database.reader.host | quote }}
+- name: READER_POSTGRES_PORT
+  value: {{ .Values.global.config.database.reader.port | default .Values.config.database.reader.port | quote }}
+- name: READER_POSTGRES_USER
+  value: {{ .Values.global.config.database.reader.user | default .Values.config.database.reader.user | quote }}
+- name: READER_POSTGRES_SCHEMA
+  value: {{ .Values.global.config.database.reader.schema | default .Values.config.database.reader.schema | quote }}
+- name: READER_POSTGRES_DB
+  value: {{ .Values.global.config.database.reader.name | default .Values.config.database.rreader.name | quote }}
+- name: READER_POSTGRES_MAX_OPEN_CONNECTIONS
+  value: {{ .Values.global.config.database.reader.maxOpenConnections | default  .Values.config.database.reader.maxOpenConnections | quote }}
+- name: READER_POSTGRES_MAX_IDLE_CONNECTIONS
+  value: {{ .Values.global.config.database.reader.maxIdleConnections | default .Values.config.database.reader.maxIdleConnections | quote }}
+- name: READER_POSTGRES_CONNECTION_LIFESPAN
+  value: {{ .Values.global.config.database.reader.connectionLifespan | default .Values.config.database.reader.connectionLifespan | quote }}
+- name: READER_POSTGRES_DEBUG
+  value: {{ .Values.global.config.database.reader.debug | default .Values.config.database.reader.debug | quote }}
 {{- range $key, $value := .Values.extraEnv }}
 - name: {{ $key | quote }}
   value: {{ $value | quote }}
