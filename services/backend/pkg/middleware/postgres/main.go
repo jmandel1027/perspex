@@ -2,9 +2,12 @@ package grpc_postgres
 
 import (
 	"context"
+	"database/sql"
 
-	"github.com/grpc-ecosystem/go-grpc-middleware"
+	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	"google.golang.org/grpc"
+
+	"github.com/jmandel1027/perspex/services/backend/pkg/database/postgres"
 )
 
 // AuthFunc is the pluggable function that performs authentication.
@@ -29,23 +32,34 @@ type ServiceAuthFuncOverride interface {
 }
 
 // UnaryServerInterceptor returns a new unary server interceptors that performs per-request auth.
-func UnaryServerInterceptor(pgFunc PostgresFunc) grpc.UnaryServerInterceptor {
+func UnaryServerInterceptor(db *sql.DB, txOpts *sql.TxOptions) grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
-		var newCtx context.Context
-		var err error
 
-		// Begin: We can remove this block when the postgres modules are ready
-		if overrideSrv, ok := info.Server.(ServiceAuthFuncOverride); ok {
-			newCtx, err = overrideSrv.PostgresFuncOverride(ctx, info.FullMethod)
-		} else {
-			newCtx, err = pgFunc(ctx)
-		}
+		tx, err := postgres.BeginTx(ctx, db, txOpts)
 		if err != nil {
-			return nil, err
+			var cancel context.CancelFunc
+			ctx, cancel = context.WithCancel(ctx)
+			cancel()
 		}
-		// End
 
-		return handler(newCtx, req)
+		key, err := postgres.WhichConnection(ctx, *txOpts)
+		if err != nil {
+			var cancel context.CancelFunc
+			ctx, cancel = context.WithCancel(ctx)
+			cancel()
+		}
+
+		ntx := postgres.NewContext(ctx, *key, tx)
+
+		defer func() {
+			if p := recover(); err != nil || p != nil {
+				tx.Rollback()
+			} else {
+				tx.Commit()
+			}
+		}()
+
+		return handler(ntx, req)
 	}
 }
 
