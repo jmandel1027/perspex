@@ -64,7 +64,7 @@ func Serve() {
 
 // GRPC -- Handler
 func GRPC(cfg *config.BackendConfig, l net.Listener) {
-	dbs, err := postgres.Open(*cfg)
+	dbs, err := postgres.Open(cfg)
 	if err != nil {
 		otelzap.L().Warn("Postgres Connection Error: %s", zap.Error(err))
 	}

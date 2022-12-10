@@ -42,7 +42,7 @@ func UnaryServerInterceptor(db *sql.DB, txOpts *sql.TxOptions) grpc.UnaryServerI
 			cancel()
 		}
 
-		key, err := postgres.WhichConnection(ctx, *txOpts)
+		key, err := postgres.WhichConnection(ctx, txOpts)
 		if err != nil {
 			var cancel context.CancelFunc
 			ctx, cancel = context.WithCancel(ctx)

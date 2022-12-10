@@ -77,13 +77,13 @@ Create the name of the service account to use
 
 {{- define "perspex.environmentVariables" -}}
 - name: POSTGRES_HOST
-  value: {{ .Values.global.config.database.host | quote }}
+  value: {{ .Values.global.config.database.writer.host | quote }}
 - name: POSTGRES_PORT
-  value: {{ .Values.global.config.database.port | quote }}
+  value: {{ .Values.global.config.database.writer.port | quote }}
 - name: POSTGRES_USER
-  value: {{ .Values.global.config.database.user | quote }}
+  value: {{ .Values.global.config.database.writer.user | quote }}
 - name: POSTGRES_SCHEMA
-  value: {{ .Values.global.config.database.schema | quote }}
+  value: {{ .Values.global.config.database.writer.schema | quote }}
 - name: POSTGRES_DB
-  value: {{ .Values.global.config.database.name | quote }}
+  value: {{ .Values.global.config.database.writer.name | quote }}
 {{- end }}

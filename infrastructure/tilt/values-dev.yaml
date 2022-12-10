@@ -16,8 +16,8 @@ global:
       writer:
         host: "postgresql.perspex.svc.cluster.local"
         port: 5432
-        user: "perspex"
-        db: "perspex"
+        user: "postgres"
+        name: "perspex"
         schema: "public"
         maxIdleConnections: 128
         maxOpenConnections: 4096
@@ -26,8 +26,8 @@ global:
       reader:
         host: "postgresql.perspex.svc.cluster.local"
         port: 5432
-        user: "perspex"
-        db: "perspex"
+        user: "postgres"
+        name: "perspex"
         schema: "public"
         maxIdleConnections: 128
         maxOpenConnections: 4096
