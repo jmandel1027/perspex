@@ -13,15 +13,26 @@ global:
       scheme: "http"
       host: "0.0.0.0"
     database:
-      host: "postgresql.perspex"
-      port: 5432
-      user: "postgres"
-      name: "perspex"
-      schema: "public"
-      maxIdleConnections: 128
-      maxOpenConnections: 4096
-      connectionLifespan: 128
-      debug: false
+      writer:
+        host: "postgresql.perspex.svc.cluster.local"
+        port: 5432
+        user: "perspex"
+        db: "perspex"
+        schema: "public"
+        maxIdleConnections: 128
+        maxOpenConnections: 4096
+        connectionLifespan: 128
+        debug: false
+      reader:
+        host: "postgresql.perspex.svc.cluster.local"
+        port: 5432
+        user: "perspex"
+        db: "perspex"
+        schema: "public"
+        maxIdleConnections: 128
+        maxOpenConnections: 4096
+        connectionLifespan: 128
+        debug: false
 
 backend:
   enabled: true

@@ -76,7 +76,7 @@ func New() (BackendConfig, error) {
 		MaxOpenConns: utils.MustGetInt("READER_POSTGRES_MAXOPENCONNECTIONS", "100"),
 		MaxIdleConns: utils.MustGetInt("READER_POSTGRES_MAXOPENCONNECTIONS", "50"),
 		MaxLifespan:  utils.MustGetInt("READER_POSTGRES_CONNECTION_LIFESPAN", "128"),
-		Debug:        utils.MustGetBool("READERPOSTGRES_DEBUG", "false"),
+		Debug:        utils.MustGetBool("READER_POSTGRES_DEBUG", "false"),
 	}
 
 	redis := RedisConfig{

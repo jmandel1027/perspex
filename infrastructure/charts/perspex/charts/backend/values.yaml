@@ -43,15 +43,26 @@ config:
     enabled: false
     brokers: ""
   database:
-    host: "perspex-postgresql"
-    port: 5432
-    user: "perspex"
-    db: "perspex"
-    schema: "public"
-    maxIdleConnections: 128
-    maxOpenConnections: 4096
-    connectionLifespan: 128
-    debug: false
+    writer:
+      host: "postgresql.perspex.svc.cluster.local"
+      port: 5432
+      user: "perspex"
+      db: "perspex"
+      schema: "public"
+      maxIdleConnections: 128
+      maxOpenConnections: 4096
+      connectionLifespan: 128
+      debug: false
+    reader:
+      host: "postgresql.perspex.svc.cluster.local"
+      port: 5432
+      user: "perspex"
+      db: "perspex"
+      schema: "public"
+      maxIdleConnections: 128
+      maxOpenConnections: 4096
+      connectionLifespan: 128
+      debug: false
   redis:
     host: "perspex-redis-writer"
     port: 6379
