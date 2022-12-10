@@ -30,6 +30,7 @@ type Tx struct {
 var (
 	ErrTXRequiresUser      = errors.New("user must be present in context to begin transaction")
 	ErrTXRequiresActiveCtx = errors.New("context must not be cancelled to begin transaction")
+	ErrTXRequiresOpts      = errors.New("opts must be passed to begin transaction")
 )
 
 // TxFunc is a function passed to a transaction block.
@@ -57,14 +58,14 @@ var ReadOnlyTxOpts = &sql.TxOptions{Isolation: sql.LevelReadCommitted, ReadOnly:
 // InTx provides the passed function with exclusive access to the Postgres
 // transaction within the passed context. A non-nil error will be returned
 // if the context is not open or does not contain a transaction.
-func InTx(ctx context.Context, opts sql.TxOptions, f func(tx *Tx) error) error {
+func InTx(ctx context.Context, opts *sql.TxOptions, f func(tx *Tx) error) error {
 	if ctx.Err() != nil {
 		return ErrTXRequiresActiveCtx
 	}
 
 	key, err := WhichConnection(ctx, opts)
 	if err != nil {
-		return ErrTXRequiresActiveCtx
+		return ErrTXRequiresOpts
 	}
 
 	tx, ok := FromContext(ctx, *key)
@@ -78,9 +79,13 @@ func InTx(ctx context.Context, opts sql.TxOptions, f func(tx *Tx) error) error {
 }
 
 // WhichConnection returns the key for the connection to use for the given transaction options.
-func WhichConnection(ctx context.Context, opts sql.TxOptions) (*key, error) {
+func WhichConnection(ctx context.Context, opts *sql.TxOptions) (*key, error) {
 	if ctx.Err() != nil {
 		return nil, ErrTXRequiresActiveCtx
+	}
+
+	if opts == nil {
+		return nil, ErrTXRequiresOpts
 	}
 
 	var key key
@@ -94,7 +99,7 @@ func WhichConnection(ctx context.Context, opts sql.TxOptions) (*key, error) {
 }
 
 // Open opens a database connection to both writer and reader.
-func Open(cfg config.BackendConfig) (*DB, error) {
+func Open(cfg *config.BackendConfig) (*DB, error) {
 	writer, err := sql.Open("pgx", cfg.WriterPG.GetDataSourceName())
 	if err != nil {
 		otelzap.L().Error("WriterPG Error: ", zap.Error(err))
@@ -120,22 +125,20 @@ func Open(cfg config.BackendConfig) (*DB, error) {
 
 // BeginTx initializes a transaction.
 func BeginTx(ctx context.Context, db *sql.DB, opts *sql.TxOptions) (*Tx, error) {
-	otelzap.L().Ctx(ctx).Info("BeginTx")
 	if ctx.Err() != nil {
 		return nil, ErrTXRequiresActiveCtx
 	}
 
 	if opts == nil {
-		return nil, ErrTXRequiresActiveCtx
+		return nil, ErrTXRequiresOpts
 	}
 
 	tx, err := db.BeginTx(ctx, opts)
 	if err != nil {
-		otelzap.L().Ctx(ctx).Error("BeginTx Error: ", zap.Error(err))
+		otelzap.L().Ctx(ctx).Error("Failed to begin transaction: ", zap.Error(err))
 		return nil, err
 	}
 
-	otelzap.L().Ctx(ctx).Info("BeginTx Success")
 	return &Tx{Tx: tx}, nil
 }
 
