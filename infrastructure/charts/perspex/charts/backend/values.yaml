@@ -157,6 +157,7 @@ securityContext: {}
 
 service:
   type: ClusterIP
+  grpcPort: 8888
   port: 8080
 
 traefik:
