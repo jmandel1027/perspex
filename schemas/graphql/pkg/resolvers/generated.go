@@ -17,7 +17,32 @@ func (r *mutationResolver) NodeMutation(ctx context.Context) (model.Node, error)
 }
 
 // // foo
+func (r *mutationResolver) UserCreate(ctx context.Context, input model.UserPatch) (*model.User, error) {
+	panic("not implemented")
+}
+
+// // foo
+func (r *mutationResolver) UserDelete(ctx context.Context, input model.UserUpdateInput) (*model.User, error) {
+	panic("not implemented")
+}
+
+// // foo
+func (r *mutationResolver) UserUpdate(ctx context.Context, input model.UserUpdateInput) (*model.User, error) {
+	panic("not implemented")
+}
+
+// // foo
 func (r *queryResolver) NodeQuery(ctx context.Context) (model.Node, error) {
+	panic("not implemented")
+}
+
+// // foo
+func (r *queryResolver) User(ctx context.Context, input model.UserInput) (*model.User, error) {
+	panic("not implemented")
+}
+
+// // foo
+func (r *queryResolver) Users(ctx context.Context, input model.UsersInput) (*model.Users, error) {
 	panic("not implemented")
 }
 

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"strconv"
+	"time"
 )
 
 // Connection interface
@@ -48,6 +49,72 @@ type PageInfo struct {
 	HasPreviousPage bool   `json:"hasPreviousPage"`
 }
 
+type User struct {
+	ID        string    `json:"id"`
+	AuthID    string    `json:"authId"`
+	FirstName string    `json:"firstName"`
+	LastName  string    `json:"lastName"`
+	Email     string    `json:"email"`
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
+}
+
+func (User) IsNode()            {}
+func (this User) GetID() string { return this.ID }
+
+type UserCondition struct {
+	ID *string `json:"id"`
+}
+
+type UserEdge struct {
+	Cursor string `json:"cursor"`
+	Node   *User  `json:"node"`
+}
+
+func (UserEdge) IsEdge()                {}
+func (this UserEdge) GetNode() Node     { return *this.Node }
+func (this UserEdge) GetCursor() string { return this.Cursor }
+
+type UserInput struct {
+	ID string `json:"id"`
+}
+
+type UserPatch struct {
+	AuthID    string `json:"authID"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
+	Email     string `json:"email"`
+}
+
+type UserUpdateInput struct {
+	ID    string     `json:"id"`
+	Patch *UserPatch `json:"patch"`
+}
+
+type Users struct {
+	Edges    []*UserEdge `json:"edges"`
+	PageInfo *PageInfo   `json:"pageInfo"`
+}
+
+func (Users) IsConnection() {}
+func (this Users) GetEdges() []Edge {
+	if this.Edges == nil {
+		return nil
+	}
+	interfaceSlice := make([]Edge, 0, len(this.Edges))
+	for _, concrete := range this.Edges {
+		interfaceSlice = append(interfaceSlice, concrete)
+	}
+	return interfaceSlice
+}
+func (this Users) GetPageInfo() *PageInfo { return this.PageInfo }
+
+type UsersInput struct {
+	Arguments *PageArguments `json:"arguments"`
+	OrderBy   *UsersOrderBy  `json:"orderBy"`
+	Condition *UserCondition `json:"condition"`
+}
+
 type Direction string
 
 const (
@@ -86,5 +153,44 @@ func (e *Direction) UnmarshalGQL(v interface{}) error {
 }
 
 func (e Direction) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type UsersOrderBy string
+
+const (
+	UsersOrderByNatural UsersOrderBy = "NATURAL"
+)
+
+var AllUsersOrderBy = []UsersOrderBy{
+	UsersOrderByNatural,
+}
+
+func (e UsersOrderBy) IsValid() bool {
+	switch e {
+	case UsersOrderByNatural:
+		return true
+	}
+	return false
+}
+
+func (e UsersOrderBy) String() string {
+	return string(e)
+}
+
+func (e *UsersOrderBy) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = UsersOrderBy(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid UsersOrderBy", str)
+	}
+	return nil
+}
+
+func (e UsersOrderBy) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }
