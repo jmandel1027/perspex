@@ -22,12 +22,9 @@ function buf_lint() {
 }
 
 function lint_codegen() {
-
   modified_paths=$(git diff --name-only origin/"${GITHUB_BASE_REF}"...origin/"${GITHUB_HEAD_REF}" .)
-  echo "$modified_paths"
-    
-  for file in "${modified_paths[@]}"; do
-    
+
+  for file in "${modified_paths[@]}"; do    
     if [[ "${file}" == *"services/migration/src/perspex"* ]]; then
       path="schemas/perspex/pkg/models"
       tool="sqlboiler"
@@ -36,7 +33,7 @@ function lint_codegen() {
       path="schemas/graphql/pkg"
       tool="gqlgen"
       verify_hashes
-    elif [[ "${file}" == *" schemas/proto/**/*.proto"* ]]; then
+    elif [[ "${file}" == *"schemas/proto/**/*.proto"* ]]; then
       path="schemas/proto/goproto"
       tool="buf"
       verify_hashes
