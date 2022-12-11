@@ -33,10 +33,6 @@ jobs:
         run: |
           bin/helm dependency update infrastructure/charts/perspex
 
-      - uses: actions/setup-python@v2
-        with:
-          python-version: '3.9.7'
-
       - name: Spin up k3d cluster
         run: |
           bin/k3d cluster create -c infrastructure/tilt/k3d-config.yaml
