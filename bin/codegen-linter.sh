@@ -5,7 +5,7 @@ set -e
 function verify_hashes() {
   branch=$(tar -cf - "${path}" | md5sum)
 
-  git checkout main "${path}"
+  git checkout origin/"${GITHUB_BASE_REF}" "${path}"
   
   main=$(tar -cf - "${path}" | md5sum)
 
@@ -22,22 +22,26 @@ function buf_lint() {
 }
 
 function lint_codegen() {
-  if [[ "$(git diff --quiet HEAD main -- services/migration/src/perspex || echo $?)" == 1 ]]; then
-    path="schemas/perspex/pkg/models"
-    tool="sqlboiler"
-    verify_hashes
-  elif [[ "$(git diff --quiet HEAD main -- schemas/graphql || echo $?)" == 1 ]]; then
-    path="services/backend/pkg/graphql"
-    tool="gqlgen"
-    verify_hashes
-  elif [[ "$(git diff --quiet HEAD main -- schemas/proto/**/*.proto || echo $?)" == 1 ]]; then
-    path="schemas/proto/goproto"
-    tool="buf"
-    verify_hashes
-    buf_lint
-  else
-    echo "Generated code is up to date"
-  fi
+  modified_paths=$(git diff --name-only origin/"${GITHUB_BASE_REF}"...origin/"${GITHUB_HEAD_REF}" .)
+
+  for file in "${modified_paths[@]}"; do    
+    if [[ "${file}" == *"services/migration/src/perspex"* ]]; then
+      path="schemas/perspex/pkg/models"
+      tool="sqlboiler"
+      verify_hashes
+    elif [[ "${file}" == *"schemas/graphql"* ]]; then
+      path="schemas/graphql/pkg"
+      tool="gqlgen"
+      verify_hashes
+    elif [[ "${file}" == *"schemas/proto/**/*.proto"* ]]; then
+      path="schemas/proto/goproto"
+      tool="buf"
+      verify_hashes
+      buf_lint
+    else
+      echo "Generated code is up to date"
+    fi
+  done
 
   exit 0;
 }
