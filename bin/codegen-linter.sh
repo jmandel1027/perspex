@@ -33,7 +33,7 @@ function lint_codegen() {
       tool="sqlboiler"
       verify_hashes
     elif [[ "${file}" == *"schemas/graphql"* ]]; then
-      path="services/backend/pkg/graphql"
+      path="schemas/graphql/pkg"
       tool="gqlgen"
       verify_hashes
     elif [[ "${file}" == *" schemas/proto/**/*.proto"* ]]; then
