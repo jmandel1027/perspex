@@ -17,14 +17,14 @@ jobs:
       - id: modified-migrations
         name: Find modified migrations
         run: |
-          modified_migrations=$(git diff --name-only origin/$GITHUB_BASE_REF...origin/$GITHUB_HEAD_REF 'services/migration/src/**/*.sql')
+          modified_migrations=$(git diff --name-only origin/${GITHUB_BASE_REF}...origin/${GITHUB_HEAD_REF} 'services/migration/src/**/*.sql')
           echo "$modified_migrations"
 
           echo "{file_names}={"${modified_migrations}"}" >> $GITHUB_OUTPUT
 
           for i in "${modified_migrations[@]}"; do
             # or do whatever with individual element of the array
-            does_file_exist=$(git cat-file -e origin/main:${i})
+            does_file_exist=$(git cat-file -e origin/${GITHUB_BASE_REF}:${i})
 
             echo "${does_file_exist}"
             if [[ -v "${does_file_exist}" ]]; then
