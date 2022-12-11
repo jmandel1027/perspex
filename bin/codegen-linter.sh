@@ -10,6 +10,11 @@ function verify_hashes() {
   main=$(tar -cf - "${path}" | md5sum)
 
   if [[ "${branch}" == "${main}" ]]; then
+    if [[ "${tool}" == "migrations" ]]; then
+      echo "Error: migrations have already been committed, please do not change earlier migrations."
+      exit 1;
+    fi
+
     echo "Error: Generated ${tool} code is out of phase, please commit generated code."
     exit 1;
   fi
@@ -28,6 +33,10 @@ function lint_codegen() {
     if [[ "${file}" == *"services/migration/src/perspex"* ]]; then
       path="schemas/perspex/pkg/models"
       tool="sqlboiler"
+      verify_hashes
+    elif [[ "${file}" == *"services/migration/src/perspex"* ]]; then
+      path="services/migration/src/perspex"
+      tool="migrations"
       verify_hashes
     elif [[ "${file}" == *"schemas/graphql"* ]]; then
       path="schemas/graphql/pkg"
