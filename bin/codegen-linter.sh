@@ -23,7 +23,7 @@ function buf_lint() {
 
 function lint_codegen() {
 
-  modified_paths=$(git diff --name-only origin/"${GITHUB_BASE_REF}"...origin/"${GITHUB_HEAD_REF}" .)
+  modified_paths=$(git diff --name-only origin/"${GITHUB_BASE_REF}"...origin/"${GITHUB_HEAD_REF}" schemas)
   echo "$modified_paths"
     
   for file in "${modified_paths[@]}"; do
