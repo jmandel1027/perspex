@@ -8,15 +8,11 @@ build_boil() {
   
   ../../bin/go mod download
 
-  ../../bin/go get \
-    github.com/volatiletech/sqlboiler \
-    github.com/volatiletech/sqlboiler/drivers/sqlboiler-psql
-
-  sqlboiler psql
+  ../../.hermit/go/bin/sqlboiler psql
   
   cd ../../services/backend
 
-  printf "\nDone.\n\n"
+  echo "Done."
 }
 
 build_gql() {
@@ -24,17 +20,13 @@ build_gql() {
 
   ../../bin/go mod download
 
-  ../../bin/go get github.com/99designs/gqlgen
+  rm -rf pkg
 
-  rm -rf pkg/resolvers/generated
-  rm -rf pkg/graphql/*
-
-  time go run -v github.com/99designs/gqlgen generate
-  time go generate ./...
+  time ../../.hermit/go/bin/gqlgen generate
 
   cd ../../services/backend
 
-  printf "\nDone.\n\n"
+  echo "Done."
 }
 
 build_proto() {
@@ -43,6 +35,8 @@ build_proto() {
   ../../bin/buf generate
 
   cd ../../services/backend
+
+  echo "Done."
 }
 
 build_linux() {
@@ -50,57 +44,19 @@ build_linux() {
   src="$srcPath/$app/$pkgFile"
 
   echo "Building: ${app}"
+
   GOOS=linux GOARCH=amd64 ../../bin/go build -ldflags="-w -s" -o "${output}" "${src}"
+
   echo "Built: ${app} size:"
-  ls -lah "${output}" | awk '{print $5}'
+
+  find . -name "${output}" | awk '{print $5}'
+
   echo "Done building: ${app}"
+
   exit 0
-}
-
-build_mac() {
-  output="$outputPath/$app"
-  src="$srcPath/$app/$pkgFile"
-
-  printf "\nBuilding: $app\n"
-  ../../bin/go build -o $output $src
-  printf "\nBuilt: $app size:"
-  ls -lah $output | awk '{print $5}'
-  printf "\nDone building: $app\n\n"
-  exit 0
-}
-
-
-run_linux() {
-  buildPath="bin"
-  app="server"
-  program="$buildPath/$app"
-  printf "\nStart app: $app\n"
-  printenv
-
-  # Set all ENV vars for the program to run
-  # export $(grep -v '^#' ./.env | xargs)
-  $program
-
-  # This should unset all the ENV vars, just in case.
-  # unset $(grep -v '^#' .env | sed -E 's/(.*)=.*/\1/' | xargs)
-  printf "\nStopped app: $app\n\n"
-  exit 0
-}
-
-run_mac() {
-    app="server"
-    src="$srcPath/$app/$pkgFile"
-    printf "\nStart running: $app\n"
-
-    time modd
-    # This should unset all the ENV vars, just in case.
-    # unset $(grep -v '^#' .env | sed -E 's/(.*)=.*/\1/''' | xargs)
-    printf "\nStopped running: $app\n\n"
-    exit 0
 }
 
 run_tilt() {
-
   # Download go dependencies
   ../../bin/go mod download
 
@@ -121,19 +77,19 @@ main() {
   while [[ "$#" -gt 0 ]]; do
     case $1 in
       -sp|--source-path)
-        srcPath="$2"
+        srcPath="${2}"
         shift
         ;;
       -pf|--package-file)
-        pkgFile="$2"
+        pkgFile="${2}"
         shift
         ;;
       -op|--output-path)
-        outputPath="$2"
+        outputPath="${2}"
         shift
         ;;
       -an|--app-name)
-        app="$2"
+        app="${2}"
         shift
         ;;
       -bl|--build-linux)
@@ -141,35 +97,23 @@ main() {
         shift
       ;;
       -bb|--build-boil)
-        build_boil
+        build_boil && exit 0;
         shift
       ;;
       -bg|--build-gql)
-        build_gql
-        shift
-      ;;
-      -bm|--build-mac)
-        build_mac
+        build_gql && exit 0;
         shift
       ;;
       -bp|--build-proto)
-        build_proto
-        shift
-      ;;
-      -rl|--run-linux)
-        run_linux
+        build_proto && exit 0;
         shift
       ;;
       -rt|--run-tilt)
         run_tilt
         shift
       ;;
-      -rm|--run-mac)
-        run_mac
-        shift
-      ;;
       *)
-        echo "Unknown parameter passed: $1";
+        echo "Unknown parameter passed: ${1}";
         exit 1
       ;;
     esac;

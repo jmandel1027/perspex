@@ -3,7 +3,7 @@ module github.com/jmandel1027/perspex/schemas/graphql
 go 1.19
 
 require (
-	github.com/99designs/gqlgen v0.17.21
+	github.com/99designs/gqlgen v0.17.22
 	github.com/vektah/gqlparser/v2 v2.5.1
 )
 

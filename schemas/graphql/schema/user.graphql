@@ -1,0 +1,64 @@
+# Methods to use when ordering `User`.
+enum UsersOrderBy {
+  NATURAL
+}
+
+input UserCondition {
+  id: ID
+}
+
+input UserInput {
+  id: ID!
+}
+
+input UsersInput {
+  # Contains the parameters for a given page
+  arguments: PageArguments
+  # The method to use when ordering `users`
+  orderBy: UsersOrderBy
+  # A condition to be used in determining which values should be returned by the collection.
+  condition: UserCondition
+}
+
+input UserPatch {
+  authID: String!
+  firstName: String!
+  lastName: String!
+  email: String!
+}
+
+input UserUpdateInput {
+  id: ID!
+  patch: UserPatch
+}
+
+type User implements Node {
+  id: ID!
+  authId: String!
+  firstName: String!
+  lastName: String!
+  email: String!
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+type UserEdge implements Edge {
+  cursor: ID!
+  node: User!
+}
+
+type Users implements Connection {
+  edges: [UserEdge!]
+  pageInfo: PageInfo!
+}
+
+extend type Query {
+  user(input: UserInput!): User!
+  users(input: UsersInput!): Users!
+}
+
+extend type Mutation {
+  userCreate(input: UserPatch!): User!
+  userDelete(input: UserUpdateInput!): User!
+  userUpdate(input: UserUpdateInput!): User!
+}

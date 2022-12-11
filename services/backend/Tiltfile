@@ -6,7 +6,7 @@ image_target = os.getenv("TILT_BACKEND_IMAGE_TARGET", default="tilt")
 compile_cmd = "CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o bin/backend ./cmd/backend/main.go"
 
 local_resource(
-  name="backend-generate-gql",
+  name="generate-all",
   cmd="bin/prepare.sh -rt",
   dir=".",
   deps=["./pkg", "./cmd/backend/main.go", "./bin/prepare.sh"],
@@ -17,8 +17,16 @@ local_resource(
 )
 
 local_resource(
-  "protobuf-generate",
-  "../../bin/buf generate",
+  "generate-protobufs",
+  "bin/prepare.sh -bp",
+  trigger_mode=TRIGGER_MODE_MANUAL,
+  labels=["backend"],
+  auto_init=False,
+)
+
+local_resource(
+  "generate-sqlboiler",
+  "bin/prepare.sh -bb",
   trigger_mode=TRIGGER_MODE_MANUAL,
   labels=["backend"],
   auto_init=False,

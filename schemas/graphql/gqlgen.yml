@@ -4,7 +4,9 @@
 
 # Pick up all the schema files you put in this directory
 schema:
-    - schema/schema.graphql
+  - schema/schema.graphql
+  - schema/user.graphql
+
 
 # Let gqlgen know where to put the generated server
 exec:
