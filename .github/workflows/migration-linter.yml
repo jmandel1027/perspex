@@ -24,7 +24,8 @@ jobs:
 
           for i in "${modified_migrations[@]}"; do
             # or do whatever with individual element of the array
-            does_file_exist=$(git cat-file -e origin/${GITHUB_BASE_REF}:${i})
+            echo "origin/${GITHUB_BASE_REF}:${i}"
+            does_file_exist=$(git cat-file -e "origin/${GITHUB_BASE_REF}:${i}")
 
             echo "${does_file_exist}"
             if [[ -v "${does_file_exist}" ]]; then
