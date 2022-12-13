@@ -1,4 +1,5 @@
 # Perspex
+[![Go Reference](https://pkg.go.dev/badge/github.com/jmandel1027/perspex.svg)](https://pkg.go.dev/github.com/jmandel1027/perspex)
 
 ![Alt text](.github/media/perspex.jpg?raw=true "perspex-icon")
 
