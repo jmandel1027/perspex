@@ -118,6 +118,84 @@
         ]
       }
     },
+    "/v1/user/{user.id}/delete": {
+      "get": {
+        "summary": "Soft-Delete a user by ID",
+        "description": "This endpoint Soft-Deletes a user by ID via Query Params.",
+        "operationId": "UserService_DeleteUser",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1User"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user.id",
+            "description": "User ID.",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "user.authId",
+            "description": "Auth ID.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "user.email",
+            "description": "User Email",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "user.firstName",
+            "description": "User First Name",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "user.lastName",
+            "description": "User Last Name",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "user.createdAt",
+            "description": "User Creation Timestamp",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "user.updatedAt",
+            "description": "User Updated Timestamp",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          }
+        ],
+        "tags": [
+          "Users"
+        ]
+      }
+    },
     "/v1/users": {
       "post": {
         "summary": "Retrieve a list of users by ID",
@@ -182,7 +260,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/v1RetrieveUsersPageRequest"
+              "$ref": "#/definitions/v1UsersPageRequest"
             }
           }
         ],
@@ -366,35 +444,6 @@
       ],
       "default": "FORWARD"
     },
-    "v1RetrieveUsersPageRequest": {
-      "type": "object",
-      "properties": {
-        "first": {
-          "type": "string",
-          "format": "int64",
-          "description": "First number of users to return."
-        },
-        "after": {
-          "type": "string",
-          "format": "int64",
-          "description": "After cursor for paginated users input."
-        },
-        "last": {
-          "type": "string",
-          "format": "int64",
-          "description": "Last number of users to return."
-        },
-        "before": {
-          "type": "string",
-          "format": "int64",
-          "description": "Before cursor for paginated users input."
-        },
-        "direction": {
-          "$ref": "#/definitions/v1Direction",
-          "description": "Direction of users to return."
-        }
-      }
-    },
     "v1User": {
       "type": "object",
       "properties": {
@@ -468,6 +517,35 @@
         "hasPreviousPage": {
           "type": "boolean",
           "description": "Indicates if there is a previous page of users."
+        }
+      }
+    },
+    "v1UsersPageRequest": {
+      "type": "object",
+      "properties": {
+        "first": {
+          "type": "string",
+          "format": "int64",
+          "description": "First number of users to return."
+        },
+        "after": {
+          "type": "string",
+          "format": "int64",
+          "description": "After cursor for paginated users input."
+        },
+        "last": {
+          "type": "string",
+          "format": "int64",
+          "description": "Last number of users to return."
+        },
+        "before": {
+          "type": "string",
+          "format": "int64",
+          "description": "Before cursor for paginated users input."
+        },
+        "direction": {
+          "$ref": "#/definitions/v1Direction",
+          "description": "Direction of users to return."
         }
       }
     }
