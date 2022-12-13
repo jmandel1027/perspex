@@ -51,6 +51,38 @@
         "tags": [
           "Users"
         ]
+      },
+      "patch": {
+        "summary": "Modify a user",
+        "description": "This endpoint modifies a user.",
+        "operationId": "UserService_ModifyUser",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1User"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1User"
+            }
+          }
+        ],
+        "tags": [
+          "Users"
+        ]
       }
     },
     "/v1/user/{id}": {
@@ -77,6 +109,295 @@
             "name": "id",
             "in": "path",
             "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/v1/user/{user.id}/delete": {
+      "get": {
+        "summary": "Soft-Delete a user by ID",
+        "description": "This endpoint Soft-Deletes a user by ID via Query Params.",
+        "operationId": "UserService_DeleteUser",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1User"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user.id",
+            "description": "User ID.",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "user.authId",
+            "description": "Auth ID.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "user.email",
+            "description": "User Email",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "user.firstName",
+            "description": "User First Name",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "user.lastName",
+            "description": "User Last Name",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "user.createdAt",
+            "description": "User Creation Timestamp",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "user.updatedAt",
+            "description": "User Updated Timestamp",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          }
+        ],
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/v1/users": {
+      "post": {
+        "summary": "Retrieve a list of users by ID",
+        "description": "This endpoint returns a list of users by IDs",
+        "operationId": "UserService_RetrieveUsers",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1Users"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "ids",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "int64"
+              },
+              "description": "IDs of users to retrieve."
+            }
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      }
+    },
+    "/v1/users/page": {
+      "post": {
+        "summary": "Retrieve a page of user IDs",
+        "description": "This endpoint returns a user by ID via Query Params.",
+        "operationId": "UserService_RetrieveUsersPage",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1UsersPage"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1UsersPageRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/v1/users/page/direction/{direction}/first/{first}/after/{after}": {
+      "get": {
+        "summary": "Retrieve a page of user IDs",
+        "description": "This endpoint returns a user by ID via Query Params.",
+        "operationId": "UserService_RetrieveUsersPage2",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1UsersPage"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "direction",
+            "description": "Direction of users to return.",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "enum": [
+              "FORWARD",
+              "BACKWARD"
+            ]
+          },
+          {
+            "name": "first",
+            "description": "First number of users to return.",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "after",
+            "description": "After cursor for paginated users input.",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "last",
+            "description": "Last number of users to return.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "before",
+            "description": "Before cursor for paginated users input.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/v1/users/page/direction/{direction}/last/{last}/before/{before}": {
+      "get": {
+        "summary": "Retrieve a page of user IDs",
+        "description": "This endpoint returns a user by ID via Query Params.",
+        "operationId": "UserService_RetrieveUsersPage3",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1UsersPage"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "direction",
+            "description": "Direction of users to return.",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "enum": [
+              "FORWARD",
+              "BACKWARD"
+            ]
+          },
+          {
+            "name": "last",
+            "description": "Last number of users to return.",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "before",
+            "description": "Before cursor for paginated users input.",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "first",
+            "description": "First number of users to return.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "after",
+            "description": "After cursor for paginated users input.",
+            "in": "query",
+            "required": false,
             "type": "string",
             "format": "int64"
           }
@@ -115,6 +436,14 @@
         }
       }
     },
+    "v1Direction": {
+      "type": "string",
+      "enum": [
+        "FORWARD",
+        "BACKWARD"
+      ],
+      "default": "FORWARD"
+    },
     "v1User": {
       "type": "object",
       "properties": {
@@ -148,6 +477,75 @@
           "type": "string",
           "format": "date-time",
           "description": "User Updated Timestamp"
+        }
+      }
+    },
+    "v1Users": {
+      "type": "object",
+      "properties": {
+        "users": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1User"
+          },
+          "description": "Users."
+        }
+      }
+    },
+    "v1UsersPage": {
+      "type": "object",
+      "properties": {
+        "totalCount": {
+          "type": "string",
+          "format": "int64",
+          "description": "Total number of users returned by paginated input."
+        },
+        "startCursor": {
+          "type": "string",
+          "format": "int64",
+          "description": "Start cursor for paginated users input."
+        },
+        "endCursor": {
+          "type": "string",
+          "format": "int64",
+          "description": "End cursor for paginated users input."
+        },
+        "hasNextPage": {
+          "type": "boolean",
+          "description": "Indicates if there is a next page of users."
+        },
+        "hasPreviousPage": {
+          "type": "boolean",
+          "description": "Indicates if there is a previous page of users."
+        }
+      }
+    },
+    "v1UsersPageRequest": {
+      "type": "object",
+      "properties": {
+        "first": {
+          "type": "string",
+          "format": "int64",
+          "description": "First number of users to return."
+        },
+        "after": {
+          "type": "string",
+          "format": "int64",
+          "description": "After cursor for paginated users input."
+        },
+        "last": {
+          "type": "string",
+          "format": "int64",
+          "description": "Last number of users to return."
+        },
+        "before": {
+          "type": "string",
+          "format": "int64",
+          "description": "Before cursor for paginated users input."
+        },
+        "direction": {
+          "$ref": "#/definitions/v1Direction",
+          "description": "Direction of users to return."
         }
       }
     }

@@ -5,7 +5,9 @@ set -e
 
 build_boil() {
   cd ../../schemas/perspex
-  
+
+  ../../bin/go work sync
+ 
   ../../bin/go mod download
 
   ../../.hermit/go/bin/sqlboiler psql
@@ -18,6 +20,8 @@ build_boil() {
 build_gql() {
   cd ../../schemas/graphql
 
+  ../../bin/go work sync
+  
   ../../bin/go mod download
 
   rm -rf pkg
@@ -31,6 +35,8 @@ build_gql() {
 
 build_proto() {
   cd ../../schemas/proto
+
+  ../../bin/go work sync
 
   ../../bin/buf generate
 
