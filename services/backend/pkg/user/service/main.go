@@ -16,8 +16,12 @@ import (
 
 // IUserService for interacting with Users
 type IUserService interface {
-	RegisterUser(ctx context.Context, in *users.RegisterUserRequest) (*users.User, error)
-	RetrieveUser(ctx context.Context, in *users.RetrieveUserRequest) (*users.User, error)
+	DeleteUser(context.Context, *users.UserInputRequest) (*users.User, error)
+	ModifyUser(ctx context.Context, in *users.UserInputRequest) (*users.User, error)
+	RegisterUser(ctx context.Context, in *users.UserInputRequest) (*users.User, error)
+	RetrieveUser(ctx context.Context, in *users.UserInputRequest) (*users.User, error)
+	RetrieveUsers(ctx context.Context, in *users.UsersByIdRequest) (*users.Users, error)
+	RetrieveUsersPage(ctx context.Context, in *users.UsersPageRequest) (*users.UsersPage, error)
 }
 
 // UserService structs
@@ -56,9 +60,7 @@ func (svc *UserService) RegisterUser(ctx context.Context, in *users.UserInputReq
 func (svc *UserService) RetrieveUser(ctx context.Context, in *users.UserInputRequest) (*users.User, error) {
 	svc.mu.RLock()
 
-	otelzap.Ctx(ctx).Info("RetrieveUser: ", zap.Int64("id", in.Id))
-
-	record, err := svc.repo.FindUserById(ctx, in.Id)
+	record, err := svc.repo.FindUserById(ctx, in.User.Id)
 	if err != nil {
 		otelzap.Ctx(ctx).Error("Error retrieving user: ", zap.Error(err))
 		return nil, err
@@ -70,8 +72,8 @@ func (svc *UserService) RetrieveUser(ctx context.Context, in *users.UserInputReq
 		Email:     record.Email,
 		FirstName: record.FirstName,
 		LastName:  record.LastName,
-		CreatedAt: &timestamppb.Timestamp{},
-		UpdatedAt: &timestamppb.Timestamp{},
+		CreatedAt: timestamppb.New(record.CreatedAt),
+		UpdatedAt: timestamppb.New(record.UpdatedAt),
 	}
 
 	defer svc.mu.RUnlock()
@@ -79,10 +81,41 @@ func (svc *UserService) RetrieveUser(ctx context.Context, in *users.UserInputReq
 	return user, nil
 }
 
-func (svc *UserService) RetrieveUsers(ctx context.Context, in *users.RetrieveUsersRequest) (*users.Users, error) {
-	return &users.Users{}, nil
+func (svc *UserService) RetrieveUsers(ctx context.Context, in *users.UsersByIdRequest) (*users.Users, error) {
+	svc.mu.RLock()
+
+	records, err := svc.repo.FindUsersByIds(ctx, in.Ids)
+	if err != nil {
+		otelzap.Ctx(ctx).Error("Error retrieving users: ", zap.Error(err))
+		return nil, err
+	}
+
+	usr := make([]*users.User, len(records))
+
+	for i, record := range records {
+
+		user := &users.User{
+			Id:        record.ID,
+			AuthId:    "",
+			Email:     record.Email,
+			FirstName: record.FirstName,
+			LastName:  record.LastName,
+			CreatedAt: timestamppb.New(record.CreatedAt),
+			UpdatedAt: timestamppb.New(record.UpdatedAt),
+		}
+
+		usr = append(usr[:i], user)
+	}
+
+	res := &users.Users{
+		Users: usr,
+	}
+
+	defer svc.mu.RUnlock()
+
+	return res, nil
 }
 
-func (svc *UserService) RetrieveUsersPage(ctx context.Context, in *users.RetrieveUsersPageRequest) (*users.UsersPage, error) {
+func (svc *UserService) RetrieveUsersPage(ctx context.Context, in *users.UsersPageRequest) (*users.UsersPage, error) {
 	return &users.UsersPage{}, nil
 }

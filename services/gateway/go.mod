@@ -5,7 +5,6 @@ go 1.19
 require (
 	github.com/99designs/gqlgen v0.17.22
 	github.com/dimiro1/health v0.0.0-20191019130555-c5cbb4d46ffc
-	github.com/jmandel1027/perspex/schemas/graphql v0.0.0-00010101000000-000000000000
 	github.com/prometheus/client_golang v1.14.0
 	github.com/rs/cors v1.8.2
 	github.com/uptrace/opentelemetry-go-extra/otelzap v0.1.17

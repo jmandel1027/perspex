@@ -5,6 +5,13 @@ image_target = os.getenv("TILT_GATEWAY_IMAGE_TARGET", default="tilt")
 
 compile_cmd = "CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o bin/gateway cmd/gateway/main.go"
 
+local_resource(
+  "generate-gqlgen",
+  "bin/prepare.sh -bg",
+  trigger_mode=TRIGGER_MODE_MANUAL,
+  labels=["gateway"],
+  auto_init=False,
+)
 
 local_resource(
   name="gateway-compile",

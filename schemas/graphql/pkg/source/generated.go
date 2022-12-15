@@ -461,11 +461,11 @@ type GeographicCoordinates {
 
 # Information for paginating a given connection
 type PageInfo {
-    totalCount: Int!
-    startCursor: ID!
-    endCursor: ID!
-    hasNextPage: Boolean!
-    hasPreviousPage: Boolean!
+  totalCount: Int!
+  startCursor: ID!
+  endCursor: ID!
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
 }
 
 input PageArguments {
