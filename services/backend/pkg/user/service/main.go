@@ -57,10 +57,10 @@ func (svc *UserService) RegisterUser(ctx context.Context, in *users.UserInputReq
 }
 
 // RetrieveUser fetches a user by ID
-func (svc *UserService) RetrieveUser(ctx context.Context, in *users.UserInputRequest) (*users.User, error) {
+func (svc *UserService) RetrieveUser(ctx context.Context, in *users.UserByIdRequest) (*users.User, error) {
 	svc.mu.RLock()
 
-	record, err := svc.repo.FindUserById(ctx, in.User.Id)
+	record, err := svc.repo.FindUserById(ctx, in.Id)
 	if err != nil {
 		otelzap.Ctx(ctx).Error("Error retrieving user: ", zap.Error(err))
 		return nil, err
