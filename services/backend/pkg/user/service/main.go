@@ -10,6 +10,7 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
+	"github.com/jmandel1027/perspex/schemas/perspex/pkg/models"
 	users "github.com/jmandel1027/perspex/schemas/proto/goproto/pkg/users/v1"
 	"github.com/jmandel1027/perspex/services/backend/pkg/user/repository"
 )
@@ -48,12 +49,65 @@ func (svc *UserService) DeleteUser(context.Context, *users.UserInputRequest) (*u
 
 // ModidifyUser
 func (svc *UserService) ModifyUser(ctx context.Context, in *users.UserInputRequest) (*users.User, error) {
-	return &users.User{}, nil
+	svc.mu.RLock()
+
+	u := &models.User{
+		ID:        in.User.Id,
+		Email:     in.User.Email,
+		FirstName: in.User.FirstName,
+		LastName:  in.User.LastName,
+	}
+
+	record, err := svc.repo.UpdateUser(ctx, u)
+	if err != nil {
+		otelzap.Ctx(ctx).Error("Error modifying user: ", zap.Error(err))
+		return nil, err
+	}
+
+	user := &users.User{
+		Id:        record.ID,
+		AuthId:    "",
+		Email:     record.Email,
+		FirstName: record.FirstName,
+		LastName:  record.LastName,
+		CreatedAt: timestamppb.New(record.CreatedAt),
+		UpdatedAt: timestamppb.New(record.UpdatedAt),
+	}
+
+	defer svc.mu.RUnlock()
+
+	return user, nil
 }
 
 // RegisterUser by RegisterUserRequest
 func (svc *UserService) RegisterUser(ctx context.Context, in *users.UserInputRequest) (*users.User, error) {
-	return &users.User{}, nil
+	svc.mu.RLock()
+
+	u := &models.User{
+		Email:     in.User.Email,
+		FirstName: in.User.FirstName,
+		LastName:  in.User.LastName,
+	}
+
+	record, err := svc.repo.CreateUser(ctx, u)
+	if err != nil {
+		otelzap.Ctx(ctx).Error("Error retrieving user: ", zap.Error(err))
+		return nil, err
+	}
+
+	user := &users.User{
+		Id:        record.ID,
+		AuthId:    "",
+		Email:     record.Email,
+		FirstName: record.FirstName,
+		LastName:  record.LastName,
+		CreatedAt: timestamppb.New(record.CreatedAt),
+		UpdatedAt: timestamppb.New(record.UpdatedAt),
+	}
+
+	defer svc.mu.RUnlock()
+
+	return user, nil
 }
 
 // RetrieveUser fetches a user by ID
