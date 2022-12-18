@@ -1,10 +1,14 @@
 1. Get the application URL by running these commands:
-{{- if .Values.ingress.enabled }}
-{{- range $host := .Values.ingress.hosts }}
-  {{- range .paths }}
-  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ $host.host }}{{ .path }}
+{{- if .Values.traefik.enabled }}
+  {{- $host := .Values.traefik.host }}
+  {{- range .Values.traefik.routes }}
+  http{{ if $.Values.traefik.tls }}s{{ end }}://{{ $host }}{{ . }}
   {{- end }}
-{{- end }}
+{{- else if .Values.contour.enabled  }}
+  {{- $host := .Values.contour.host }}
+  {{- range .Values.contour.paths }}
+  http{{ if $.Values.contour.tls }}s{{ end }}://{{ $host }}{{ . }}
+  {{- end }}
 {{- else if contains "NodePort" .Values.service.type }}
   export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "backend.fullname" . }})
   export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
