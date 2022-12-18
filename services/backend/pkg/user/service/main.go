@@ -4,11 +4,8 @@ import (
 	"context"
 	"sync"
 
-	"github.com/uptrace/opentelemetry-go-extra/otelzap"
-	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/types/known/timestamppb"
 
 	users "github.com/jmandel1027/perspex/schemas/proto/goproto/pkg/users/v1"
 	"github.com/jmandel1027/perspex/services/backend/pkg/user/repository"
@@ -16,8 +13,8 @@ import (
 
 // IUserService for interacting with Users
 type IUserService interface {
-	RegisterUser(ctx context.Context, in *users.RegisterUserRequest) (*users.User, error)
-	RetrieveUser(ctx context.Context, in *users.RetrieveUserRequest) (*users.User, error)
+	RegisterUser(ctx context.Context, in *users.UserInputRequest) (*users.User, error)
+	RetrieveUser(ctx context.Context, in *users.UserByIdRequest) (*users.User, error)
 }
 
 // UserService structs
@@ -53,36 +50,40 @@ func (svc *UserService) RegisterUser(ctx context.Context, in *users.UserInputReq
 }
 
 // RetrieveUser fetches a user by ID
-func (svc *UserService) RetrieveUser(ctx context.Context, in *users.UserInputRequest) (*users.User, error) {
+func (svc *UserService) RetrieveUser(ctx context.Context, in *users.UserByIdRequest) (*users.User, error) {
 	svc.mu.RLock()
 
-	otelzap.Ctx(ctx).Info("RetrieveUser: ", zap.Int64("id", in.Id))
+	/*
+		otelzap.Ctx(ctx).Info("RetrieveUser: ", zap.Int64("id", in.Id))
 
-	record, err := svc.repo.FindUserById(ctx, in.Id)
-	if err != nil {
-		otelzap.Ctx(ctx).Error("Error retrieving user: ", zap.Error(err))
-		return nil, err
-	}
+		record, err := svc.repo.FindUserById(ctx, in.Id)
+		if err != nil {
+			otelzap.Ctx(ctx).Error("Error retrieving user: ", zap.Error(err))
+			return nil, err
+		}
 
-	user := &users.User{
-		Id:        record.ID,
-		AuthId:    "",
-		Email:     record.Email,
-		FirstName: record.FirstName,
-		LastName:  record.LastName,
-		CreatedAt: &timestamppb.Timestamp{},
-		UpdatedAt: &timestamppb.Timestamp{},
-	}
+		user := &users.User{
+			Id:        record.ID,
+			AuthId:    "",
+			Email:     record.Email,
+			FirstName: record.FirstName,
+			LastName:  record.LastName,
+			CreatedAt: &timestamppb.Timestamp{},
+			UpdatedAt: &timestamppb.Timestamp{},
+		}
 
-	defer svc.mu.RUnlock()
+		defer svc.mu.RUnlock()
 
-	return user, nil
+		return user, nil
+
+	*/
+	return &users.User{}, nil
 }
 
-func (svc *UserService) RetrieveUsers(ctx context.Context, in *users.RetrieveUsersRequest) (*users.Users, error) {
+func (svc *UserService) RetrieveUsers(ctx context.Context, in *users.UsersByIdRequest) (*users.Users, error) {
 	return &users.Users{}, nil
 }
 
-func (svc *UserService) RetrieveUsersPage(ctx context.Context, in *users.RetrieveUsersPageRequest) (*users.UsersPage, error) {
+func (svc *UserService) RetrieveUsersPage(ctx context.Context, in *users.UsersPageRequest) (*users.UsersPage, error) {
 	return &users.UsersPage{}, nil
 }
