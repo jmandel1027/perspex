@@ -90,8 +90,8 @@ func New() (BackendConfig, error) {
 
 	return BackendConfig{
 		Host:     utils.MustGet("BACKEND_HOST", "0.0.0.0"),
-		HttpPort: utils.MustGet("BACKEND_HTTP_PORT", "8080"),
-		GrpcPort: utils.MustGet("BACKEND_GRPC_PORT", "8888"),
+		HttpPort: utils.MustGet("BACKEND_HTTP_PORT", "8081"),
+		GrpcPort: utils.MustGet("BACKEND_GRPC_PORT", "8080"),
 		Log:      log,
 		WriterPG: writerPG,
 		ReaderPG: readerPG,

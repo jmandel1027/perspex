@@ -41,7 +41,8 @@ spec:
                 name: {{ .Values.secretsManager.secretName | default "backend-secrets" }}
           {{- end }}
           ports:
-            - name: grpc
+            - hostPort: 80
+              name: http
               containerPort: {{ .Values.service.port }}
               protocol: TCP
           {{- if .Values.healthcheck.liveness.enabled }}

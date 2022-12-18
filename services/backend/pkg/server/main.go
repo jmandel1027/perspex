@@ -56,7 +56,7 @@ func Serve() {
 	grpc := m.Match(cmux.HTTP2())
 
 	go GRPC(&cfg, grpc)
-	go HTTP(&cfg)
+	// go HTTP(&cfg)
 
 	select {}
 

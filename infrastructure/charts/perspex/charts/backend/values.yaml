@@ -186,12 +186,12 @@ traefik:
   additionalRoutes: []
 
 contour:
-  enabled: true
+  enabled: false
   annotations: {}
   host: "svc.perspex.us"
   protocol: h2c
   paths:
-    - "/api"
+    - "/"
   #tls: []
 
 resources: {}

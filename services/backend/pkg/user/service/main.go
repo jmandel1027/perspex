@@ -47,6 +47,11 @@ func (svc *UserService) DeleteUser(context.Context, *users.UserInputRequest) (*u
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteUser not implemented")
 }
 
+/*
+func (svc *UserService) Check(ctx context.Context, in *health.HealthCheckRequest) (*health.HealthCheckResponse, error) {
+	return &health.HealthCheckResponse{Status: health.HealthCheckResponse_SERVING}, nil
+}*/
+
 // ModidifyUser
 func (svc *UserService) ModifyUser(ctx context.Context, in *users.UserInputRequest) (*users.User, error) {
 	svc.mu.RLock()

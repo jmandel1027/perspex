@@ -46,6 +46,8 @@ backend:
   secretsManager:
     enabled: false
     secretName: "local-secrets"
+  contour:
+    enabled: false
   healthcheck:
     liveness:
       enabled: false
@@ -53,7 +55,7 @@ backend:
       enabled: false
 
 contour:
-  enabled: true
+  enabled: false
 
 migration:
   enabled: true

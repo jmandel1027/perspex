@@ -48,6 +48,13 @@ global:
 
 backend:
   enabled: false
+  contour:
+    enabled: true
+    annotations: {}
+    host: "svc.perspex.us"
+    protocol: h2c
+    paths:
+      - "/"
 
 contour:
   enabled: false
