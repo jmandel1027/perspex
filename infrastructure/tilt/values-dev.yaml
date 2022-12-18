@@ -48,9 +48,12 @@ backend:
     secretName: "local-secrets"
   healthcheck:
     liveness:
-      enabled: true
+      enabled: false
     readiness:
-      enabled: true
+      enabled: false
+
+contour:
+  enabled: true
 
 migration:
   enabled: true

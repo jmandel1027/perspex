@@ -11,6 +11,10 @@ dependencies:
 - name: gateway
   condition: gateway.enabled
   version: 0.1.0
+- name: contour
+  repository: https://charts.bitnami.com/bitnami
+  version: 10.1.3
+  condition: contour.enabled
 - name: postgresql
   repository: https://charts.bitnami.com/bitnami
   version: 12.1.2

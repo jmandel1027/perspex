@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/name: grpc-echo
+  name: grpc-echo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: grpc-echo
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: grpc-echo
+    spec:
+      containers:
+      - name: grpc-echo
+        image: ghcr.io/projectcontour/yages:v0.1.0
+        ports:
+        - name: grpc
+          containerPort: 9000
+        readinessProbe:
+          exec:
+            command: ["/grpc-health-probe", "-addr=localhost:9000"]

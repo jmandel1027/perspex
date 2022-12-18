@@ -17,10 +17,11 @@ if remote_cluster == True :
   local(docker_login_cmd)
 
 services={
-  "backend":   os.getenv("TILT_BACKEND_ENABLED", default="true"),
-  "gateway":   os.getenv("TILT_GATEWAY_ENABLED", default="true"),
-  "migration": os.getenv("TILT_MIGRATION_ENABLED", default="true"),
-  "postgres":  os.getenv("TILT_POSTGRES_ENABLED", default="true"),
+  "backend": os.getenv("TILT_BACKEND_ENABLED", default="true"),
+  "contour": os.getenv("TILT_CONTOUR_ENABLED", default="true"),
+  "gateway": os.getenv("TILT_GATEWAY_ENABLED", default="false"),
+  "migration": os.getenv("TILT_MIGRATION_ENABLED", default="false"),
+  "postgresql": os.getenv("TILT_POSTGRES_ENABLED", default="true"),
 }
 
 #########################
@@ -34,9 +35,10 @@ perspex = helm(
   values=values_file,
   set=[
     "backend.enabled={s}".format(s=services["backend"]),
+    "contour.enabled={s}".format(s=services["contour"]),
     "gateway.enabled={s}".format(s=services["gateway"]),
     "migration.enabled={s}".format(s=services["migration"]),
-    "postgres.enabled={s}".format(s=services["postgres"]),
+    "postgresql.enabled={s}".format(s=services["postgresql"]),
   ]
 )
 
@@ -49,11 +51,16 @@ k8s_yaml(perspex)
 if services["backend"] == "true": 
   include('services/backend/Tiltfile')
 
+if services["contour"] == "true":
+  k8s_resource(workload="perspex-contour-contour", labels=["contour"])
+  k8s_resource(workload="perspex-contour-contour-certgen", labels=["contour"])
+  k8s_resource(workload="perspex-contour-envoy", labels=["contour"])
+
 if services["gateway"] == "true": 
   include('services/gateway/Tiltfile')
 
 if services["migration"] == "true": 
   include("services/migration/Tiltfile")
 
-if services["postgres"] == "true":
-  k8s_resource(workload="postgresql", labels=["postgres"], port_forwards=[port_forward(5433, 5432, name="postgres")])
+if services["postgresql"] == "true":
+  k8s_resource(workload="postgresql", labels=["postgresql"], port_forwards=[port_forward(5433, 5432, name="postgres")])

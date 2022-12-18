@@ -7,8 +7,15 @@ serviceAccount:
   annotations: {}
   name: ""
 
-backend:
-  enabled: true
+envFromSecret:
+  enabled: false
+  secretName: "env-configmap"
+
+# Enable or disable secrets from AWS SecretsManager
+secretsManager:
+  enabled: false
+  secretName: ""
+
 
 # Global config that applies to all subcharts
 global:
@@ -38,6 +45,13 @@ global:
         maxOpenConnections: 4096
         connectionLifespan: 128
         debug: false
+
+backend:
+  enabled: false
+
+contour:
+  enabled: false
+
 # Enable or disable database migrations Helm Hooks
 migration:
   enabled: false
@@ -77,15 +91,6 @@ migration:
       # migration.rollback.hook.weight - Hook weight to use for rollback migrations to determine hook order (see https://helm.sh/docs/topics/charts_hooks/#writing-a-hook)
       weight: 10
   extraEnv: {}
-
-envFromSecret:
-  enabled: false
-  secretName: "env-configmap"
-
-# Enable or disable secrets from AWS SecretsManager
-secretsManager:
-  enabled: false
-  secretName: ""
 
 # Enable or disable the postgres subchart
 postgresql:

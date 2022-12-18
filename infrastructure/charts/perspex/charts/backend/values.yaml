@@ -71,7 +71,7 @@ config:
 
 healthcheck:
   liveness:
-    enabled: true
+    enabled: false
     # Defaults to tcpSocket on the service.port if disabled
     http:
       enabled: true
@@ -80,10 +80,10 @@ healthcheck:
     initialDelaySeconds: 15
     failureThreshold: 3
   readiness:
-    enabled: true
+    enabled: false
     # Defaults to tcpSocket on service.port if disabled
     http:
-      enabled: true
+      enabled: false
       path: "/api/status"
     periodSeconds: 30
     initialDelaySeconds: 15
@@ -168,13 +168,14 @@ securityContext: {}
 
 service:
   type: ClusterIP
-  grpcPort: 8888
   port: 8080
 
 traefik:
   enabled: false
   path: "/api"
   host: "svc.perspex.us"
+  routes:
+    - "/api"
   # Middlewares managed in flux as they're shared in most cases
   middlewares:
     - name: cors-configuration
@@ -185,18 +186,13 @@ traefik:
   additionalRoutes: []
 
 contour:
-  enabled: false
-  host: ""
-  routes:
-    - prefix: "/api"
-
-ingress:
-  enabled: false
+  enabled: true
   annotations: {}
-  #hosts:
-  #  - host: backend
-  #    paths: []
-  #tls: []
+  host: "svc.perspex.us"
+  protocol: h2c
+  paths:
+    - "/api"
+  tls: []
 
 resources: {}
 

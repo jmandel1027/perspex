@@ -1,0 +1,21 @@
+---
+apiVersion: projectcontour.io/v1
+kind: HTTPProxy
+metadata:
+  name: my-grpc-service
+spec:
+  virtualhost:
+    fqdn: my-grpc-service.foo.com 
+  routes:
+  - conditions:
+    - prefix: /yages.Echo/Ping # Matches a specific gRPC method.
+    services:
+    - name: grpc-echo
+      port: 9000
+      protocol: h2c
+  - conditions: 
+    - prefix: / # Matches everything else.
+    services:
+    - name: grpc-echo
+      port: 9000
+      protocol: h2c
