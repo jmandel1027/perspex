@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"database/sql"
+	"log"
 	"net"
 	"net/http"
 	"os"
@@ -54,8 +55,8 @@ func Serve() {
 	go func() { m.Serve() }()
 
 	grpc := m.Match(cmux.HTTP2())
-
-	go GRPC(&cfg, grpc)
+	log.Print(grpc)
+	//go GRPC(&cfg, grpc)
 	go HTTP(&cfg)
 
 	select {}

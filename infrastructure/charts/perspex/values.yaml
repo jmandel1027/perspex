@@ -7,9 +7,6 @@ serviceAccount:
   annotations: {}
   name: ""
 
-backend:
-  enabled: true
-
 # Global config that applies to all subcharts
 global:
   environment: "development"
@@ -38,6 +35,10 @@ global:
         maxOpenConnections: 4096
         connectionLifespan: 128
         debug: false
+
+backend:
+  enabled: true
+
 # Enable or disable database migrations Helm Hooks
 migration:
   enabled: false
@@ -132,12 +133,13 @@ postgresql:
 
 ingress:
   enabled: false
-  annotations: {}
+  annotations:
+    ingress.kubernetes.io/ssl-redirect: "false"
   hosts:
-    - host: app.development.perspex.com
+    - host: app.perspex.us
       paths:
         - path: /api/*
-          serviceName: backend
+          serviceName: perspex-backend
           servicePort: 8080
         - path: /*
           serviceName: frontend

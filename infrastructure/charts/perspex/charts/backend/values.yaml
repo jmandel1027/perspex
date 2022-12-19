@@ -71,7 +71,7 @@ config:
 
 healthcheck:
   liveness:
-    enabled: true
+    enabled: false
     # Defaults to tcpSocket on the service.port if disabled
     http:
       enabled: true
@@ -80,7 +80,7 @@ healthcheck:
     initialDelaySeconds: 15
     failureThreshold: 3
   readiness:
-    enabled: true
+    enabled: false
     # Defaults to tcpSocket on service.port if disabled
     http:
       enabled: true
@@ -169,16 +169,16 @@ securityContext: {}
 service:
   type: ClusterIP
   grpcPort: 8888
-  port: 8080
+  port: 80
 
 traefik:
-  enabled: false
+  enabled: true
   path: "/api"
   host: "svc.perspex.us"
   # Middlewares managed in flux as they're shared in most cases
-  middlewares:
-    - name: cors-configuration
-      namespace: perspex
+  #middlewares:
+  #  - name: cors-configuration
+  #    namespace: perspex
   entrypoints:
     - web
   # Should adhere to Traefik's Rule kind spec
@@ -191,12 +191,14 @@ contour:
     - prefix: "/api"
 
 ingress:
-  enabled: false
-  annotations: {}
-  #hosts:
-  #  - host: backend
-  #    paths: []
-  #tls: []
+  enabled: true
+  annotations:
+    ingress.kubernetes.io/ssl-redirect: "false"
+  hosts:
+    - host: local.perspex.us
+      paths:
+        - path: /
+  tls: []
 
 resources: {}
 

@@ -12,10 +12,10 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
-    - port: {{ .Values.service.grpcPort }}
-      targetPort: grpc
-      protocol: TCP
-      name: grpc
+    #- port: {{ .Values.service.grpcPort }}
+    #  targetPort: grpc
+    #  protocol: TCP
+    #  name: grpc
   selector:
     {{- include "backend.selectorLabels" . | nindent 4 }}
 {{- end }}

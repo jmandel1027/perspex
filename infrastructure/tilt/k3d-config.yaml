@@ -4,12 +4,15 @@ metadata:
   name: perspex-local
 servers: 1
 agents: 2
-#kubeAPI:
+kubeAPI:
 #  host: "myhost.my.domain"
-#  hostIP: "127.0.0.1"
-#  hostPort: "6450"
+  hostIP: "127.0.0.1"
+  hostPort: "6550"
 ports:
-  - port: 8080:80 # same as `--port '8080:80@loadbalancer'`
+  - port: 8081:80 # same as `--port '8080:80@loadbalancer'`
+    nodeFilters:
+      - loadbalancer
+  - port: 8001:8000 # same as `--port '8080:80@loadbalancer'`
     nodeFilters:
       - loadbalancer
 registries:

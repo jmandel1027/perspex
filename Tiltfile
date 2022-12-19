@@ -18,7 +18,7 @@ if remote_cluster == True :
 
 services={
   "backend":   os.getenv("TILT_BACKEND_ENABLED", default="true"),
-  "gateway":   os.getenv("TILT_GATEWAY_ENABLED", default="true"),
+  "gateway":   os.getenv("TILT_GATEWAY_ENABLED", default="false"),
   "migration": os.getenv("TILT_MIGRATION_ENABLED", default="true"),
   "postgres":  os.getenv("TILT_POSTGRES_ENABLED", default="true"),
 }
