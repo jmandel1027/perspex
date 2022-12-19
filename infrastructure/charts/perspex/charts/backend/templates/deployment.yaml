@@ -41,8 +41,7 @@ spec:
                 name: {{ .Values.secretsManager.secretName | default "backend-secrets" }}
           {{- end }}
           ports:
-            - hostPort: 80
-              name: http
+            - name: http
               containerPort: {{ .Values.service.port }}
               protocol: TCP
           {{- if .Values.healthcheck.liveness.enabled }}

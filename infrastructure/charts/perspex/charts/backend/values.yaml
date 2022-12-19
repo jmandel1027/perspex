@@ -186,7 +186,7 @@ traefik:
   additionalRoutes: []
 
 contour:
-  enabled: false
+  enabled: true
   annotations: {}
   host: "svc.perspex.us"
   protocol: h2c

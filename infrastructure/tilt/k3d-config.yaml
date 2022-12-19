@@ -4,9 +4,9 @@ metadata:
   name: perspex-local
 servers: 1
 agents: 2
-kubeAPI:
-  hostIP: "127.0.0.1"
-  hostPort: "6550"
+#kubeAPI:
+#  hostIP: "127.0.0.1"
+#  hostPort: "6550"
 options:
   k3s:
     extraArgs:
