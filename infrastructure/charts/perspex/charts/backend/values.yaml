@@ -169,7 +169,7 @@ securityContext: {}
 service:
   type: ClusterIP
   grpcPort: 8888
-  port: 80
+  port: 8000
 
 traefik:
   enabled: true
