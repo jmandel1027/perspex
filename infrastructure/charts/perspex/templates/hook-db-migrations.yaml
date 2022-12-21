@@ -1,6 +1,6 @@
 {{- if .Values.migration.enabled }}
 {{ $fullname := include "perspex.fullname" . }}
-{{- $jobName := include "perspex.uniqueName" (dict "root" . "job" "migration" "unique" true ) }}
+{{ $jobName := include "perspex.uniqueName" (dict "root" . "job" "migration" "unique" .Values.migration.timestamped ) }}
 apiVersion: batch/v1
 kind: Job
 metadata:

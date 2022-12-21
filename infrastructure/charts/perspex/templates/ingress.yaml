@@ -2,7 +2,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "perspex.fullname" . }}
+  name: {{ include "perspex.name" . }}
   labels:
     {{- include "perspex.labels" . | nindent 4 }}
   {{- with .Values.ingress.annotations }}

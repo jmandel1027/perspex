@@ -85,6 +85,7 @@ migration:
       types: "pre-rollback"
       # migration.rollback.hook.weight - Hook weight to use for rollback migrations to determine hook order (see https://helm.sh/docs/topics/charts_hooks/#writing-a-hook)
       weight: 10
+  timestamped: true
   extraEnv: {}
 
 

@@ -55,7 +55,7 @@ Create the name of the service account to use
 */}}
 {{- define "perspex.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "perspex.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "perspex.name" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
@@ -63,14 +63,13 @@ Create the name of the service account to use
 
 {{- define "perspex.uniqueName" -}}
 {{- $root := index . "root" -}}
-{{- $fullname := include "perspex.fullname" $root -}}
 {{- $job := index . "job" -}}
 {{- $unique := index . "unique" -}}
 {{- $now := ( now | unixEpoch ) -}}
 {{- if $unique -}}
-{{- printf "%s-%s-%s" $fullname $job $now }}
+{{- printf "%s-%s" $job $now }}
 {{- else }}
-{{- printf "%s-%s" $fullname $job }}
+{{- printf "%s" $job }}
 {{- end }}
 {{- end -}}
 

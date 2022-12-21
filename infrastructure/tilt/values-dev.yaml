@@ -51,6 +51,26 @@ backend:
       enabled: true
     readiness:
       enabled: true
+  traefik:
+    enabled: true
+    path: "/api"
+    host: "localhost"
+    # Middlewares managed in flux as they're shared in most cases
+    entrypoints:
+      - web
+    # Should adhere to Traefik's Rule kind spec
+    additionalRoutes: []
+  ingress:
+    enabled: true
+    annotations: {}
+    hosts:
+      - host: localhost
+        paths:
+          - path: /api
+    tls: []
+
+
+
 
 migration:
   enabled: true
@@ -65,6 +85,7 @@ migration:
   rollback:
     enabled: false
     command: [ "/usr/local/bin/migration", "-p", "/mnt/src/perspex", "-m", "down", "-n", "1" ]
+  timestamped: false
 
 postgresql:
   enabled: true
