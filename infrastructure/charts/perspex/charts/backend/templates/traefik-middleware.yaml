@@ -1,0 +1,27 @@
+{{- if .Values.traefik.enabled }}
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ include "backend.fullname" . }}
+spec:
+  grpcWeb:
+    allowOrigins:
+      - "*"
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: cors-configuration
+spec:
+  headers:
+    accessControlAllowMethods:
+      - "GET"
+      - "OPTIONS"
+      - "POST"
+      - "HEAD"
+    accessControlMaxAge: 100
+    accessControlAllowHeaders:
+      - "Content-Type"
+      - "Authorization"
+    addVaryHeader: true
+{{- end }}
