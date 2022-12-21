@@ -8,5 +8,8 @@ dependencies:
 - name: postgresql
   repository: https://charts.bitnami.com/bitnami
   version: 12.1.2
-digest: sha256:35ebd21314ff4781fa9a4c470ea65506567a9138eda9ca1629a341508034ebba
-generated: "2022-12-06T18:28:36.167214-05:00"
+- name: traefik
+  repository: https://traefik.github.io/charts
+  version: 20.8.0
+digest: sha256:c70982b67cb6a8065107bea00ff779bd004f208c628a59fde23b7b3e7d86a645
+generated: "2022-12-21T11:49:45.080044-05:00"

@@ -181,12 +181,6 @@ traefik:
   # Should adhere to Traefik's Rule kind spec
   additionalRoutes: []
 
-contour:
-  enabled: false
-  host: ""
-  routes:
-    - prefix: "/api"
-
 ingress:
   enabled: true
   annotations: {}
@@ -194,8 +188,6 @@ ingress:
     - host: localhost
       paths:
         - path: /api
-          serviceName: backend
-          servicePort: 8000
   tls: []
 
 resources: {}

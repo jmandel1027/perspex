@@ -58,7 +58,7 @@ docker_build_with_restart(
 )
 
 k8s_resource(
-  workload="perspex-backend",
+  workload="backend",
   labels=["backend"],
   resource_deps=['postgresql'],
   port_forwards=[

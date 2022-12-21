@@ -21,6 +21,7 @@ services={
   "gateway":   os.getenv("TILT_GATEWAY_ENABLED", default="false"),
   "migration": os.getenv("TILT_MIGRATION_ENABLED", default="true"),
   "postgres":  os.getenv("TILT_POSTGRES_ENABLED", default="true"),
+  "traefik": os.getenv("TILT_TRAEFIK_ENABLED", default="true"),
 }
 
 #########################
@@ -37,6 +38,7 @@ perspex = helm(
     "gateway.enabled={s}".format(s=services["gateway"]),
     "migration.enabled={s}".format(s=services["migration"]),
     "postgres.enabled={s}".format(s=services["postgres"]),
+    "traefik.enabled={s}".format(s=services["traefik"]),
   ]
 )
 
@@ -57,3 +59,6 @@ if services["migration"] == "true":
 
 if services["postgres"] == "true":
   k8s_resource(workload="postgresql", labels=["postgres"], port_forwards=[port_forward(5433, 5432, name="postgres")])
+
+if services["traefik"] == "true":
+  k8s_resource(workload="perspex-traefik", labels=["traefik"])

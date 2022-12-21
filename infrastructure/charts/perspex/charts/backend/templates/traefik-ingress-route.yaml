@@ -2,7 +2,7 @@
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
-  name: {{ include "backend.fullname" . }}
+  name: {{ include "backend.name" . }}
   labels: 
     {{- include "backend.labels" . | nindent 4 }}
 spec:
@@ -18,7 +18,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       services:
-        - name: {{ include "backend.fullname" . }}
+        - name: {{ include "backend.name" . }}
           kind: {{ if .Values.canary.enabled -}}TraefikService{{- else -}}Service{{- end}}
           port: {{ .Values.service.port }}
     {{- with .Values.traefik.additionalRoutes }}

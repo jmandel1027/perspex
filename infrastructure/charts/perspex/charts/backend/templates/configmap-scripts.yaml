@@ -1,6 +1,6 @@
-{{ $fullname := include "backend.fullname" . }}
+{{ $name := include "backend.name" . }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ $fullname }}-scripts
+  name: {{ $name }}-scripts
 data:

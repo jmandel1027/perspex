@@ -84,3 +84,6 @@ postgresql:
       logStatement: "all"
       maxParallelWorkersPerGather: 16
       maxWorkerProcesses: 32
+
+traefik:
+  enabled: true

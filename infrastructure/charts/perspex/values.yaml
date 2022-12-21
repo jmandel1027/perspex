@@ -7,6 +7,15 @@ serviceAccount:
   annotations: {}
   name: ""
 
+envFromSecret:
+  enabled: false
+  secretName: "env-configmap"
+
+# Enable or disable secrets from AWS SecretsManager
+secretsManager:
+  enabled: false
+  secretName: ""
+
 backend:
   enabled: true
 
@@ -78,14 +87,6 @@ migration:
       weight: 10
   extraEnv: {}
 
-envFromSecret:
-  enabled: false
-  secretName: "env-configmap"
-
-# Enable or disable secrets from AWS SecretsManager
-secretsManager:
-  enabled: false
-  secretName: ""
 
 # Enable or disable the postgres subchart
 postgresql:
@@ -129,6 +130,9 @@ postgresql:
       maxWorkerProcesses: 4
       sharedBuffers: "512MB"
       workMem: "512MB"
+
+traefik:
+  enabled: false
 
 ingress:
   enabled: false

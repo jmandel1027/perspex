@@ -1,9 +1,9 @@
-{{ $fullname := include "backend.fullname" . }}
+{{ $name := include "backend.name" . }}
 {{- if .Values.canary.enabled }}
 apiVersion: flagger.app/v1beta1
 kind: Canary
 metadata:
-  name: {{ $fullname }}
+  name: {{ $name }}
   labels:
     {{- include "backend.labels" . | nindent 4 }}
 spec:
@@ -13,16 +13,16 @@ spec:
   targetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name:  {{ $fullname }}
+    name:  {{ $name }}
   autoscalerRef:
     apiVersion: autoscaling/v2beta1
     kind: HorizontalPodAutoscaler
-    name:  {{ $fullname }}
+    name:  {{ $name }}
   {{- if .Values.ingress.enabled }}
   ingressRef:
     apiVersion: {{ .Values.canary.ingressRef.apiVersion }}
     kind: {{ .Values.canary.ingressRef.kind }}
-    name:  {{ .Values.canary.ingressRef.name | default $fullname }}
+    name:  {{ .Values.canary.ingressRef.name | default $name }}
   {{- end }}
   service:
     port: {{ .Values.service.port }}
@@ -88,7 +88,7 @@ spec:
         {{- if .Values.canary.loadtest.command }}
           cmd: {{ .Values.canary.loadtest.command | quote }}
         {{- else }}
-          cmd: "hey -z 1m -q 10 -c 2 -H 'X-Canary: {{ .Values.canary.headerValue }}' http://{{ $fullname }}-canary.{{ .Release.Namespace }}:{{ .Values.service.port }}{{ .Values.canary.loadtest.path }}"
+          cmd: "hey -z 1m -q 10 -c 2 -H 'X-Canary: {{ .Values.canary.headerValue }}' http://{{ $name }}-canary.{{ .Release.Namespace }}:{{ .Values.service.port }}{{ .Values.canary.loadtest.path }}"
         {{- end }}
       {{- end }}
 {{- end }}

@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "backend.fullname" . }}
+  name: {{ include "backend.name" . }}
   labels:
     {{- include "backend.labels" . | nindent 4 }}
 spec:
@@ -12,10 +12,6 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
-    - port: {{ .Values.service.grpcPort }}
-      targetPort: grpc
-      protocol: TCP
-      name: grpc
   selector:
     {{- include "backend.selectorLabels" . | nindent 4 }}
 {{- end }}

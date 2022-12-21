@@ -2,7 +2,7 @@
 apiVersion: traefik.containo.us/v1alpha1
 kind: Middleware
 metadata:
-  name: {{ include "backend.fullname" . }}
+  name: {{ include "backend.name" . }}
 spec:
   grpcWeb:
     allowOrigins:
