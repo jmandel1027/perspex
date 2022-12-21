@@ -134,12 +134,9 @@ ingress:
   enabled: false
   annotations: {}
   hosts:
-    - host: app.development.perspex.com
+    - host: localhost
       paths:
-        - path: /api/*
+        - path: /
           serviceName: backend
-          servicePort: 8080
-        - path: /*
-          serviceName: frontend
-          servicePort: 80
+          servicePort: 8000
   tls: []

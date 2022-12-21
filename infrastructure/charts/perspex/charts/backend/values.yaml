@@ -169,16 +169,13 @@ securityContext: {}
 service:
   type: ClusterIP
   grpcPort: 8888
-  port: 8080
+  port: 8000
 
 traefik:
-  enabled: false
+  enabled: true
   path: "/api"
-  host: "svc.perspex.us"
+  host: "localhost"
   # Middlewares managed in flux as they're shared in most cases
-  middlewares:
-    - name: cors-configuration
-      namespace: perspex
   entrypoints:
     - web
   # Should adhere to Traefik's Rule kind spec
@@ -191,12 +188,15 @@ contour:
     - prefix: "/api"
 
 ingress:
-  enabled: false
+  enabled: true
   annotations: {}
-  #hosts:
-  #  - host: backend
-  #    paths: []
-  #tls: []
+  hosts:
+    - host: localhost
+      paths:
+        - path: /api
+          serviceName: backend
+          servicePort: 8000
+  tls: []
 
 resources: {}
 
