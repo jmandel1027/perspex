@@ -2,8 +2,14 @@
 apiVersion: traefik.containo.us/v1alpha1
 kind: Middleware
 metadata:
-  name: {{ include "backend.name" . }}
+  name: {{ include "backend.name" . }}-grpc-web
 spec:
+  headers:
+    accessControlAllowMethods:
+      - "GET"
+      - "OPTIONS"
+      - "POST"
+      - "HEAD"
   grpcWeb:
     allowOrigins:
       - "*"
@@ -11,7 +17,7 @@ spec:
 apiVersion: traefik.containo.us/v1alpha1
 kind: Middleware
 metadata:
-  name: cors-configuration
+  name: {{ include "backend.name" . }}-cors-configuration
 spec:
   headers:
     accessControlAllowMethods:

@@ -38,7 +38,6 @@ perspex = helm(
     "gateway.enabled={s}".format(s=services["gateway"]),
     "migration.enabled={s}".format(s=services["migration"]),
     "postgres.enabled={s}".format(s=services["postgres"]),
-    "traefik.enabled={s}".format(s=services["traefik"]),
   ]
 )
 
@@ -61,4 +60,12 @@ if services["postgres"] == "true":
   k8s_resource(workload="postgresql", labels=["postgres"], port_forwards=[port_forward(5433, 5432, name="postgres")])
 
 if services["traefik"] == "true":
-  k8s_resource(workload="perspex-traefik", labels=["traefik"])
+  helm_remote(
+    "traefik",
+    namespace=deploy_namespace,
+    repo_name="traefik",
+    repo_url="https://traefik.github.io/charts",
+    release_name="traefik",
+    version="20.8.0",
+  )
+  k8s_resource(workload="traefik", labels=["traefik"], port_forwards=[port_forward(9000, 9000, name="traefik")])

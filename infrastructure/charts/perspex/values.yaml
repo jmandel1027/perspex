@@ -132,9 +132,6 @@ postgresql:
       sharedBuffers: "512MB"
       workMem: "512MB"
 
-traefik:
-  enabled: false
-
 ingress:
   enabled: false
   annotations: {}
