@@ -55,24 +55,11 @@ Create the name of the service account to use
 */}}
 {{- define "backend.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "backend.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "backend.name" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
-
-{{- define "backend.uniqueName" -}}
-{{- $root := index . "root" -}}
-{{- $fullname := include "backend.fullname" $root -}}
-{{- $job := index . "job" -}}
-{{- $unique := index . "unique" -}}
-{{- $now := ( now | unixEpoch ) -}}
-{{- if $unique -}}
-{{- printf "%s-%s-%s" $fullname $job $now }}
-{{- else }}
-{{- printf "%s-%s" $fullname $job }}
-{{- end }}
-{{- end -}}
 
 {{/*
 Define default environment variables

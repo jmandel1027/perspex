@@ -18,9 +18,10 @@ if remote_cluster == True :
 
 services={
   "backend":   os.getenv("TILT_BACKEND_ENABLED", default="true"),
-  "gateway":   os.getenv("TILT_GATEWAY_ENABLED", default="true"),
+  "gateway":   os.getenv("TILT_GATEWAY_ENABLED", default="false"),
   "migration": os.getenv("TILT_MIGRATION_ENABLED", default="true"),
   "postgres":  os.getenv("TILT_POSTGRES_ENABLED", default="true"),
+  "traefik": os.getenv("TILT_TRAEFIK_ENABLED", default="true"),
 }
 
 #########################
@@ -57,3 +58,14 @@ if services["migration"] == "true":
 
 if services["postgres"] == "true":
   k8s_resource(workload="postgresql", labels=["postgres"], port_forwards=[port_forward(5433, 5432, name="postgres")])
+
+if services["traefik"] == "true":
+  helm_remote(
+    "traefik",
+    namespace=deploy_namespace,
+    repo_name="traefik",
+    repo_url="https://traefik.github.io/charts",
+    release_name="traefik",
+    version="20.8.0",
+  )
+  k8s_resource(workload="traefik", labels=["traefik"], port_forwards=[port_forward(9000, 9000, name="traefik")])

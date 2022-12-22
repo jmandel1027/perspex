@@ -1,9 +1,8 @@
 {{ if .Values.migration.enabled }}
-{{ $fullname := include "perspex.fullname" . }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ $fullname }}-scripts
+  name: {{ include "perspex.name" . }}-scripts
 data:
   {{- if .Values.migration.forward.enabled }}
   {{ $forwardMigration := concat .Values.migration.forward.command .Values.migration.forward.extraArgs }}
