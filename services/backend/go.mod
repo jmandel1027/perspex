@@ -13,12 +13,12 @@ require (
 	github.com/prometheus/client_golang v1.14.0
 	github.com/rs/cors v1.8.2
 	github.com/uptrace/opentelemetry-go-extra/otelzap v0.1.17
+	github.com/volatiletech/sqlboiler/v4 v4.13.0
 	go.opentelemetry.io/otel v1.11.2
 	go.opentelemetry.io/otel/exporters/stdout/stdouttrace v1.11.2
 	go.opentelemetry.io/otel/sdk v1.11.2
 	go.uber.org/zap v1.24.0
 	google.golang.org/grpc v1.51.0
-	google.golang.org/protobuf v1.28.1
 )
 
 require (
@@ -44,7 +44,6 @@ require (
 	github.com/spf13/cast v1.5.0 // indirect
 	github.com/uptrace/opentelemetry-go-extra/otelutil v0.1.17 // indirect
 	github.com/volatiletech/inflect v0.0.1 // indirect
-	github.com/volatiletech/sqlboiler/v4 v4.13.0 // indirect
 	github.com/volatiletech/strmangle v0.0.4 // indirect
 	go.opentelemetry.io/otel/trace v1.11.2 // indirect
 	go.uber.org/atomic v1.10.0 // indirect
@@ -56,6 +55,7 @@ require (
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	google.golang.org/genproto v0.0.0-20221202195650-67e5cbc046fd // indirect
 	google.golang.org/grpc/examples v0.0.0-20221202020918-001d234e1f2d // indirect
+	google.golang.org/protobuf v1.28.1 // indirect
 )
 
 replace github.com/jmandel1027/perspex/schemas/perspex => ../../schemas/perspex
