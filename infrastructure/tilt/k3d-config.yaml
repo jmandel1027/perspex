@@ -14,7 +14,7 @@ options:
         nodeFilters:
           - server:*
 ports:
-  - port: 8080:80
+  - port: 3000:80
     nodeFilters:
       - loadbalancer
 registries:

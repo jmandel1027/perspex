@@ -4,12 +4,6 @@ kind: Middleware
 metadata:
   name: {{ include "backend.name" . }}-grpc-web
 spec:
-  headers:
-    accessControlAllowMethods:
-      - "GET"
-      - "OPTIONS"
-      - "POST"
-      - "HEAD"
   grpcWeb:
     allowOrigins:
       - "*"
