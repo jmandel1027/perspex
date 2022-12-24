@@ -67,5 +67,6 @@ if services["traefik"] == "true":
     repo_url="https://traefik.github.io/charts",
     release_name="traefik",
     version="20.8.0",
+    values="infrastructure/tilt/traefik-values.yaml",
   )
   k8s_resource(workload="traefik", labels=["traefik"], port_forwards=[port_forward(9000, 9000, name="traefik")])

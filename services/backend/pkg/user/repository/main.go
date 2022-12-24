@@ -55,8 +55,10 @@ func (repo *UserRepository) CreateUser(ctx context.Context, record *models.User)
 // FindUserById register's a new user
 func (repo *UserRepository) FindUserById(ctx context.Context, id int64) (res *models.User, err error) {
 	err = postgres.InTx(ctx, &sql.TxOptions{ReadOnly: true}, func(tx *postgres.Tx) error {
+		otelzap.L().Ctx(ctx).Info("attempting to fetch user")
 		res, err = models.Users(models.UserWhere.ID.EQ(id)).One(ctx, tx)
 		if err != nil && err == sql.ErrNoRows {
+			otelzap.L().Ctx(ctx).Info("no user found")
 			return nil
 		}
 
@@ -68,6 +70,8 @@ func (repo *UserRepository) FindUserById(ctx context.Context, id int64) (res *mo
 
 		return nil
 	})
+
+	otelzap.L().Ctx(ctx).Info("done attempting to find user")
 
 	return
 }

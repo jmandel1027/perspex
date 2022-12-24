@@ -3,6 +3,7 @@ module github.com/jmandel1027/perspex/services/backend
 go 1.19
 
 require (
+	github.com/bufbuild/connect-go v1.4.1
 	github.com/cockroachdb/cmux v0.0.0-20170110192607-30d10be49292
 	github.com/dimiro1/health v0.0.0-20191019130555-c5cbb4d46ffc
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0
@@ -19,10 +20,13 @@ require (
 	go.opentelemetry.io/otel/sdk v1.11.2
 	go.uber.org/zap v1.24.0
 	google.golang.org/grpc v1.51.0
+	google.golang.org/protobuf v1.28.1
 )
 
 require (
 	github.com/beorn7/perks v1.0.1 // indirect
+	github.com/bufbuild/connect-grpcreflect-go v1.0.0 // indirect
+	github.com/bufbuild/connect-opentelemetry-go v0.0.0-20221216163308-175499ea7a59 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/friendsofgo/errors v0.9.2 // indirect
 	github.com/go-logr/logr v1.2.3 // indirect
@@ -45,17 +49,17 @@ require (
 	github.com/uptrace/opentelemetry-go-extra/otelutil v0.1.17 // indirect
 	github.com/volatiletech/inflect v0.0.1 // indirect
 	github.com/volatiletech/strmangle v0.0.4 // indirect
+	go.opentelemetry.io/otel/metric v0.34.0 // indirect
 	go.opentelemetry.io/otel/trace v1.11.2 // indirect
 	go.uber.org/atomic v1.10.0 // indirect
 	go.uber.org/multierr v1.8.0 // indirect
 	golang.org/x/crypto v0.0.0-20220722155217-630584e8d5aa // indirect
 	golang.org/x/net v0.2.0 // indirect
-	golang.org/x/sys v0.2.0 // indirect
+	golang.org/x/sys v0.3.0 // indirect
 	golang.org/x/text v0.4.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	google.golang.org/genproto v0.0.0-20221202195650-67e5cbc046fd // indirect
 	google.golang.org/grpc/examples v0.0.0-20221202020918-001d234e1f2d // indirect
-	google.golang.org/protobuf v1.28.1 // indirect
 )
 
 replace github.com/jmandel1027/perspex/schemas/perspex => ../../schemas/perspex

@@ -1,13 +1,13 @@
 syntax="proto3";
 
-package user.v1;
+package users.v1;
 
 import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 
 // Defines the import path that should be used to import the generated package and name.
-option go_package = "github.com/jmandel1027/perspex/schemas/proto/goproto/pkg/users;users";
+option go_package = "github.com/jmandel1027/perspex/schemas/proto/goproto/pkg/users/v1;users";
 
 // These annotations are used when generating the OpenAPI file.
 option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
@@ -22,12 +22,13 @@ option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
 };
 
 enum Direction {
-  FORWARD = 0;
-  BACKWARD = 1;
+  DIRECTION_FORWARD_UNSPECIFIED = 0;
+  DIRECTION_FORWARD = 1;
+  DIRECTION_BACKWARD = 2;
 }
 
 service UserService {
-  rpc DeleteUser(UserInputRequest) returns (User) {
+  rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse) {
     option (google.api.http) = {
       get: "/v1/user/{user.id}/delete"
     };
@@ -38,7 +39,7 @@ service UserService {
     };
   }
 
-  rpc ModifyUser (UserInputRequest) returns (User) {
+  rpc ModifyUser (ModifyUserRequest) returns (ModifyUserResponse) {
     option (google.api.http) = {
       patch: "/v1/user"
       body: "user"
@@ -50,7 +51,7 @@ service UserService {
     };
   }
 
-  rpc RegisterUser (UserInputRequest) returns (User) {
+  rpc RegisterUser (RegisterUserRequest) returns (RegisterUserResponse) {
     option (google.api.http) = {
       post: "/v1/user"
       body: "user"
@@ -62,7 +63,7 @@ service UserService {
     };
   }
 
-  rpc RetrieveUser(UserByIdRequest) returns (User) {
+  rpc RetrieveUser(RetrieveUserRequest) returns (RetrieveUserResponse) {
     option (google.api.http) = {
       get: "/v1/user/{id}"
     };
@@ -73,7 +74,7 @@ service UserService {
     };
   }
 
-  rpc RetrieveUsers(UsersByIdRequest) returns (Users) {
+  rpc RetrieveUsers(RetrieveUsersRequest) returns (RetrieveUsersResponse) {
     option (google.api.http) = {
       post: "/v1/users"
       body: "ids"
@@ -84,7 +85,7 @@ service UserService {
     };
   }
 
-  rpc RetrieveUsersPage(UsersPageRequest) returns (UsersPage) {
+  rpc RetrieveUsersPage(RetrieveUsersPageRequest) returns (RetrieveUsersPageResponse) {
     option (google.api.http) = {
       post: "/v1/users/page"
       body: "*"
@@ -106,14 +107,81 @@ service UserService {
   }
 }
 
-message UserByIdRequest {
+message DeleteUserRequest {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    example: "{\"id\": \"1\", \"authId\": \"auth:1234\", \"email\": \"johndoe@gmai.com\", \"first_name\": \"John\", \"last_name\": \"Doe\"}";
+  };
+
+  User user = 1;
+}
+
+message DeleteUserResponse {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    example: "{\"id\": \"1\", \"authId\": \"auth:1234\", \"email\": \"johndoe@gmai.com\", \"first_name\": \"John\", \"last_name\": \"Doe\"}";
+  };
+
+  User user = 1;
+}
+
+message ModifyUserRequest {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    example: "{\"id\": \"1\", \"authId\": \"auth:1234\", \"email\": \"johndoe@gmai.com\", \"first_name\": \"John\", \"last_name\": \"Doe\"}";
+  };
+
+  User user = 1;
+}
+
+message ModifyUserResponse {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    example: "{\"id\": \"1\", \"authId\": \"auth:1234\", \"email\": \"johndoe@gmai.com\", \"first_name\": \"John\", \"last_name\": \"Doe\"}";
+  };
+
+  User user = 1;
+}
+
+message RegisterUserRequest {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    example: "{\"id\": \"1\", \"authId\": \"auth:1234\", \"email\": \"johndoe@gmai.com\", \"first_name\": \"John\", \"last_name\": \"Doe\"}";
+  };
+
+  User user = 1;
+}
+
+message RegisterUserResponse {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    example: "{\"id\": \"1\", \"authId\": \"auth:1234\", \"email\": \"johndoe@gmai.com\", \"first_name\": \"John\", \"last_name\": \"Doe\"}";
+  };
+
+  User user = 1;
+}
+
+message RetrieveUserRequest {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {};
 
   int64 id = 1;
 }
 
+message RetrieveUserResponse {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    example: "{\"id\": \"1\", \"authId\": \"auth:1234\", \"email\": \"johndoe@gmai.com\", \"first_name\": \"John\", \"last_name\": \"Doe\"}";
+  };
 
-message UsersPageRequest {
+  User user = 1;
+}
+
+message RetrieveUsersRequest {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {};
+
+  repeated int64 ids = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {description: "IDs of users to retrieve."}];
+}
+
+message RetrieveUsersResponse {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {};
+
+  repeated User users = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {description: "Users."}];
+}
+
+message RetrieveUsersPageRequest {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {};
 
   int64 first =  1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {description: "First number of users to return."}];
@@ -123,29 +191,14 @@ message UsersPageRequest {
   Direction direction = 5 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {description: "Direction of users to return."}];
 }
 
-message UsersByIdRequest {
+message RetrieveUsersPageResponse {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {};
 
-  repeated int64 ids = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {description: "IDs of users to retrieve."}];
-}
-
-message UserInputRequest {
-  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
-    example: "{\"id\": \"1\", \"authId\": \"auth:1234\", \"email\": \"johndoe@gmai.com\", \"first_name\": \"John\", \"last_name\": \"Doe\"}";
-  };
-
-  User user = 1;
-}
-
-
-message UsersPage {
-  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {};
-
-  int64 totalCount = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {description: "Total number of users returned by paginated input."}];
-  int64 startCursor = 2 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {description: "Start cursor for paginated users input."}];
-  int64 endCursor = 3 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {description: "End cursor for paginated users input."}]; 
-  bool hasNextPage = 4 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {description: "Indicates if there is a next page of users."}];
-  bool hasPreviousPage = 5 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {description: "Indicates if there is a previous page of users."}];
+  int64 total_count = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {description: "Total number of users returned by paginated input."}];
+  int64 start_cursor = 2 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {description: "Start cursor for paginated users input."}];
+  int64 end_cursor = 3 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {description: "End cursor for paginated users input."}]; 
+  bool has_next_page = 4 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {description: "Indicates if there is a next page of users."}];
+  bool has_previous_page = 5 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {description: "Indicates if there is a previous page of users."}];
 }
 
 message Users {

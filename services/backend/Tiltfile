@@ -61,4 +61,8 @@ k8s_resource(
   workload="backend",
   labels=["backend"],
   resource_deps=['postgresql'],
+  port_forwards=[
+    port_forward(8989, 8000, name='backend-grpc'),
+    #port_forward(9000, 8080, name='backend-http'),
+  ]
 )

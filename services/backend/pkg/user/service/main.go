@@ -4,6 +4,7 @@ import (
 	"context"
 	"sync"
 
+	connect "github.com/bufbuild/connect-go"
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -11,25 +12,27 @@ import (
 
 	"github.com/jmandel1027/perspex/schemas/perspex/pkg/models"
 	users "github.com/jmandel1027/perspex/schemas/proto/goproto/pkg/users/v1"
+
+	"github.com/jmandel1027/perspex/schemas/proto/goproto/pkg/users/v1/usersconnect"
 	"github.com/jmandel1027/perspex/services/backend/pkg/user/repository"
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 )
 
 // IUserService for interacting with Users
 type IUserService interface {
-	DeleteUser(context.Context, *users.UserInputRequest) (*users.User, error)
-	ModifyUser(ctx context.Context, in *users.UserInputRequest) (*users.User, error)
-	RegisterUser(ctx context.Context, in *users.UserInputRequest) (*users.User, error)
-	RetrieveUser(ctx context.Context, in *users.UserInputRequest) (*users.User, error)
-	RetrieveUsers(ctx context.Context, in *users.UsersByIdRequest) (*users.Users, error)
-	RetrieveUsersPage(ctx context.Context, in *users.UsersPageRequest) (*users.UsersPage, error)
+	DeleteUser(ctx context.Context, rec *connect.Request[users.UserInputRequest]) (*connect.Response[users.User], error)
+	ModifyUser(ctx context.Context, rec *connect.Request[users.UserInputRequest]) (*connect.Response[users.User], error)
+	RegisterUser(ctx context.Context, rec *connect.Request[users.UserInputRequest]) (*connect.Response[users.User], error)
+	RetrieveUser(ctx context.Context, rec *connect.Request[users.UserInputRequest]) (*connect.Response[users.User], error)
+	RetrieveUsers(ctx context.Context, rec *connect.Request[users.UsersByIdRequest]) (*connect.Response[users.Users], error)
+	RetrieveUsersPage(ctx context.Context, rec *connect.Request[users.UsersPageRequest]) (*connect.Response[users.UsersPage], error)
 }
 
 // UserService structs
 type UserService struct {
 	mu   *sync.RWMutex
 	repo *repository.UserRepository
-	users.UnimplementedUserServiceServer
+	usersconnect.UnimplementedUserServiceHandler
 }
 
 // NewUserService for connecting to the repository
@@ -43,19 +46,19 @@ func NewUserService() *UserService {
 	return service
 }
 
-func (svc *UserService) DeleteUser(context.Context, *users.UserInputRequest) (*users.User, error) {
+func (svc *UserService) DeleteUser(ctx context.Context, rec *connect.Request[users.UserInputRequest]) (*connect.Response[users.User], error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteUser not implemented")
 }
 
 // ModidifyUser
-func (svc *UserService) ModifyUser(ctx context.Context, in *users.UserInputRequest) (*users.User, error) {
+func (svc *UserService) ModifyUser(ctx context.Context, rec *connect.Request[users.UserInputRequest]) (*connect.Response[users.User], error) {
 	svc.mu.RLock()
 
 	u := &models.User{
-		ID:        in.User.Id,
-		Email:     in.User.Email,
-		FirstName: in.User.FirstName,
-		LastName:  in.User.LastName,
+		ID:        rec.Msg.User.Id,
+		Email:     rec.Msg.User.Email,
+		FirstName: rec.Msg.User.FirstName,
+		LastName:  rec.Msg.User.LastName,
 	}
 
 	record, err := svc.repo.UpdateUser(ctx, u)
@@ -64,7 +67,7 @@ func (svc *UserService) ModifyUser(ctx context.Context, in *users.UserInputReque
 		return nil, err
 	}
 
-	user := &users.User{
+	res := connect.NewResponse(&users.User{
 		Id:        record.ID,
 		AuthId:    "",
 		Email:     record.Email,
@@ -72,30 +75,30 @@ func (svc *UserService) ModifyUser(ctx context.Context, in *users.UserInputReque
 		LastName:  record.LastName,
 		CreatedAt: timestamppb.New(record.CreatedAt),
 		UpdatedAt: timestamppb.New(record.UpdatedAt),
-	}
+	})
 
 	defer svc.mu.RUnlock()
 
-	return user, nil
+	return res, nil
 }
 
 // RegisterUser by RegisterUserRequest
-func (svc *UserService) RegisterUser(ctx context.Context, in *users.UserInputRequest) (*users.User, error) {
+func (svc *UserService) RegisterUser(ctx context.Context, rec *connect.Request[users.UserInputRequest]) (*connect.Response[users.User], error) {
 	svc.mu.RLock()
 
 	u := &models.User{
-		Email:     in.User.Email,
-		FirstName: in.User.FirstName,
-		LastName:  in.User.LastName,
+		Email:     rec.Msg.User.Email,
+		FirstName: rec.Msg.User.FirstName,
+		LastName:  rec.Msg.User.LastName,
 	}
 
 	record, err := svc.repo.CreateUser(ctx, u)
 	if err != nil {
 		otelzap.Ctx(ctx).Error("Error retrieving user: ", zap.Error(err))
-		return nil, err
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
-	user := &users.User{
+	res := connect.NewResponse(&users.User{
 		Id:        record.ID,
 		AuthId:    "",
 		Email:     record.Email,
@@ -103,45 +106,46 @@ func (svc *UserService) RegisterUser(ctx context.Context, in *users.UserInputReq
 		LastName:  record.LastName,
 		CreatedAt: timestamppb.New(record.CreatedAt),
 		UpdatedAt: timestamppb.New(record.UpdatedAt),
-	}
+	})
 
 	defer svc.mu.RUnlock()
 
-	return user, nil
+	return res, nil
 }
 
 // RetrieveUser fetches a user by ID
-func (svc *UserService) RetrieveUser(ctx context.Context, in *users.UserByIdRequest) (*users.User, error) {
+func (svc *UserService) RetrieveUser(ctx context.Context, rec *connect.Request[users.UserByIdRequest]) (*connect.Response[users.User], error) {
 	svc.mu.RLock()
 
-	record, err := svc.repo.FindUserById(ctx, in.Id)
+	otelzap.L().Ctx(ctx).Info("Retrieving user", zap.Int64("id", rec.Msg.Id))
+	record, err := svc.repo.FindUserById(ctx, rec.Msg.Id)
 	if err != nil {
-		otelzap.Ctx(ctx).Error("Error retrieving user: ", zap.Error(err))
-		return nil, err
+		otelzap.Ctx(ctx).Error("Error retrieving user", zap.Error(err))
+		return nil, nil // connect.NewError(connect.CodeInternal, err)
 	}
 
-	user := &users.User{
+	res := connect.NewResponse(&users.User{
 		Id:        record.ID,
 		AuthId:    "",
 		Email:     record.Email,
 		FirstName: record.FirstName,
 		LastName:  record.LastName,
-		CreatedAt: &timestamppb.Timestamp{},
-		UpdatedAt: &timestamppb.Timestamp{},
-	}
+		CreatedAt: timestamppb.New(record.CreatedAt),
+		UpdatedAt: timestamppb.New(record.UpdatedAt),
+	})
 
 	defer svc.mu.RUnlock()
 
-	return user, nil
+	return res, nil
 }
 
-func (svc *UserService) RetrieveUsers(ctx context.Context, in *users.UsersByIdRequest) (*users.Users, error) {
+func (svc *UserService) RetrieveUsers(ctx context.Context, rec *connect.Request[users.UsersByIdRequest]) (*connect.Response[users.Users], error) {
 	svc.mu.RLock()
 
-	records, err := svc.repo.FindUsersByIds(ctx, in.Ids)
+	records, err := svc.repo.FindUsersByIds(ctx, rec.Msg.Ids)
 	if err != nil {
 		otelzap.Ctx(ctx).Error("Error retrieving users: ", zap.Error(err))
-		return nil, err
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
 	usr := make([]*users.User, len(records))
@@ -161,15 +165,15 @@ func (svc *UserService) RetrieveUsers(ctx context.Context, in *users.UsersByIdRe
 		usr = append(usr[:i], user)
 	}
 
-	res := &users.Users{
+	res := connect.NewResponse(&users.Users{
 		Users: usr,
-	}
+	})
 
 	defer svc.mu.RUnlock()
 
 	return res, nil
 }
 
-func (svc *UserService) RetrieveUsersPage(ctx context.Context, in *users.UsersPageRequest) (*users.UsersPage, error) {
-	return &users.UsersPage{}, nil
+func (svc *UserService) RetrieveUsersPage(ctx context.Context, rec *connect.Request[users.UsersPageRequest]) (*connect.Response[users.UsersPage], error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RetrieveUsersPage not implemented")
 }

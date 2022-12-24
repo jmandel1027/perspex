@@ -31,6 +31,9 @@ terraform/**/*.zip
 
 .helm/**/*
 
+.hermit/node/cache
+
+
 tilt_modules
 tilt_modules/**/*
 

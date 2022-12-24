@@ -8,6 +8,10 @@ plugins:
     out: goproto/pkg
     opt:
       - paths=source_relative
+  - name: connect-go
+    out: goproto/pkg
+    opt: 
+      - paths=source_relative
   - name: grpc-gateway
     out: goproto/pkg
     opt:

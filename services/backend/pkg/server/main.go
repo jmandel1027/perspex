@@ -2,34 +2,21 @@ package server
 
 import (
 	"context"
-	"database/sql"
-	"net"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
-	"github.com/cockroachdb/cmux"
-	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
-	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
-	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
-	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
-	grpc_opentracing "github.com/grpc-ecosystem/go-grpc-middleware/tracing/opentracing"
-	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 	"go.uber.org/zap"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
+	"golang.org/x/net/http2"
+	"golang.org/x/net/http2/h2c"
 
-	users "github.com/jmandel1027/perspex/schemas/proto/goproto/pkg/users/v1"
 	config "github.com/jmandel1027/perspex/services/backend/pkg/config"
 	"github.com/jmandel1027/perspex/services/backend/pkg/database/postgres"
 	"github.com/jmandel1027/perspex/services/backend/pkg/logger"
-	grpc_postgres "github.com/jmandel1027/perspex/services/backend/pkg/middleware/postgres"
 	"github.com/jmandel1027/perspex/services/backend/pkg/router"
-	"github.com/jmandel1027/perspex/services/backend/pkg/tracing"
-	userService "github.com/jmandel1027/perspex/services/backend/pkg/user/service"
 )
 
 func Serve() {
@@ -45,86 +32,31 @@ func Serve() {
 	undo := logger.ReplaceGlobals(z)
 	defer undo()
 
-	l, err := net.Listen("tcp", ":"+cfg.GrpcPort)
-	if err != nil {
-		otelzap.L().Fatal("Listen Error: %s", zap.Error(err))
-	}
-
-	m := cmux.New(l)
-	go func() { m.Serve() }()
-
-	grpc := m.Match(cmux.HTTP2())
-
-	go GRPC(&cfg, grpc)
-	go HTTP(&cfg)
-
-	select {}
-
-}
-
-// GRPC -- Handler
-func GRPC(cfg *config.BackendConfig, l net.Listener) {
-	dbs, err := postgres.Open(cfg)
+	dbs, err := postgres.Open(&cfg)
 	if err != nil {
 		otelzap.L().Warn("Postgres Connection Error: %s", zap.Error(err))
 	}
 
-	trace, err := tracing.NewTracerProvider(context.TODO())
-	if err != nil {
-		otelzap.L().Ctx(context.TODO()).Error("Tracer Provider Error: %s", zap.Error(err))
-	}
+	go HTTP(&cfg, dbs)
 
-	defer func() {
-		if err := trace.Shutdown(context.Background()); err != nil {
-			otelzap.L().Ctx(context.TODO()).Error("Error shutting down tracer provider")
-		}
-	}()
-
-	middleware := grpc_middleware.ChainUnaryServer(
-		grpc_ctxtags.UnaryServerInterceptor(),
-		grpc_prometheus.UnaryServerInterceptor,
-		grpc_opentracing.UnaryServerInterceptor(),
-		grpc_zap.UnaryServerInterceptor(otelzap.L().Ctx(context.TODO()).ZapLogger()),
-		grpc_recovery.UnaryServerInterceptor(),
-		grpc_postgres.UnaryServerInterceptor(dbs.Writer, &sql.TxOptions{ReadOnly: false}),
-		grpc_postgres.UnaryServerInterceptor(dbs.Reader, &sql.TxOptions{ReadOnly: true}),
-	)
-
-	unary := grpc.UnaryInterceptor(middleware)
-	sever := grpc.NewServer(unary)
-
-	userService := userService.NewUserService()
-	users.RegisterUserServiceServer(sever, userService)
-
-	reflection.Register(sever)
-
-	if err := sever.Serve(l); err != nil {
-		otelzap.Ctx(context.TODO()).Panic("gRPC Serve Error: %s", zap.Error(err))
-	}
-
-	otelzap.L().Info("gRPC Server Stopped")
-
-	defer func() {
-		// Here is where we'd safely close out any connections
-		// eg: redis, grpc, etc..
-	}()
-
+	select {}
 }
 
 // HTTP server
-func HTTP(cfg *config.BackendConfig) {
+func HTTP(cfg *config.BackendConfig, dbs *postgres.DB) {
 	ctx := context.Background()
 
 	otelzap.L().Ctx(ctx).Info("Scaffolded global logger")
 
-	rtr := router.Route(cfg)
+	rtr := router.Route(cfg, dbs)
 
 	srv := &http.Server{
-		Addr:         cfg.Host + ":" + cfg.HttpPort,
-		WriteTimeout: time.Second * 10,
-		ReadTimeout:  time.Second * 10,
-		IdleTimeout:  time.Second * 10,
-		Handler:      rtr,
+		Addr:           cfg.Host + ":" + cfg.HttpPort,
+		WriteTimeout:   time.Minute * 5,
+		ReadTimeout:    time.Minute * 5,
+		IdleTimeout:    time.Minute * 5,
+		MaxHeaderBytes: 8 * 1024, // 8KiB
+		Handler:        h2c.NewHandler(rtr, &http2.Server{}),
 	}
 
 	// Create a goroutine that listens for interupts
@@ -152,6 +84,8 @@ func HTTP(cfg *config.BackendConfig) {
 		// Here is where we'd safely close out any connections
 		// eg: redis, etc. Except for Postgres, we need to allow that package to manage
 		// It's own lifecycle.
+		dbs.Writer.Close()
+		dbs.Reader.Close()
 
 		cancel()
 	}()

@@ -1,0 +1,12 @@
+
+logs:
+  general:
+    level: DEBUG
+  access:
+    enabled: false
+
+ports:
+  websecure:
+    expose: false
+    tls:
+      enabled: false
