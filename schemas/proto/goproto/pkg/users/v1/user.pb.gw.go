@@ -36,7 +36,7 @@ var (
 )
 
 func request_UserService_DeleteUser_0(ctx context.Context, marshaler runtime.Marshaler, client UserServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq UserInputRequest
+	var protoReq DeleteUserRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -69,7 +69,7 @@ func request_UserService_DeleteUser_0(ctx context.Context, marshaler runtime.Mar
 }
 
 func local_request_UserService_DeleteUser_0(ctx context.Context, marshaler runtime.Marshaler, server UserServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq UserInputRequest
+	var protoReq DeleteUserRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -102,7 +102,7 @@ func local_request_UserService_DeleteUser_0(ctx context.Context, marshaler runti
 }
 
 func request_UserService_ModifyUser_0(ctx context.Context, marshaler runtime.Marshaler, client UserServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq UserInputRequest
+	var protoReq ModifyUserRequest
 	var metadata runtime.ServerMetadata
 
 	newReader, berr := utilities.IOReaderFactory(req.Body)
@@ -119,7 +119,7 @@ func request_UserService_ModifyUser_0(ctx context.Context, marshaler runtime.Mar
 }
 
 func local_request_UserService_ModifyUser_0(ctx context.Context, marshaler runtime.Marshaler, server UserServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq UserInputRequest
+	var protoReq ModifyUserRequest
 	var metadata runtime.ServerMetadata
 
 	newReader, berr := utilities.IOReaderFactory(req.Body)
@@ -136,7 +136,7 @@ func local_request_UserService_ModifyUser_0(ctx context.Context, marshaler runti
 }
 
 func request_UserService_RegisterUser_0(ctx context.Context, marshaler runtime.Marshaler, client UserServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq UserInputRequest
+	var protoReq RegisterUserRequest
 	var metadata runtime.ServerMetadata
 
 	newReader, berr := utilities.IOReaderFactory(req.Body)
@@ -153,7 +153,7 @@ func request_UserService_RegisterUser_0(ctx context.Context, marshaler runtime.M
 }
 
 func local_request_UserService_RegisterUser_0(ctx context.Context, marshaler runtime.Marshaler, server UserServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq UserInputRequest
+	var protoReq RegisterUserRequest
 	var metadata runtime.ServerMetadata
 
 	newReader, berr := utilities.IOReaderFactory(req.Body)
@@ -170,7 +170,7 @@ func local_request_UserService_RegisterUser_0(ctx context.Context, marshaler run
 }
 
 func request_UserService_RetrieveUser_0(ctx context.Context, marshaler runtime.Marshaler, client UserServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq UserByIdRequest
+	var protoReq RetrieveUserRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -196,7 +196,7 @@ func request_UserService_RetrieveUser_0(ctx context.Context, marshaler runtime.M
 }
 
 func local_request_UserService_RetrieveUser_0(ctx context.Context, marshaler runtime.Marshaler, server UserServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq UserByIdRequest
+	var protoReq RetrieveUserRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -222,7 +222,7 @@ func local_request_UserService_RetrieveUser_0(ctx context.Context, marshaler run
 }
 
 func request_UserService_RetrieveUsers_0(ctx context.Context, marshaler runtime.Marshaler, client UserServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq UsersByIdRequest
+	var protoReq RetrieveUsersRequest
 	var metadata runtime.ServerMetadata
 
 	newReader, berr := utilities.IOReaderFactory(req.Body)
@@ -239,7 +239,7 @@ func request_UserService_RetrieveUsers_0(ctx context.Context, marshaler runtime.
 }
 
 func local_request_UserService_RetrieveUsers_0(ctx context.Context, marshaler runtime.Marshaler, server UserServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq UsersByIdRequest
+	var protoReq RetrieveUsersRequest
 	var metadata runtime.ServerMetadata
 
 	newReader, berr := utilities.IOReaderFactory(req.Body)
@@ -256,7 +256,7 @@ func local_request_UserService_RetrieveUsers_0(ctx context.Context, marshaler ru
 }
 
 func request_UserService_RetrieveUsersPage_0(ctx context.Context, marshaler runtime.Marshaler, client UserServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq UsersPageRequest
+	var protoReq RetrieveUsersPageRequest
 	var metadata runtime.ServerMetadata
 
 	newReader, berr := utilities.IOReaderFactory(req.Body)
@@ -273,7 +273,7 @@ func request_UserService_RetrieveUsersPage_0(ctx context.Context, marshaler runt
 }
 
 func local_request_UserService_RetrieveUsersPage_0(ctx context.Context, marshaler runtime.Marshaler, server UserServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq UsersPageRequest
+	var protoReq RetrieveUsersPageRequest
 	var metadata runtime.ServerMetadata
 
 	newReader, berr := utilities.IOReaderFactory(req.Body)
@@ -294,7 +294,7 @@ var (
 )
 
 func request_UserService_RetrieveUsersPage_1(ctx context.Context, marshaler runtime.Marshaler, client UserServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq UsersPageRequest
+	var protoReq RetrieveUsersPageRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -350,7 +350,7 @@ func request_UserService_RetrieveUsersPage_1(ctx context.Context, marshaler runt
 }
 
 func local_request_UserService_RetrieveUsersPage_1(ctx context.Context, marshaler runtime.Marshaler, server UserServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq UsersPageRequest
+	var protoReq RetrieveUsersPageRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -410,7 +410,7 @@ var (
 )
 
 func request_UserService_RetrieveUsersPage_2(ctx context.Context, marshaler runtime.Marshaler, client UserServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq UsersPageRequest
+	var protoReq RetrieveUsersPageRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -466,7 +466,7 @@ func request_UserService_RetrieveUsersPage_2(ctx context.Context, marshaler runt
 }
 
 func local_request_UserService_RetrieveUsersPage_2(ctx context.Context, marshaler runtime.Marshaler, server UserServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq UsersPageRequest
+	var protoReq RetrieveUsersPageRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -535,7 +535,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/user.v1.UserService/DeleteUser", runtime.WithHTTPPathPattern("/v1/user/{user.id}/delete"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/users.v1.UserService/DeleteUser", runtime.WithHTTPPathPattern("/v1/user/{user.id}/delete"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -560,7 +560,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/user.v1.UserService/ModifyUser", runtime.WithHTTPPathPattern("/v1/user"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/users.v1.UserService/ModifyUser", runtime.WithHTTPPathPattern("/v1/user"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -585,7 +585,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/user.v1.UserService/RegisterUser", runtime.WithHTTPPathPattern("/v1/user"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/users.v1.UserService/RegisterUser", runtime.WithHTTPPathPattern("/v1/user"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -610,7 +610,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/user.v1.UserService/RetrieveUser", runtime.WithHTTPPathPattern("/v1/user/{id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/users.v1.UserService/RetrieveUser", runtime.WithHTTPPathPattern("/v1/user/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -635,7 +635,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/user.v1.UserService/RetrieveUsers", runtime.WithHTTPPathPattern("/v1/users"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/users.v1.UserService/RetrieveUsers", runtime.WithHTTPPathPattern("/v1/users"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -660,7 +660,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/user.v1.UserService/RetrieveUsersPage", runtime.WithHTTPPathPattern("/v1/users/page"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/users.v1.UserService/RetrieveUsersPage", runtime.WithHTTPPathPattern("/v1/users/page"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -685,7 +685,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/user.v1.UserService/RetrieveUsersPage", runtime.WithHTTPPathPattern("/v1/users/page/direction/{direction}/first/{first}/after/{after}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/users.v1.UserService/RetrieveUsersPage", runtime.WithHTTPPathPattern("/v1/users/page/direction/{direction}/first/{first}/after/{after}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -710,7 +710,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/user.v1.UserService/RetrieveUsersPage", runtime.WithHTTPPathPattern("/v1/users/page/direction/{direction}/last/{last}/before/{before}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/users.v1.UserService/RetrieveUsersPage", runtime.WithHTTPPathPattern("/v1/users/page/direction/{direction}/last/{last}/before/{before}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -774,7 +774,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/user.v1.UserService/DeleteUser", runtime.WithHTTPPathPattern("/v1/user/{user.id}/delete"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/users.v1.UserService/DeleteUser", runtime.WithHTTPPathPattern("/v1/user/{user.id}/delete"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -796,7 +796,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/user.v1.UserService/ModifyUser", runtime.WithHTTPPathPattern("/v1/user"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/users.v1.UserService/ModifyUser", runtime.WithHTTPPathPattern("/v1/user"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -818,7 +818,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/user.v1.UserService/RegisterUser", runtime.WithHTTPPathPattern("/v1/user"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/users.v1.UserService/RegisterUser", runtime.WithHTTPPathPattern("/v1/user"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -840,7 +840,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/user.v1.UserService/RetrieveUser", runtime.WithHTTPPathPattern("/v1/user/{id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/users.v1.UserService/RetrieveUser", runtime.WithHTTPPathPattern("/v1/user/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -862,7 +862,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/user.v1.UserService/RetrieveUsers", runtime.WithHTTPPathPattern("/v1/users"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/users.v1.UserService/RetrieveUsers", runtime.WithHTTPPathPattern("/v1/users"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -884,7 +884,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/user.v1.UserService/RetrieveUsersPage", runtime.WithHTTPPathPattern("/v1/users/page"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/users.v1.UserService/RetrieveUsersPage", runtime.WithHTTPPathPattern("/v1/users/page"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -906,7 +906,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/user.v1.UserService/RetrieveUsersPage", runtime.WithHTTPPathPattern("/v1/users/page/direction/{direction}/first/{first}/after/{after}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/users.v1.UserService/RetrieveUsersPage", runtime.WithHTTPPathPattern("/v1/users/page/direction/{direction}/first/{first}/after/{after}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -928,7 +928,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/user.v1.UserService/RetrieveUsersPage", runtime.WithHTTPPathPattern("/v1/users/page/direction/{direction}/last/{last}/before/{before}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/users.v1.UserService/RetrieveUsersPage", runtime.WithHTTPPathPattern("/v1/users/page/direction/{direction}/last/{last}/before/{before}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return

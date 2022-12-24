@@ -23,21 +23,21 @@ const _ = connect_go.IsAtLeastVersion0_1_0
 
 const (
 	// UserServiceName is the fully-qualified name of the UserService service.
-	UserServiceName = "user.v1.UserService"
+	UserServiceName = "users.v1.UserService"
 )
 
-// UserServiceClient is a client for the user.v1.UserService service.
+// UserServiceClient is a client for the users.v1.UserService service.
 type UserServiceClient interface {
-	DeleteUser(context.Context, *connect_go.Request[v1.UserInputRequest]) (*connect_go.Response[v1.User], error)
-	ModifyUser(context.Context, *connect_go.Request[v1.UserInputRequest]) (*connect_go.Response[v1.User], error)
-	RegisterUser(context.Context, *connect_go.Request[v1.UserInputRequest]) (*connect_go.Response[v1.User], error)
-	RetrieveUser(context.Context, *connect_go.Request[v1.UserByIdRequest]) (*connect_go.Response[v1.User], error)
-	RetrieveUsers(context.Context, *connect_go.Request[v1.UsersByIdRequest]) (*connect_go.Response[v1.Users], error)
-	RetrieveUsersPage(context.Context, *connect_go.Request[v1.UsersPageRequest]) (*connect_go.Response[v1.UsersPage], error)
+	DeleteUser(context.Context, *connect_go.Request[v1.DeleteUserRequest]) (*connect_go.Response[v1.DeleteUserResponse], error)
+	ModifyUser(context.Context, *connect_go.Request[v1.ModifyUserRequest]) (*connect_go.Response[v1.ModifyUserResponse], error)
+	RegisterUser(context.Context, *connect_go.Request[v1.RegisterUserRequest]) (*connect_go.Response[v1.RegisterUserResponse], error)
+	RetrieveUser(context.Context, *connect_go.Request[v1.RetrieveUserRequest]) (*connect_go.Response[v1.RetrieveUserResponse], error)
+	RetrieveUsers(context.Context, *connect_go.Request[v1.RetrieveUsersRequest]) (*connect_go.Response[v1.RetrieveUsersResponse], error)
+	RetrieveUsersPage(context.Context, *connect_go.Request[v1.RetrieveUsersPageRequest]) (*connect_go.Response[v1.RetrieveUsersPageResponse], error)
 }
 
-// NewUserServiceClient constructs a client for the user.v1.UserService service. By default, it uses
-// the Connect protocol with the binary Protobuf Codec, asks for gzipped responses, and sends
+// NewUserServiceClient constructs a client for the users.v1.UserService service. By default, it
+// uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses, and sends
 // uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the connect.WithGRPC() or
 // connect.WithGRPCWeb() options.
 //
@@ -46,34 +46,34 @@ type UserServiceClient interface {
 func NewUserServiceClient(httpClient connect_go.HTTPClient, baseURL string, opts ...connect_go.ClientOption) UserServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
 	return &userServiceClient{
-		deleteUser: connect_go.NewClient[v1.UserInputRequest, v1.User](
+		deleteUser: connect_go.NewClient[v1.DeleteUserRequest, v1.DeleteUserResponse](
 			httpClient,
-			baseURL+"/user.v1.UserService/DeleteUser",
+			baseURL+"/users.v1.UserService/DeleteUser",
 			opts...,
 		),
-		modifyUser: connect_go.NewClient[v1.UserInputRequest, v1.User](
+		modifyUser: connect_go.NewClient[v1.ModifyUserRequest, v1.ModifyUserResponse](
 			httpClient,
-			baseURL+"/user.v1.UserService/ModifyUser",
+			baseURL+"/users.v1.UserService/ModifyUser",
 			opts...,
 		),
-		registerUser: connect_go.NewClient[v1.UserInputRequest, v1.User](
+		registerUser: connect_go.NewClient[v1.RegisterUserRequest, v1.RegisterUserResponse](
 			httpClient,
-			baseURL+"/user.v1.UserService/RegisterUser",
+			baseURL+"/users.v1.UserService/RegisterUser",
 			opts...,
 		),
-		retrieveUser: connect_go.NewClient[v1.UserByIdRequest, v1.User](
+		retrieveUser: connect_go.NewClient[v1.RetrieveUserRequest, v1.RetrieveUserResponse](
 			httpClient,
-			baseURL+"/user.v1.UserService/RetrieveUser",
+			baseURL+"/users.v1.UserService/RetrieveUser",
 			opts...,
 		),
-		retrieveUsers: connect_go.NewClient[v1.UsersByIdRequest, v1.Users](
+		retrieveUsers: connect_go.NewClient[v1.RetrieveUsersRequest, v1.RetrieveUsersResponse](
 			httpClient,
-			baseURL+"/user.v1.UserService/RetrieveUsers",
+			baseURL+"/users.v1.UserService/RetrieveUsers",
 			opts...,
 		),
-		retrieveUsersPage: connect_go.NewClient[v1.UsersPageRequest, v1.UsersPage](
+		retrieveUsersPage: connect_go.NewClient[v1.RetrieveUsersPageRequest, v1.RetrieveUsersPageResponse](
 			httpClient,
-			baseURL+"/user.v1.UserService/RetrieveUsersPage",
+			baseURL+"/users.v1.UserService/RetrieveUsersPage",
 			opts...,
 		),
 	}
@@ -81,52 +81,52 @@ func NewUserServiceClient(httpClient connect_go.HTTPClient, baseURL string, opts
 
 // userServiceClient implements UserServiceClient.
 type userServiceClient struct {
-	deleteUser        *connect_go.Client[v1.UserInputRequest, v1.User]
-	modifyUser        *connect_go.Client[v1.UserInputRequest, v1.User]
-	registerUser      *connect_go.Client[v1.UserInputRequest, v1.User]
-	retrieveUser      *connect_go.Client[v1.UserByIdRequest, v1.User]
-	retrieveUsers     *connect_go.Client[v1.UsersByIdRequest, v1.Users]
-	retrieveUsersPage *connect_go.Client[v1.UsersPageRequest, v1.UsersPage]
+	deleteUser        *connect_go.Client[v1.DeleteUserRequest, v1.DeleteUserResponse]
+	modifyUser        *connect_go.Client[v1.ModifyUserRequest, v1.ModifyUserResponse]
+	registerUser      *connect_go.Client[v1.RegisterUserRequest, v1.RegisterUserResponse]
+	retrieveUser      *connect_go.Client[v1.RetrieveUserRequest, v1.RetrieveUserResponse]
+	retrieveUsers     *connect_go.Client[v1.RetrieveUsersRequest, v1.RetrieveUsersResponse]
+	retrieveUsersPage *connect_go.Client[v1.RetrieveUsersPageRequest, v1.RetrieveUsersPageResponse]
 }
 
-// DeleteUser calls user.v1.UserService.DeleteUser.
-func (c *userServiceClient) DeleteUser(ctx context.Context, req *connect_go.Request[v1.UserInputRequest]) (*connect_go.Response[v1.User], error) {
+// DeleteUser calls users.v1.UserService.DeleteUser.
+func (c *userServiceClient) DeleteUser(ctx context.Context, req *connect_go.Request[v1.DeleteUserRequest]) (*connect_go.Response[v1.DeleteUserResponse], error) {
 	return c.deleteUser.CallUnary(ctx, req)
 }
 
-// ModifyUser calls user.v1.UserService.ModifyUser.
-func (c *userServiceClient) ModifyUser(ctx context.Context, req *connect_go.Request[v1.UserInputRequest]) (*connect_go.Response[v1.User], error) {
+// ModifyUser calls users.v1.UserService.ModifyUser.
+func (c *userServiceClient) ModifyUser(ctx context.Context, req *connect_go.Request[v1.ModifyUserRequest]) (*connect_go.Response[v1.ModifyUserResponse], error) {
 	return c.modifyUser.CallUnary(ctx, req)
 }
 
-// RegisterUser calls user.v1.UserService.RegisterUser.
-func (c *userServiceClient) RegisterUser(ctx context.Context, req *connect_go.Request[v1.UserInputRequest]) (*connect_go.Response[v1.User], error) {
+// RegisterUser calls users.v1.UserService.RegisterUser.
+func (c *userServiceClient) RegisterUser(ctx context.Context, req *connect_go.Request[v1.RegisterUserRequest]) (*connect_go.Response[v1.RegisterUserResponse], error) {
 	return c.registerUser.CallUnary(ctx, req)
 }
 
-// RetrieveUser calls user.v1.UserService.RetrieveUser.
-func (c *userServiceClient) RetrieveUser(ctx context.Context, req *connect_go.Request[v1.UserByIdRequest]) (*connect_go.Response[v1.User], error) {
+// RetrieveUser calls users.v1.UserService.RetrieveUser.
+func (c *userServiceClient) RetrieveUser(ctx context.Context, req *connect_go.Request[v1.RetrieveUserRequest]) (*connect_go.Response[v1.RetrieveUserResponse], error) {
 	return c.retrieveUser.CallUnary(ctx, req)
 }
 
-// RetrieveUsers calls user.v1.UserService.RetrieveUsers.
-func (c *userServiceClient) RetrieveUsers(ctx context.Context, req *connect_go.Request[v1.UsersByIdRequest]) (*connect_go.Response[v1.Users], error) {
+// RetrieveUsers calls users.v1.UserService.RetrieveUsers.
+func (c *userServiceClient) RetrieveUsers(ctx context.Context, req *connect_go.Request[v1.RetrieveUsersRequest]) (*connect_go.Response[v1.RetrieveUsersResponse], error) {
 	return c.retrieveUsers.CallUnary(ctx, req)
 }
 
-// RetrieveUsersPage calls user.v1.UserService.RetrieveUsersPage.
-func (c *userServiceClient) RetrieveUsersPage(ctx context.Context, req *connect_go.Request[v1.UsersPageRequest]) (*connect_go.Response[v1.UsersPage], error) {
+// RetrieveUsersPage calls users.v1.UserService.RetrieveUsersPage.
+func (c *userServiceClient) RetrieveUsersPage(ctx context.Context, req *connect_go.Request[v1.RetrieveUsersPageRequest]) (*connect_go.Response[v1.RetrieveUsersPageResponse], error) {
 	return c.retrieveUsersPage.CallUnary(ctx, req)
 }
 
-// UserServiceHandler is an implementation of the user.v1.UserService service.
+// UserServiceHandler is an implementation of the users.v1.UserService service.
 type UserServiceHandler interface {
-	DeleteUser(context.Context, *connect_go.Request[v1.UserInputRequest]) (*connect_go.Response[v1.User], error)
-	ModifyUser(context.Context, *connect_go.Request[v1.UserInputRequest]) (*connect_go.Response[v1.User], error)
-	RegisterUser(context.Context, *connect_go.Request[v1.UserInputRequest]) (*connect_go.Response[v1.User], error)
-	RetrieveUser(context.Context, *connect_go.Request[v1.UserByIdRequest]) (*connect_go.Response[v1.User], error)
-	RetrieveUsers(context.Context, *connect_go.Request[v1.UsersByIdRequest]) (*connect_go.Response[v1.Users], error)
-	RetrieveUsersPage(context.Context, *connect_go.Request[v1.UsersPageRequest]) (*connect_go.Response[v1.UsersPage], error)
+	DeleteUser(context.Context, *connect_go.Request[v1.DeleteUserRequest]) (*connect_go.Response[v1.DeleteUserResponse], error)
+	ModifyUser(context.Context, *connect_go.Request[v1.ModifyUserRequest]) (*connect_go.Response[v1.ModifyUserResponse], error)
+	RegisterUser(context.Context, *connect_go.Request[v1.RegisterUserRequest]) (*connect_go.Response[v1.RegisterUserResponse], error)
+	RetrieveUser(context.Context, *connect_go.Request[v1.RetrieveUserRequest]) (*connect_go.Response[v1.RetrieveUserResponse], error)
+	RetrieveUsers(context.Context, *connect_go.Request[v1.RetrieveUsersRequest]) (*connect_go.Response[v1.RetrieveUsersResponse], error)
+	RetrieveUsersPage(context.Context, *connect_go.Request[v1.RetrieveUsersPageRequest]) (*connect_go.Response[v1.RetrieveUsersPageResponse], error)
 }
 
 // NewUserServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -136,62 +136,62 @@ type UserServiceHandler interface {
 // and JSON codecs. They also support gzip compression.
 func NewUserServiceHandler(svc UserServiceHandler, opts ...connect_go.HandlerOption) (string, http.Handler) {
 	mux := http.NewServeMux()
-	mux.Handle("/user.v1.UserService/DeleteUser", connect_go.NewUnaryHandler(
-		"/user.v1.UserService/DeleteUser",
+	mux.Handle("/users.v1.UserService/DeleteUser", connect_go.NewUnaryHandler(
+		"/users.v1.UserService/DeleteUser",
 		svc.DeleteUser,
 		opts...,
 	))
-	mux.Handle("/user.v1.UserService/ModifyUser", connect_go.NewUnaryHandler(
-		"/user.v1.UserService/ModifyUser",
+	mux.Handle("/users.v1.UserService/ModifyUser", connect_go.NewUnaryHandler(
+		"/users.v1.UserService/ModifyUser",
 		svc.ModifyUser,
 		opts...,
 	))
-	mux.Handle("/user.v1.UserService/RegisterUser", connect_go.NewUnaryHandler(
-		"/user.v1.UserService/RegisterUser",
+	mux.Handle("/users.v1.UserService/RegisterUser", connect_go.NewUnaryHandler(
+		"/users.v1.UserService/RegisterUser",
 		svc.RegisterUser,
 		opts...,
 	))
-	mux.Handle("/user.v1.UserService/RetrieveUser", connect_go.NewUnaryHandler(
-		"/user.v1.UserService/RetrieveUser",
+	mux.Handle("/users.v1.UserService/RetrieveUser", connect_go.NewUnaryHandler(
+		"/users.v1.UserService/RetrieveUser",
 		svc.RetrieveUser,
 		opts...,
 	))
-	mux.Handle("/user.v1.UserService/RetrieveUsers", connect_go.NewUnaryHandler(
-		"/user.v1.UserService/RetrieveUsers",
+	mux.Handle("/users.v1.UserService/RetrieveUsers", connect_go.NewUnaryHandler(
+		"/users.v1.UserService/RetrieveUsers",
 		svc.RetrieveUsers,
 		opts...,
 	))
-	mux.Handle("/user.v1.UserService/RetrieveUsersPage", connect_go.NewUnaryHandler(
-		"/user.v1.UserService/RetrieveUsersPage",
+	mux.Handle("/users.v1.UserService/RetrieveUsersPage", connect_go.NewUnaryHandler(
+		"/users.v1.UserService/RetrieveUsersPage",
 		svc.RetrieveUsersPage,
 		opts...,
 	))
-	return "/user.v1.UserService/", mux
+	return "/users.v1.UserService/", mux
 }
 
 // UnimplementedUserServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedUserServiceHandler struct{}
 
-func (UnimplementedUserServiceHandler) DeleteUser(context.Context, *connect_go.Request[v1.UserInputRequest]) (*connect_go.Response[v1.User], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("user.v1.UserService.DeleteUser is not implemented"))
+func (UnimplementedUserServiceHandler) DeleteUser(context.Context, *connect_go.Request[v1.DeleteUserRequest]) (*connect_go.Response[v1.DeleteUserResponse], error) {
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("users.v1.UserService.DeleteUser is not implemented"))
 }
 
-func (UnimplementedUserServiceHandler) ModifyUser(context.Context, *connect_go.Request[v1.UserInputRequest]) (*connect_go.Response[v1.User], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("user.v1.UserService.ModifyUser is not implemented"))
+func (UnimplementedUserServiceHandler) ModifyUser(context.Context, *connect_go.Request[v1.ModifyUserRequest]) (*connect_go.Response[v1.ModifyUserResponse], error) {
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("users.v1.UserService.ModifyUser is not implemented"))
 }
 
-func (UnimplementedUserServiceHandler) RegisterUser(context.Context, *connect_go.Request[v1.UserInputRequest]) (*connect_go.Response[v1.User], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("user.v1.UserService.RegisterUser is not implemented"))
+func (UnimplementedUserServiceHandler) RegisterUser(context.Context, *connect_go.Request[v1.RegisterUserRequest]) (*connect_go.Response[v1.RegisterUserResponse], error) {
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("users.v1.UserService.RegisterUser is not implemented"))
 }
 
-func (UnimplementedUserServiceHandler) RetrieveUser(context.Context, *connect_go.Request[v1.UserByIdRequest]) (*connect_go.Response[v1.User], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("user.v1.UserService.RetrieveUser is not implemented"))
+func (UnimplementedUserServiceHandler) RetrieveUser(context.Context, *connect_go.Request[v1.RetrieveUserRequest]) (*connect_go.Response[v1.RetrieveUserResponse], error) {
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("users.v1.UserService.RetrieveUser is not implemented"))
 }
 
-func (UnimplementedUserServiceHandler) RetrieveUsers(context.Context, *connect_go.Request[v1.UsersByIdRequest]) (*connect_go.Response[v1.Users], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("user.v1.UserService.RetrieveUsers is not implemented"))
+func (UnimplementedUserServiceHandler) RetrieveUsers(context.Context, *connect_go.Request[v1.RetrieveUsersRequest]) (*connect_go.Response[v1.RetrieveUsersResponse], error) {
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("users.v1.UserService.RetrieveUsers is not implemented"))
 }
 
-func (UnimplementedUserServiceHandler) RetrieveUsersPage(context.Context, *connect_go.Request[v1.UsersPageRequest]) (*connect_go.Response[v1.UsersPage], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("user.v1.UserService.RetrieveUsersPage is not implemented"))
+func (UnimplementedUserServiceHandler) RetrieveUsersPage(context.Context, *connect_go.Request[v1.RetrieveUsersPageRequest]) (*connect_go.Response[v1.RetrieveUsersPageResponse], error) {
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("users.v1.UserService.RetrieveUsersPage is not implemented"))
 }

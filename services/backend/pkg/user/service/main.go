@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"sync"
 
 	connect "github.com/bufbuild/connect-go"
@@ -33,15 +34,17 @@ type IUserService interface {
 // UserService structs
 type UserService struct {
 	mu   *sync.RWMutex
+	db   *postgres.DB
 	repo *repository.UserRepository
 	usersconnect.UnimplementedUserServiceHandler
 }
 
 // NewUserService for connecting to the repository
-func NewUserService() *UserService {
+func NewUserService(dbs *postgres.DB) *UserService {
 	repo := repository.NewUserRepository()
 	service := &UserService{
 		mu:   &sync.RWMutex{},
+		db:   dbs,
 		repo: repo,
 	}
 
@@ -64,7 +67,7 @@ func (svc *UserService) ModifyUser(ctx context.Context, rec *connect.Request[use
 		LastName:  rec.Msg.User.LastName,
 	}
 
-	postgres.WithTx(ctx, postgres.ReadOnlyTxOpts, func(tx *sql.Tx) (err error) {
+	postgres.WithTx(ctx, svc.db.Writer, postgres.StdTxOpts, func(tx *sql.Tx) (err error) {
 		record, err = svc.repo.UpdateUser(ctx, tx, u)
 		if err != nil {
 			otelzap.Ctx(ctx).Error("Error modifying user: ", zap.Error(err))
@@ -102,7 +105,7 @@ func (svc *UserService) RegisterUser(ctx context.Context, rec *connect.Request[u
 		LastName:  rec.Msg.User.LastName,
 	}
 
-	postgres.WithTx(ctx, postgres.ReadOnlyTxOpts, func(tx *sql.Tx) (err error) {
+	postgres.WithTx(ctx, svc.db.Reader, postgres.ReadOnlyTxOpts, func(tx *sql.Tx) (err error) {
 		record, err = svc.repo.CreateUser(ctx, tx, u)
 		if err != nil {
 			otelzap.Ctx(ctx).Error("Error retrieving user: ", zap.Error(err))
@@ -130,11 +133,11 @@ func (svc *UserService) RegisterUser(ctx context.Context, rec *connect.Request[u
 }
 
 // RetrieveUser fetches a user by ID
-func (svc *UserService) RetrieveUser(ctx context.Context, rec *connect.Request[users.RetrieveUserRequest]) (*connect.Response[users.RetrieveUserResponse], *connect.Error) {
+func (svc *UserService) RetrieveUser(ctx context.Context, rec *connect.Request[users.RetrieveUserRequest]) (*connect.Response[users.RetrieveUserResponse], error) {
 	var record *models.User
 	svc.mu.RLock()
 
-	postgres.WithTx(ctx, postgres.ReadOnlyTxOpts, func(tx *sql.Tx) (err error) {
+	postgres.WithTx(ctx, svc.db.Reader, postgres.ReadOnlyTxOpts, func(tx *sql.Tx) (err error) {
 		record, err = svc.repo.FindUserById(ctx, tx, rec.Msg.Id)
 		if err != nil {
 			otelzap.Ctx(ctx).Error("Error retrieving user", zap.Error(err))
@@ -144,6 +147,10 @@ func (svc *UserService) RetrieveUser(ctx context.Context, rec *connect.Request[u
 		return nil
 	})
 
+	if record == nil {
+		return nil, connect.NewError(connect.CodeNotFound, errors.New("user not found"))
+	}
+
 	res := connect.NewResponse(&users.RetrieveUserResponse{
 		User: &users.User{
 			Id:        record.ID,
@@ -151,8 +158,10 @@ func (svc *UserService) RetrieveUser(ctx context.Context, rec *connect.Request[u
 			Email:     record.Email,
 			FirstName: record.FirstName,
 			LastName:  record.LastName,
-			CreatedAt: timestamppb.New(record.CreatedAt),
-			UpdatedAt: timestamppb.New(record.UpdatedAt),
+			//CreatedAt: timestamppb.New(time.Now()),
+			//UpdatedAt: timestamppb.New(time.Now()),
+			//CreatedAt: timestamppb.New(record.CreatedAt),
+			// UpdatedAt: timestamppb.New(record.UpdatedAt),
 		},
 	})
 
@@ -165,7 +174,7 @@ func (svc *UserService) RetrieveUsers(ctx context.Context, rec *connect.Request[
 	var records []*models.User
 	svc.mu.RLock()
 
-	postgres.WithTx(ctx, postgres.ReadOnlyTxOpts, func(tx *sql.Tx) (err error) {
+	postgres.WithTx(ctx, svc.db.Reader, postgres.ReadOnlyTxOpts, func(tx *sql.Tx) (err error) {
 		records, err = svc.repo.FindUsersByIds(ctx, tx, rec.Msg.Ids)
 		if err != nil {
 			otelzap.Ctx(ctx).Error("Error retrieving users: ", zap.Error(err))

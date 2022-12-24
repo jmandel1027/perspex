@@ -120,7 +120,7 @@ func (tx *Tx) Execute(fn TxFunc) (err error) {
 			otelzap.L().Info("rolling back")
 		} else {
 			if err := tx.Commit(); err != nil {
-				otelzap.L().Ctx(context.Background()).Error("Failed to commit transaction", zap.Error(err))
+				otelzap.L().Error("Failed to commit transaction", zap.Error(err))
 			}
 			otelzap.L().Info("committing")
 		}
@@ -143,28 +143,18 @@ func (tx *Tx) Unlock() {
 }
 
 // WithTx creates a transaction block, commits on success, and rolls back on failure.
-func WithTx(ctx context.Context, opts *sql.TxOptions, fn TxFunc) error {
+func WithTx(ctx context.Context, db *sql.DB, opts *sql.TxOptions, fn TxFunc) error {
 
 	cfg, err := config.New()
 	if err != nil {
 		return err
 	}
 
-	db, ok := FromContext(ctx, Key)
-	if !ok {
-		otelzap.Ctx(ctx).Error("Transaction requires active ctx")
-		return ErrTXRequiresActiveCtx
-	}
-
-	var conn *sql.DB
-	if opts.ReadOnly {
-		conn = db.Reader
-	} else {
-		conn = db.Writer
-	}
-
 	if cfg.Log.Verbose {
-		writer := &zapio.Writer{Log: otelzap.Ctx(ctx).Logger().Logger, Level: zap.DebugLevel}
+		writer := &zapio.Writer{
+			Log:   otelzap.Ctx(ctx).Logger().Logger,
+			Level: zap.DebugLevel,
+		}
 
 		defer writer.Close()
 
@@ -172,12 +162,29 @@ func WithTx(ctx context.Context, opts *sql.TxOptions, fn TxFunc) error {
 		boil.DebugWriter = writer
 	}
 
-	tx, err := BeginTx(ctx, conn, opts)
+	tx, err := db.BeginTx(ctx, opts)
 	if err != nil {
 		return err
 	}
 
-	return tx.Execute(fn)
+	defer func() {
+		if p := recover(); p != nil {
+			tx.Rollback()
+		} else if err != nil {
+			tx.Rollback()
+		} else {
+			if err := tx.Commit(); err != nil {
+				// https://golang.org/pkg/database/sql/#Tx
+				// After a call to Commit or Rollback, all operations on the
+				// transaction fail with ErrTxDone.
+				if err == sql.ErrTxDone {
+					otelzap.L().Ctx(ctx).Error("Failed to commit transaction", zap.Error(err))
+				}
+			}
+		}
+	}()
+
+	return fn(tx)
 }
 
 // FromContext extracts an active Postgres transaction from a context.
