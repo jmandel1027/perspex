@@ -20,12 +20,12 @@ import (
 
 // IUserService for interacting with Users
 type IUserService interface {
-	DeleteUser(ctx context.Context, rec *connect.Request[users.UserInputRequest]) (*connect.Response[users.User], error)
-	ModifyUser(ctx context.Context, rec *connect.Request[users.UserInputRequest]) (*connect.Response[users.User], error)
-	RegisterUser(ctx context.Context, rec *connect.Request[users.UserInputRequest]) (*connect.Response[users.User], error)
-	RetrieveUser(ctx context.Context, rec *connect.Request[users.UserInputRequest]) (*connect.Response[users.User], error)
-	RetrieveUsers(ctx context.Context, rec *connect.Request[users.UsersByIdRequest]) (*connect.Response[users.Users], error)
-	RetrieveUsersPage(ctx context.Context, rec *connect.Request[users.UsersPageRequest]) (*connect.Response[users.UsersPage], error)
+	DeleteUser(ctx context.Context, rec *connect.Request[users.DeleteUserRequest]) (*connect.Response[users.DeleteUserResponse], error)
+	ModifyUser(ctx context.Context, rec *connect.Request[users.ModifyUserRequest]) (*connect.Response[users.ModifyUserResponse], error)
+	RegisterUser(ctx context.Context, rec *connect.Request[users.RegisterUserRequest]) (*connect.Response[users.RegisterUserResponse], error)
+	RetrieveUser(ctx context.Context, rec *connect.Request[users.RetrieveUserRequest]) (*connect.Response[users.RetrieveUserResponse], error)
+	RetrieveUsers(ctx context.Context, rec *connect.Request[users.RetrieveUsersRequest]) (*connect.Response[users.RetrieveUsersResponse], error)
+	RetrieveUsersPage(ctx context.Context, rec *connect.Request[users.RetrieveUsersPageRequest]) (*connect.Response[users.RetrieveUsersPageResponse], error)
 }
 
 // UserService structs
@@ -46,12 +46,12 @@ func NewUserService() *UserService {
 	return service
 }
 
-func (svc *UserService) DeleteUser(ctx context.Context, rec *connect.Request[users.UserInputRequest]) (*connect.Response[users.User], error) {
+func (svc *UserService) DeleteUser(ctx context.Context, rec *connect.Request[users.DeleteUserRequest]) (*connect.Response[users.DeleteUserResponse], error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteUser not implemented")
 }
 
 // ModidifyUser
-func (svc *UserService) ModifyUser(ctx context.Context, rec *connect.Request[users.UserInputRequest]) (*connect.Response[users.User], error) {
+func (svc *UserService) ModifyUser(ctx context.Context, rec *connect.Request[users.ModifyUserRequest]) (*connect.Response[users.ModifyUserResponse], error) {
 	svc.mu.RLock()
 
 	u := &models.User{
@@ -67,14 +67,16 @@ func (svc *UserService) ModifyUser(ctx context.Context, rec *connect.Request[use
 		return nil, err
 	}
 
-	res := connect.NewResponse(&users.User{
-		Id:        record.ID,
-		AuthId:    "",
-		Email:     record.Email,
-		FirstName: record.FirstName,
-		LastName:  record.LastName,
-		CreatedAt: timestamppb.New(record.CreatedAt),
-		UpdatedAt: timestamppb.New(record.UpdatedAt),
+	res := connect.NewResponse(&users.ModifyUserResponse{
+		User: &users.User{
+			Id:        record.ID,
+			AuthId:    "",
+			Email:     record.Email,
+			FirstName: record.FirstName,
+			LastName:  record.LastName,
+			CreatedAt: timestamppb.New(record.CreatedAt),
+			UpdatedAt: timestamppb.New(record.UpdatedAt),
+		},
 	})
 
 	defer svc.mu.RUnlock()
@@ -83,7 +85,7 @@ func (svc *UserService) ModifyUser(ctx context.Context, rec *connect.Request[use
 }
 
 // RegisterUser by RegisterUserRequest
-func (svc *UserService) RegisterUser(ctx context.Context, rec *connect.Request[users.UserInputRequest]) (*connect.Response[users.User], error) {
+func (svc *UserService) RegisterUser(ctx context.Context, rec *connect.Request[users.RegisterUserRequest]) (*connect.Response[users.RegisterUserResponse], error) {
 	svc.mu.RLock()
 
 	u := &models.User{
@@ -98,14 +100,16 @@ func (svc *UserService) RegisterUser(ctx context.Context, rec *connect.Request[u
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
-	res := connect.NewResponse(&users.User{
-		Id:        record.ID,
-		AuthId:    "",
-		Email:     record.Email,
-		FirstName: record.FirstName,
-		LastName:  record.LastName,
-		CreatedAt: timestamppb.New(record.CreatedAt),
-		UpdatedAt: timestamppb.New(record.UpdatedAt),
+	res := connect.NewResponse(&users.RegisterUserResponse{
+		User: &users.User{
+			Id:        record.ID,
+			AuthId:    "",
+			Email:     record.Email,
+			FirstName: record.FirstName,
+			LastName:  record.LastName,
+			CreatedAt: timestamppb.New(record.CreatedAt),
+			UpdatedAt: timestamppb.New(record.UpdatedAt),
+		},
 	})
 
 	defer svc.mu.RUnlock()
@@ -114,24 +118,26 @@ func (svc *UserService) RegisterUser(ctx context.Context, rec *connect.Request[u
 }
 
 // RetrieveUser fetches a user by ID
-func (svc *UserService) RetrieveUser(ctx context.Context, rec *connect.Request[users.UserByIdRequest]) (*connect.Response[users.User], error) {
+func (svc *UserService) RetrieveUser(ctx context.Context, rec *connect.Request[users.RetrieveUserRequest]) (*connect.Response[users.RetrieveUserResponse], error) {
 	svc.mu.RLock()
 
 	otelzap.L().Ctx(ctx).Info("Retrieving user", zap.Int64("id", rec.Msg.Id))
 	record, err := svc.repo.FindUserById(ctx, rec.Msg.Id)
 	if err != nil {
 		otelzap.Ctx(ctx).Error("Error retrieving user", zap.Error(err))
-		return nil, nil // connect.NewError(connect.CodeInternal, err)
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
-	res := connect.NewResponse(&users.User{
-		Id:        record.ID,
-		AuthId:    "",
-		Email:     record.Email,
-		FirstName: record.FirstName,
-		LastName:  record.LastName,
-		CreatedAt: timestamppb.New(record.CreatedAt),
-		UpdatedAt: timestamppb.New(record.UpdatedAt),
+	res := connect.NewResponse(&users.RetrieveUserResponse{
+		User: &users.User{
+			Id:        record.ID,
+			AuthId:    "",
+			Email:     record.Email,
+			FirstName: record.FirstName,
+			LastName:  record.LastName,
+			CreatedAt: timestamppb.New(record.CreatedAt),
+			UpdatedAt: timestamppb.New(record.UpdatedAt),
+		},
 	})
 
 	defer svc.mu.RUnlock()
@@ -139,7 +145,7 @@ func (svc *UserService) RetrieveUser(ctx context.Context, rec *connect.Request[u
 	return res, nil
 }
 
-func (svc *UserService) RetrieveUsers(ctx context.Context, rec *connect.Request[users.UsersByIdRequest]) (*connect.Response[users.Users], error) {
+func (svc *UserService) RetrieveUsers(ctx context.Context, rec *connect.Request[users.RetrieveUsersRequest]) (*connect.Response[users.RetrieveUsersResponse], error) {
 	svc.mu.RLock()
 
 	records, err := svc.repo.FindUsersByIds(ctx, rec.Msg.Ids)
@@ -165,7 +171,7 @@ func (svc *UserService) RetrieveUsers(ctx context.Context, rec *connect.Request[
 		usr = append(usr[:i], user)
 	}
 
-	res := connect.NewResponse(&users.Users{
+	res := connect.NewResponse(&users.RetrieveUsersResponse{
 		Users: usr,
 	})
 
@@ -174,6 +180,6 @@ func (svc *UserService) RetrieveUsers(ctx context.Context, rec *connect.Request[
 	return res, nil
 }
 
-func (svc *UserService) RetrieveUsersPage(ctx context.Context, rec *connect.Request[users.UsersPageRequest]) (*connect.Response[users.UsersPage], error) {
+func (svc *UserService) RetrieveUsersPage(ctx context.Context, rec *connect.Request[users.RetrieveUsersPageRequest]) (*connect.Response[users.RetrieveUsersPageResponse], error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RetrieveUsersPage not implemented")
 }

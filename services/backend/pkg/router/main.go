@@ -42,6 +42,7 @@ func Route(cfg *config.BackendConfig, dbs *postgres.DB) http.Handler {
 	}
 
 	otelzap.L().Info("Scaffolding opts")
+
 	opts := connect.WithInterceptors(
 		otelconnect.NewInterceptor(),
 		transaction.New(reader),
