@@ -28,7 +28,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1User"
+              "$ref": "#/definitions/v1RegisterUserResponse"
             }
           },
           "default": {
@@ -60,7 +60,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1User"
+              "$ref": "#/definitions/v1ModifyUserResponse"
             }
           },
           "default": {
@@ -94,7 +94,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1User"
+              "$ref": "#/definitions/v1RetrieveUserResponse"
             }
           },
           "default": {
@@ -127,7 +127,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1User"
+              "$ref": "#/definitions/v1DeleteUserResponse"
             }
           },
           "default": {
@@ -205,7 +205,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1Users"
+              "$ref": "#/definitions/v1RetrieveUsersResponse"
             }
           },
           "default": {
@@ -244,7 +244,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1UsersPage"
+              "$ref": "#/definitions/v1RetrieveUsersPageResponse"
             }
           },
           "default": {
@@ -260,7 +260,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/v1UsersPageRequest"
+              "$ref": "#/definitions/v1RetrieveUsersPageRequest"
             }
           }
         ],
@@ -278,7 +278,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1UsersPage"
+              "$ref": "#/definitions/v1RetrieveUsersPageResponse"
             }
           },
           "default": {
@@ -296,8 +296,9 @@
             "required": true,
             "type": "string",
             "enum": [
-              "FORWARD",
-              "BACKWARD"
+              "DIRECTION_FORWARD_UNSPECIFIED",
+              "DIRECTION_FORWARD",
+              "DIRECTION_BACKWARD"
             ]
           },
           {
@@ -347,7 +348,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1UsersPage"
+              "$ref": "#/definitions/v1RetrieveUsersPageResponse"
             }
           },
           "default": {
@@ -365,8 +366,9 @@
             "required": true,
             "type": "string",
             "enum": [
-              "FORWARD",
-              "BACKWARD"
+              "DIRECTION_FORWARD_UNSPECIFIED",
+              "DIRECTION_FORWARD",
+              "DIRECTION_BACKWARD"
             ]
           },
           {
@@ -436,13 +438,143 @@
         }
       }
     },
+    "v1DeleteUserResponse": {
+      "type": "object",
+      "example": {
+        "id": "1",
+        "authId": "auth:1234",
+        "email": "johndoe@gmai.com",
+        "first_name": "John",
+        "last_name": "Doe"
+      },
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/v1User"
+        }
+      }
+    },
     "v1Direction": {
       "type": "string",
       "enum": [
-        "FORWARD",
-        "BACKWARD"
+        "DIRECTION_FORWARD_UNSPECIFIED",
+        "DIRECTION_FORWARD",
+        "DIRECTION_BACKWARD"
       ],
-      "default": "FORWARD"
+      "default": "DIRECTION_FORWARD_UNSPECIFIED"
+    },
+    "v1ModifyUserResponse": {
+      "type": "object",
+      "example": {
+        "id": "1",
+        "authId": "auth:1234",
+        "email": "johndoe@gmai.com",
+        "first_name": "John",
+        "last_name": "Doe"
+      },
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/v1User"
+        }
+      }
+    },
+    "v1RegisterUserResponse": {
+      "type": "object",
+      "example": {
+        "id": "1",
+        "authId": "auth:1234",
+        "email": "johndoe@gmai.com",
+        "first_name": "John",
+        "last_name": "Doe"
+      },
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/v1User"
+        }
+      }
+    },
+    "v1RetrieveUserResponse": {
+      "type": "object",
+      "example": {
+        "id": "1",
+        "authId": "auth:1234",
+        "email": "johndoe@gmai.com",
+        "first_name": "John",
+        "last_name": "Doe"
+      },
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/v1User"
+        }
+      }
+    },
+    "v1RetrieveUsersPageRequest": {
+      "type": "object",
+      "properties": {
+        "first": {
+          "type": "string",
+          "format": "int64",
+          "description": "First number of users to return."
+        },
+        "after": {
+          "type": "string",
+          "format": "int64",
+          "description": "After cursor for paginated users input."
+        },
+        "last": {
+          "type": "string",
+          "format": "int64",
+          "description": "Last number of users to return."
+        },
+        "before": {
+          "type": "string",
+          "format": "int64",
+          "description": "Before cursor for paginated users input."
+        },
+        "direction": {
+          "$ref": "#/definitions/v1Direction",
+          "description": "Direction of users to return."
+        }
+      }
+    },
+    "v1RetrieveUsersPageResponse": {
+      "type": "object",
+      "properties": {
+        "totalCount": {
+          "type": "string",
+          "format": "int64",
+          "description": "Total number of users returned by paginated input."
+        },
+        "startCursor": {
+          "type": "string",
+          "format": "int64",
+          "description": "Start cursor for paginated users input."
+        },
+        "endCursor": {
+          "type": "string",
+          "format": "int64",
+          "description": "End cursor for paginated users input."
+        },
+        "hasNextPage": {
+          "type": "boolean",
+          "description": "Indicates if there is a next page of users."
+        },
+        "hasPreviousPage": {
+          "type": "boolean",
+          "description": "Indicates if there is a previous page of users."
+        }
+      }
+    },
+    "v1RetrieveUsersResponse": {
+      "type": "object",
+      "properties": {
+        "users": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1User"
+          },
+          "description": "Users."
+        }
+      }
     },
     "v1User": {
       "type": "object",
@@ -477,75 +609,6 @@
           "type": "string",
           "format": "date-time",
           "description": "User Updated Timestamp"
-        }
-      }
-    },
-    "v1Users": {
-      "type": "object",
-      "properties": {
-        "users": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/v1User"
-          },
-          "description": "Users."
-        }
-      }
-    },
-    "v1UsersPage": {
-      "type": "object",
-      "properties": {
-        "totalCount": {
-          "type": "string",
-          "format": "int64",
-          "description": "Total number of users returned by paginated input."
-        },
-        "startCursor": {
-          "type": "string",
-          "format": "int64",
-          "description": "Start cursor for paginated users input."
-        },
-        "endCursor": {
-          "type": "string",
-          "format": "int64",
-          "description": "End cursor for paginated users input."
-        },
-        "hasNextPage": {
-          "type": "boolean",
-          "description": "Indicates if there is a next page of users."
-        },
-        "hasPreviousPage": {
-          "type": "boolean",
-          "description": "Indicates if there is a previous page of users."
-        }
-      }
-    },
-    "v1UsersPageRequest": {
-      "type": "object",
-      "properties": {
-        "first": {
-          "type": "string",
-          "format": "int64",
-          "description": "First number of users to return."
-        },
-        "after": {
-          "type": "string",
-          "format": "int64",
-          "description": "After cursor for paginated users input."
-        },
-        "last": {
-          "type": "string",
-          "format": "int64",
-          "description": "Last number of users to return."
-        },
-        "before": {
-          "type": "string",
-          "format": "int64",
-          "description": "Before cursor for paginated users input."
-        },
-        "direction": {
-          "$ref": "#/definitions/v1Direction",
-          "description": "Direction of users to return."
         }
       }
     }
