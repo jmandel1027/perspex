@@ -2,7 +2,6 @@ package router
 
 import (
 	"context"
-	"database/sql"
 	"net/http"
 
 	"github.com/bufbuild/connect-go"
@@ -31,22 +30,15 @@ func Route(cfg *config.BackendConfig, dbs *postgres.DB) http.Handler {
 		"user.v1.UserService",
 	)
 
-	otelzap.L().Info("Scaffolding reader")
-	reader := func(ctx context.Context, req *transaction.Request) (*sql.DB, *sql.TxOptions, error) {
-		return transaction.Wrap(ctx, dbs.Reader, postgres.ReadOnlyTxOpts)
-	}
-
-	otelzap.L().Info("Scaffolding writer")
-	writer := func(ctx context.Context, req *transaction.Request) (*sql.DB, *sql.TxOptions, error) {
-		return transaction.Wrap(ctx, dbs.Writer, postgres.StdTxOpts)
+	otelzap.L().Info("Scaffolding db connection")
+	connection := func(ctx context.Context, req *transaction.Request) (*postgres.DB, error) {
+		return transaction.Wrap(ctx, dbs)
 	}
 
 	otelzap.L().Info("Scaffolding opts")
-
 	opts := connect.WithInterceptors(
 		otelconnect.NewInterceptor(),
-		transaction.New(reader),
-		transaction.New(writer),
+		transaction.New(connection),
 	)
 
 	api.Handle(grpcReflect.NewHandlerV1(reflector))

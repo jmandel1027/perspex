@@ -50,7 +50,7 @@ type BackendConfig struct {
 // New return all constants using in Project
 func New() (BackendConfig, error) {
 	log := LogConfig{
-		Verbose: utils.MustGetBool("BACKEND_LOGMODE", "false"),
+		Verbose: utils.MustGetBool("BACKEND_LOGMODE", "true"),
 	}
 
 	writerPG := PostgresConfig{

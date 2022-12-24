@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"database/sql"
 	"sync"
 
 	connect "github.com/bufbuild/connect-go"
@@ -14,6 +15,7 @@ import (
 	users "github.com/jmandel1027/perspex/schemas/proto/goproto/pkg/users/v1"
 
 	"github.com/jmandel1027/perspex/schemas/proto/goproto/pkg/users/v1/usersconnect"
+	"github.com/jmandel1027/perspex/services/backend/pkg/database/postgres"
 	"github.com/jmandel1027/perspex/services/backend/pkg/user/repository"
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 )
@@ -52,6 +54,7 @@ func (svc *UserService) DeleteUser(ctx context.Context, rec *connect.Request[use
 
 // ModidifyUser
 func (svc *UserService) ModifyUser(ctx context.Context, rec *connect.Request[users.ModifyUserRequest]) (*connect.Response[users.ModifyUserResponse], error) {
+	var record *models.User
 	svc.mu.RLock()
 
 	u := &models.User{
@@ -61,11 +64,15 @@ func (svc *UserService) ModifyUser(ctx context.Context, rec *connect.Request[use
 		LastName:  rec.Msg.User.LastName,
 	}
 
-	record, err := svc.repo.UpdateUser(ctx, u)
-	if err != nil {
-		otelzap.Ctx(ctx).Error("Error modifying user: ", zap.Error(err))
-		return nil, err
-	}
+	postgres.WithTx(ctx, postgres.ReadOnlyTxOpts, func(tx *sql.Tx) (err error) {
+		record, err = svc.repo.UpdateUser(ctx, tx, u)
+		if err != nil {
+			otelzap.Ctx(ctx).Error("Error modifying user: ", zap.Error(err))
+			return connect.NewError(connect.CodeInternal, err)
+		}
+
+		return nil
+	})
 
 	res := connect.NewResponse(&users.ModifyUserResponse{
 		User: &users.User{
@@ -86,6 +93,7 @@ func (svc *UserService) ModifyUser(ctx context.Context, rec *connect.Request[use
 
 // RegisterUser by RegisterUserRequest
 func (svc *UserService) RegisterUser(ctx context.Context, rec *connect.Request[users.RegisterUserRequest]) (*connect.Response[users.RegisterUserResponse], error) {
+	var record *models.User
 	svc.mu.RLock()
 
 	u := &models.User{
@@ -94,11 +102,15 @@ func (svc *UserService) RegisterUser(ctx context.Context, rec *connect.Request[u
 		LastName:  rec.Msg.User.LastName,
 	}
 
-	record, err := svc.repo.CreateUser(ctx, u)
-	if err != nil {
-		otelzap.Ctx(ctx).Error("Error retrieving user: ", zap.Error(err))
-		return nil, connect.NewError(connect.CodeInternal, err)
-	}
+	postgres.WithTx(ctx, postgres.ReadOnlyTxOpts, func(tx *sql.Tx) (err error) {
+		record, err = svc.repo.CreateUser(ctx, tx, u)
+		if err != nil {
+			otelzap.Ctx(ctx).Error("Error retrieving user: ", zap.Error(err))
+			return connect.NewError(connect.CodeInternal, err)
+		}
+
+		return nil
+	})
 
 	res := connect.NewResponse(&users.RegisterUserResponse{
 		User: &users.User{
@@ -118,15 +130,19 @@ func (svc *UserService) RegisterUser(ctx context.Context, rec *connect.Request[u
 }
 
 // RetrieveUser fetches a user by ID
-func (svc *UserService) RetrieveUser(ctx context.Context, rec *connect.Request[users.RetrieveUserRequest]) (*connect.Response[users.RetrieveUserResponse], error) {
+func (svc *UserService) RetrieveUser(ctx context.Context, rec *connect.Request[users.RetrieveUserRequest]) (*connect.Response[users.RetrieveUserResponse], *connect.Error) {
+	var record *models.User
 	svc.mu.RLock()
 
-	otelzap.L().Ctx(ctx).Info("Retrieving user", zap.Int64("id", rec.Msg.Id))
-	record, err := svc.repo.FindUserById(ctx, rec.Msg.Id)
-	if err != nil {
-		otelzap.Ctx(ctx).Error("Error retrieving user", zap.Error(err))
-		return nil, connect.NewError(connect.CodeInternal, err)
-	}
+	postgres.WithTx(ctx, postgres.ReadOnlyTxOpts, func(tx *sql.Tx) (err error) {
+		record, err = svc.repo.FindUserById(ctx, tx, rec.Msg.Id)
+		if err != nil {
+			otelzap.Ctx(ctx).Error("Error retrieving user", zap.Error(err))
+			return connect.NewError(connect.CodeInternal, err)
+		}
+
+		return nil
+	})
 
 	res := connect.NewResponse(&users.RetrieveUserResponse{
 		User: &users.User{
@@ -146,18 +162,22 @@ func (svc *UserService) RetrieveUser(ctx context.Context, rec *connect.Request[u
 }
 
 func (svc *UserService) RetrieveUsers(ctx context.Context, rec *connect.Request[users.RetrieveUsersRequest]) (*connect.Response[users.RetrieveUsersResponse], error) {
+	var records []*models.User
 	svc.mu.RLock()
 
-	records, err := svc.repo.FindUsersByIds(ctx, rec.Msg.Ids)
-	if err != nil {
-		otelzap.Ctx(ctx).Error("Error retrieving users: ", zap.Error(err))
-		return nil, connect.NewError(connect.CodeInternal, err)
-	}
+	postgres.WithTx(ctx, postgres.ReadOnlyTxOpts, func(tx *sql.Tx) (err error) {
+		records, err = svc.repo.FindUsersByIds(ctx, tx, rec.Msg.Ids)
+		if err != nil {
+			otelzap.Ctx(ctx).Error("Error retrieving users: ", zap.Error(err))
+			return connect.NewError(connect.CodeInternal, err)
+		}
+
+		return nil
+	})
 
 	usr := make([]*users.User, len(records))
 
 	for i, record := range records {
-
 		user := &users.User{
 			Id:        record.ID,
 			AuthId:    "",

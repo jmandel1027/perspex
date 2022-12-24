@@ -12,7 +12,6 @@ import (
 
 	"github.com/jmandel1027/perspex/schemas/perspex/pkg/models"
 	"github.com/jmandel1027/perspex/services/backend/pkg/config"
-	"github.com/jmandel1027/perspex/services/backend/pkg/database/postgres"
 )
 
 // UserRepository --
@@ -22,10 +21,10 @@ type UserRepository struct {
 
 // IUserRepository is interface for MaterialRepository
 type IUserRepository interface {
-	CreateUser(ctx context.Context, record *models.User) (res *models.User, err error)
-	FindUserById(ctx context.Context, id int64) (res *models.User, err error)
-	FindUsersByIds(ctx context.Context, ids []int64) (res []*models.User, err error)
-	UpdateUser(ctx context.Context, record *models.User) (res *models.User, err error)
+	CreateUser(ctx context.Context, tx *sql.Tx, record *models.User) (*models.User, error)
+	FindUserById(ctx context.Context, tx *sql.Tx, id int64) (*models.User, error)
+	FindUsersByIds(ctx context.Context, tx *sql.Tx, ids []int64) ([]*models.User, error)
+	UpdateUser(ctx context.Context, tx *sql.Tx, record *models.User) (*models.User, error)
 }
 
 // NewUserRepository Creates a new Material repo instance
@@ -37,77 +36,62 @@ func NewUserRepository() *UserRepository {
 }
 
 // CreateUser register's a new user
-func (repo *UserRepository) CreateUser(ctx context.Context, record *models.User) (res *models.User, err error) {
-	err = postgres.InTx(ctx, postgres.StdTxOpts, func(tx *postgres.Tx) error {
-		if err = record.Insert(ctx, tx, boil.Infer()); err != nil {
-			warning := fmt.Sprintf("Couldn't register user: %s", err)
-			otelzap.L().Ctx(ctx).Error(warning)
-			return errors.New(warning)
-		}
+func (repo *UserRepository) CreateUser(ctx context.Context, tx *sql.Tx, record *models.User) (*models.User, error) {
 
-		res = record
-		return nil
-	})
+	if err := record.Insert(ctx, tx, boil.Infer()); err != nil {
+		warning := fmt.Sprintf("Couldn't register user: %s", err)
+		otelzap.L().Ctx(ctx).Error(warning)
+		return nil, errors.New(warning)
+	}
 
-	return
+	return record, nil
 }
 
 // FindUserById register's a new user
-func (repo *UserRepository) FindUserById(ctx context.Context, id int64) (res *models.User, err error) {
-	err = postgres.InTx(ctx, &sql.TxOptions{ReadOnly: true}, func(tx *postgres.Tx) error {
-		otelzap.L().Ctx(ctx).Info("attempting to fetch user")
-		res, err = models.Users(models.UserWhere.ID.EQ(id)).One(ctx, tx)
-		if err != nil && err == sql.ErrNoRows {
-			otelzap.L().Ctx(ctx).Info("no user found")
-			return nil
-		}
+func (repo *UserRepository) FindUserById(ctx context.Context, tx *sql.Tx, id int64) (*models.User, error) {
 
-		if err != nil {
-			warning := fmt.Sprintf("Couldn't retrieve user: %s", err)
-			otelzap.L().Ctx(ctx).Error(warning)
-			return errors.New(warning)
-		}
+	otelzap.L().Ctx(ctx).Info("attempting to fetch user")
+	record, err := models.Users(models.UserWhere.ID.EQ(id)).One(ctx, tx)
+	if err != nil && err == sql.ErrNoRows {
+		otelzap.L().Ctx(ctx).Info("no user found")
+		return nil, nil
+	}
 
-		return nil
-	})
+	if err != nil {
+		warning := fmt.Sprintf("Couldn't retrieve user: %s", err)
+		otelzap.L().Ctx(ctx).Error(warning)
+		return nil, errors.New(warning)
+	}
 
 	otelzap.L().Ctx(ctx).Info("done attempting to find user")
 
-	return
+	return record, nil
 }
 
 // FindUsersByIds finds users by ids
-func (repo *UserRepository) FindUsersByIds(ctx context.Context, ids []int64) (res []*models.User, err error) {
-	err = postgres.InTx(ctx, &sql.TxOptions{ReadOnly: true}, func(tx *postgres.Tx) error {
-		res, err = models.Users(qm.Where("id = ANY ($1)", ids)).All(ctx, tx)
-		if err != nil && err == sql.ErrNoRows {
-			return nil
-		}
+func (repo *UserRepository) FindUsersByIds(ctx context.Context, tx *sql.Tx, ids []int64) ([]*models.User, error) {
+	record, err := models.Users(qm.Where("id = ANY ($1)", ids)).All(ctx, tx)
+	if err != nil && err == sql.ErrNoRows {
+		return nil, nil
+	}
 
-		if err != nil {
-			warning := fmt.Sprintf("Couldn't retrieve users: %s", err)
-			otelzap.L().Ctx(ctx).Error(warning)
-			return errors.New(warning)
-		}
+	if err != nil {
+		warning := fmt.Sprintf("Couldn't retrieve users: %s", err)
+		otelzap.L().Ctx(ctx).Error(warning)
+		return nil, errors.New(warning)
+	}
 
-		return nil
-	})
-
-	return
+	return record, nil
 }
 
 // UpdateUser modifies a user
-func (repo *UserRepository) UpdateUser(ctx context.Context, record *models.User) (res *models.User, err error) {
-	err = postgres.InTx(ctx, postgres.StdTxOpts, func(tx *postgres.Tx) error {
-		if _, err = record.Update(ctx, tx, boil.Infer()); err != nil {
-			warning := fmt.Sprintf("Couldn't update user: %s", err)
-			otelzap.L().Ctx(ctx).Error(warning)
-			return errors.New(warning)
-		}
+func (repo *UserRepository) UpdateUser(ctx context.Context, tx *sql.Tx, record *models.User) (*models.User, error) {
 
-		res = record
-		return nil
-	})
+	if _, err := record.Update(ctx, tx, boil.Infer()); err != nil {
+		warning := fmt.Sprintf("Couldn't update user: %s", err)
+		otelzap.L().Ctx(ctx).Error(warning)
+		return nil, errors.New(warning)
+	}
 
-	return
+	return record, nil
 }

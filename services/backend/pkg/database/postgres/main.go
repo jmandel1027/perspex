@@ -9,7 +9,9 @@ import (
 	// import the `pgx` driver for use in `sql.Open`
 	_ "github.com/jackc/pgx/v4/stdlib"
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
+	"github.com/volatiletech/sqlboiler/v4/boil"
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapio"
 
 	"github.com/jmandel1027/perspex/services/backend/pkg/config"
 )
@@ -33,17 +35,14 @@ var (
 	ErrTXRequiresOpts      = errors.New("opts must be passed to begin transaction")
 )
 
+type key string
+
+const Key key = "postgres"
+const Writer key = "writer"
+const Reader key = "reader"
+
 // TxFunc is a function passed to a transaction block.
-type TxFunc func(tx *Tx) error
-
-// key type is unexported to prevent collisions with context keys defined elsewhere.
-type Key int
-
-// txKey is the context key for the request-scoped transaction, arbitrarily set to 42.
-const txWriteKey Key = 42
-
-// txKey is the context key for the request-scoped transaction, arbitrarily set to 42.
-const txReaderKey Key = 43
+type TxFunc func(tx *sql.Tx) error
 
 // StdTxOpts are standard repeatable read transaction options used for most database operations.
 var StdTxOpts = &sql.TxOptions{Isolation: sql.LevelRepeatableRead}
@@ -54,55 +53,6 @@ var CommittedTxOpts = &sql.TxOptions{Isolation: sql.LevelReadCommitted}
 // ReadOnlyTxOpts are read-only transactions options used for long-lasting read-only transactions that need to
 // read data committed by other concurrent transactions.
 var ReadOnlyTxOpts = &sql.TxOptions{Isolation: sql.LevelReadCommitted, ReadOnly: true}
-
-// InTx provides the passed function with exclusive access to the Postgres
-// transaction within the passed context. A non-nil error will be returned
-// if the context is not open or does not contain a transaction.
-func InTx(ctx context.Context, opts *sql.TxOptions, f func(tx *Tx) error) error {
-	otelzap.Ctx(ctx).Info("in transaction")
-	if ctx.Err() != nil {
-		otelzap.Ctx(ctx).Info(ctx.Err().Error())
-		return ErrTXRequiresActiveCtx
-	}
-
-	key, err := WhichConnection(ctx, opts)
-	if err != nil {
-		otelzap.Ctx(ctx).Error("Requires opts", zap.Error(err))
-		return ErrTXRequiresOpts
-	}
-
-	tx, ok := FromContext(ctx, *key)
-	if !ok {
-		otelzap.Ctx(ctx).Error("Transaction requires active ctx")
-		return ErrTXRequiresActiveCtx
-	}
-
-	tx.Lock()
-
-	defer tx.Unlock()
-
-	return f(tx)
-}
-
-// WhichConnection returns the key for the connection to use for the given transaction options.
-func WhichConnection(ctx context.Context, opts *sql.TxOptions) (*Key, error) {
-	if ctx.Err() != nil {
-		return nil, ErrTXRequiresActiveCtx
-	}
-
-	if opts == nil {
-		return nil, ErrTXRequiresOpts
-	}
-
-	var key Key
-	if opts.ReadOnly {
-		key = txReaderKey
-	} else {
-		key = txWriteKey
-	}
-
-	return &key, nil
-}
 
 // Open opens a database connection to both writer and reader.
 func Open(cfg *config.BackendConfig) (*DB, error) {
@@ -156,19 +106,30 @@ func BeginTx(ctx context.Context, db *sql.DB, opts *sql.TxOptions) (*Tx, error) 
 
 // Execute runs a tx-scoped function, commiting on success and rolling back on failure.
 func (tx *Tx) Execute(fn TxFunc) (err error) {
+	tx.Lock()
+
+	if err := fn(tx.Tx); err != nil {
+		return err
+	}
 
 	defer func() {
 		if p := recover(); err != nil || p != nil {
-			tx.Rollback()
+			if err := tx.Tx.Rollback(); err != nil {
+				otelzap.L().Ctx(context.Background()).Error("Failed to rollback transaction", zap.Error(err))
+			}
 			otelzap.L().Info("rolling back")
 		} else {
-			tx.Commit()
+			if err := tx.Commit(); err != nil {
+				otelzap.L().Ctx(context.Background()).Error("Failed to commit transaction", zap.Error(err))
+			}
 			otelzap.L().Info("committing")
 		}
 
 	}()
 
-	return fn(tx)
+	defer tx.Unlock()
+
+	return nil
 }
 
 // Lock locks the transaction, preventing concurrent use.
@@ -182,8 +143,36 @@ func (tx *Tx) Unlock() {
 }
 
 // WithTx creates a transaction block, commits on success, and rolls back on failure.
-func WithTx(ctx context.Context, db *sql.DB, opts *sql.TxOptions, fn TxFunc) error {
-	tx, err := BeginTx(ctx, db, opts)
+func WithTx(ctx context.Context, opts *sql.TxOptions, fn TxFunc) error {
+
+	cfg, err := config.New()
+	if err != nil {
+		return err
+	}
+
+	db, ok := FromContext(ctx, Key)
+	if !ok {
+		otelzap.Ctx(ctx).Error("Transaction requires active ctx")
+		return ErrTXRequiresActiveCtx
+	}
+
+	var conn *sql.DB
+	if opts.ReadOnly {
+		conn = db.Reader
+	} else {
+		conn = db.Writer
+	}
+
+	if cfg.Log.Verbose {
+		writer := &zapio.Writer{Log: otelzap.Ctx(ctx).Logger().Logger, Level: zap.DebugLevel}
+
+		defer writer.Close()
+
+		boil.DebugMode = true
+		boil.DebugWriter = writer
+	}
+
+	tx, err := BeginTx(ctx, conn, opts)
 	if err != nil {
 		return err
 	}
@@ -192,12 +181,12 @@ func WithTx(ctx context.Context, db *sql.DB, opts *sql.TxOptions, fn TxFunc) err
 }
 
 // FromContext extracts an active Postgres transaction from a context.
-func FromContext(ctx context.Context, key Key) (*Tx, bool) {
-	tx, ok := ctx.Value(key).(*Tx)
-	return tx, ok
+func FromContext(ctx context.Context, key key) (*DB, bool) {
+	db, ok := ctx.Value(key).(*DB)
+	return db, ok
 }
 
 // NewContext returns a new context that carries a provided Postgres transaction.
-func NewContext(ctx context.Context, key Key, tx *Tx) context.Context {
-	return context.WithValue(ctx, key, tx)
+func NewContext(ctx context.Context, db *DB) context.Context {
+	return context.WithValue(ctx, Key, db)
 }
