@@ -9,7 +9,9 @@ import (
 	// import the `pgx` driver for use in `sql.Open`
 	_ "github.com/jackc/pgx/v4/stdlib"
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
+	"github.com/volatiletech/sqlboiler/v4/boil"
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapio"
 
 	"github.com/jmandel1027/perspex/services/backend/pkg/config"
 )
@@ -35,6 +37,9 @@ var (
 
 // TxFunc is a function passed to a transaction block.
 type TxFunc func(tx *Tx) error
+
+// SqlTxFunc is a function passed to a transaction block.
+type SqlTxFunc func(tx *sql.Tx) error
 
 // key type is unexported to prevent collisions with context keys defined elsewhere.
 type Key int
@@ -131,8 +136,6 @@ func Open(cfg *config.BackendConfig) (*DB, error) {
 
 // BeginTx initializes a transaction.
 func BeginTx(ctx context.Context, db *sql.DB, opts *sql.TxOptions) (*Tx, error) {
-	otelzap.L().Info("attempting to begin transaction")
-
 	if ctx.Err() != nil {
 		otelzap.L().Info("rolling back")
 		return nil, ErrTXRequiresActiveCtx
@@ -141,6 +144,23 @@ func BeginTx(ctx context.Context, db *sql.DB, opts *sql.TxOptions) (*Tx, error) 
 	if opts == nil {
 		otelzap.L().Info("reequired opts")
 		return nil, ErrTXRequiresOpts
+	}
+
+	cfg, err := config.New()
+	if err != nil {
+		return nil, err
+	}
+
+	if cfg.Log.Verbose {
+		writer := &zapio.Writer{
+			Log:   otelzap.Ctx(ctx).Logger().Logger,
+			Level: zap.DebugLevel,
+		}
+
+		defer writer.Close()
+
+		boil.DebugMode = true
+		boil.DebugWriter = writer
 	}
 
 	tx, err := db.BeginTx(ctx, opts)
@@ -182,13 +202,48 @@ func (tx *Tx) Unlock() {
 }
 
 // WithTx creates a transaction block, commits on success, and rolls back on failure.
-func WithTx(ctx context.Context, db *sql.DB, opts *sql.TxOptions, fn TxFunc) error {
-	tx, err := BeginTx(ctx, db, opts)
+func WithTx(ctx context.Context, db *sql.DB, opts *sql.TxOptions, fn SqlTxFunc) error {
+
+	cfg, err := config.New()
 	if err != nil {
 		return err
 	}
 
-	return tx.Execute(fn)
+	if cfg.Log.Verbose {
+		writer := &zapio.Writer{
+			Log:   otelzap.Ctx(ctx).Logger().Logger,
+			Level: zap.DebugLevel,
+		}
+
+		defer writer.Close()
+
+		boil.DebugMode = true
+		boil.DebugWriter = writer
+	}
+
+	tx, err := db.BeginTx(ctx, opts)
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		if p := recover(); p != nil {
+			tx.Rollback()
+		} else if err != nil {
+			tx.Rollback()
+		} else {
+			if err := tx.Commit(); err != nil {
+				// https://golang.org/pkg/database/sql/#Tx
+				// After a call to Commit or Rollback, all operations on the
+				// transaction fail with ErrTxDone.
+				if err == sql.ErrTxDone {
+					otelzap.L().Ctx(ctx).Error("Failed to commit transaction", zap.Error(err))
+				}
+			}
+		}
+	}()
+
+	return fn(tx)
 }
 
 // FromContext extracts an active Postgres transaction from a context.
