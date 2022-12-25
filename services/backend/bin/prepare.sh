@@ -32,7 +32,7 @@ build_gql() {
 build_proto() {
   cd ../../schemas/proto
 
-  ../../bin/buf generate
+  ../../bin/buf generate --config buf.go.gen.yaml
 
   cd ../../services/backend
 

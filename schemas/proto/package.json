@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "generate": "../../bin/buf generate"
+    "generate": "../../bin/buf generate --config buf.js.gen.yaml"
   },
   "dependencies": {
     "@bufbuild/connect-web": "^0.5.0",
