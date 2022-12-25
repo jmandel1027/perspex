@@ -137,12 +137,10 @@ func Open(cfg *config.BackendConfig) (*DB, error) {
 // BeginTx initializes a transaction.
 func BeginTx(ctx context.Context, db *sql.DB, opts *sql.TxOptions) (*Tx, error) {
 	if ctx.Err() != nil {
-		otelzap.L().Info("rolling back")
 		return nil, ErrTXRequiresActiveCtx
 	}
 
 	if opts == nil {
-		otelzap.L().Info("reequired opts")
 		return nil, ErrTXRequiresOpts
 	}
 
@@ -169,8 +167,6 @@ func BeginTx(ctx context.Context, db *sql.DB, opts *sql.TxOptions) (*Tx, error) 
 		return nil, err
 	}
 
-	otelzap.L().Info("instantiated transaction")
-
 	return &Tx{Tx: tx}, nil
 }
 
@@ -180,10 +176,8 @@ func (tx *Tx) Execute(fn TxFunc) (err error) {
 	defer func() {
 		if p := recover(); err != nil || p != nil {
 			tx.Rollback()
-			otelzap.L().Info("rolling back")
 		} else {
 			tx.Commit()
-			otelzap.L().Info("committing")
 		}
 
 	}()
@@ -203,7 +197,6 @@ func (tx *Tx) Unlock() {
 
 // WithTx creates a transaction block, commits on success, and rolls back on failure.
 func WithTx(ctx context.Context, db *sql.DB, opts *sql.TxOptions, fn SqlTxFunc) error {
-
 	cfg, err := config.New()
 	if err != nil {
 		return err

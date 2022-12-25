@@ -31,12 +31,10 @@ func Route(cfg *config.BackendConfig, dbs *postgres.DB) http.Handler {
 		"user.v1.UserService",
 	)
 
-	otelzap.L().Info("Scaffolding reader")
 	reader := func(ctx context.Context, req *transaction.Request) (*sql.DB, *sql.TxOptions, error) {
 		return transaction.Wrap(ctx, dbs.Reader, postgres.ReadOnlyTxOpts)
 	}
 
-	otelzap.L().Info("Scaffolding writer")
 	writer := func(ctx context.Context, req *transaction.Request) (*sql.DB, *sql.TxOptions, error) {
 		return transaction.Wrap(ctx, dbs.Writer, postgres.StdTxOpts)
 	}

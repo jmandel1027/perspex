@@ -55,7 +55,6 @@ type Interceptor struct {
 //
 // Transaction functions must be safe to call concurrently.
 func New(f func(context.Context, *Request) (*sql.DB, *sql.TxOptions, error)) *Interceptor {
-	otelzap.L().Info("instantiating interceptors")
 	return &Interceptor{f}
 }
 

@@ -122,7 +122,6 @@ func (svc *UserService) RegisterUser(ctx context.Context, rec *connect.Request[u
 func (svc *UserService) RetrieveUser(ctx context.Context, rec *connect.Request[users.RetrieveUserRequest]) (*connect.Response[users.RetrieveUserResponse], error) {
 	svc.mu.RLock()
 
-	otelzap.L().Ctx(ctx).Info("Retrieving user", zap.Int64("id", rec.Msg.Id))
 	record, err := svc.repo.FindUserById(ctx, rec.Msg.Id)
 	if err != nil {
 		otelzap.Ctx(ctx).Error("Error retrieving user", zap.Error(err))
@@ -130,6 +129,7 @@ func (svc *UserService) RetrieveUser(ctx context.Context, rec *connect.Request[u
 	}
 
 	if record == nil {
+		otelzap.Ctx(ctx).Error("Error retrieving user", zap.Error(err))
 		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("user not found"))
 	}
 
