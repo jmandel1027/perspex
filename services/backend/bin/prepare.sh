@@ -32,7 +32,7 @@ build_gql() {
 build_proto() {
   cd ../../schemas/proto
 
-  ../../bin/buf generate
+  ../../bin/buf generate --config buf.go.gen.yaml
 
   cd ../../services/backend
 
@@ -40,8 +40,8 @@ build_proto() {
 }
 
 build_linux() {
-  output="$outputPath/$app"
-  src="$srcPath/$app/$pkgFile"
+  output="${outputPath}/${app}"
+  src="${srcPath}/${app}/${pkgFile}"
 
   echo "Building: ${app}"
 

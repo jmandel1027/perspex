@@ -17,33 +17,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
       - name: update checkout
         run: git fetch --prune
         shell: bash
-
-      # - name: Set environment variables
-      #   id: set-environment-variables
-      #   run: |
-      #     echo "TILT_BACKEND_ENABLED=false" >> ${GITHUB_ENV}
-      #     echo "TILT_MIGRATION_ENABLED=true" >> ${GITHUB_ENV}
-      #     echo "TILT_REMOTE_CLUSTER=False" >> ${GITHUB_ENV}
-      #     echo "TILT_BACKEND_IMAGE_TARGET=deployable" >> ${GITHUB_ENV}
-
-      # - name: Run helm dependency update
-      #   run: |
-      #     bin/helm dependency update infrastructure/charts/perspex
-
-      # - name: Spin up k3d cluster
-      #   run: |
-      #     bin/k3d cluster create -c infrastructure/tilt/k3d-config.yaml
-
-      # - name: Do some yaml substitutions
-      #   run: |
-      #     bin/yq eval -i '.backend.enabled = "${TILT_BACKEND_ENABLED}"' infrastructure/tilt/values-dev.yaml
-
-      # - name: Run tilt up
-      #   run: |
-      #     bin/tilt ci -f Tiltfile
 
       - name: Verify Codegen is committed
         run: |

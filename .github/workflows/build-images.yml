@@ -1,0 +1,56 @@
+name: build-images
+on:
+  pull_request:
+    types: [opened, synchronize, edited, reopened]
+    branches:
+      - main
+    paths:
+      - ".github/workflows/release-images.yml"
+      - "schemas/openapi/**/*"
+      - "schemas/proto/**/*"
+      - "services/migration/**/*.sql"
+      - "services/**/*"
+
+jobs:
+  build-images:
+    name: Build-images
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: update checkout
+        run: git fetch --prune
+        shell: bash
+
+      - name: Set cluster environment variables
+        id: set-environment-variables
+        run: |
+          echo "TILT_REMOTE_CLUSTER=false" >> ${GITHUB_ENV}
+          echo "TILT_POSTGRES_ENABLED=false" >> ${GITHUB_ENV}
+          bin/yq eval -i '.postgres.enabled = "${TILT_POSTGRES_ENABLED}"' infrastructure/charts/perspex/values.yaml
+
+      - name: Disable all services
+        id: disable-all-services
+        run: |
+          bin/release.sh -r -ds
+
+      - name: Enable Changed services
+        id: enable-changed-services
+        run: |
+          bin/release.sh -r -s
+
+      - name: Run helm dependency update
+        run: |
+          bin/helm dependency update infrastructure/charts/perspex
+
+      - name: Spin up k3d cluster
+        run: |
+          bin/k3d cluster create -c infrastructure/tilt/k3d-config.yaml
+
+      - name: Run tilt up
+        run: |
+          bin/tilt ci -f Tiltfile
+
+      - name: Verify Codegen is committed
+        run: |
+          bin/codegen-linter.sh -l
