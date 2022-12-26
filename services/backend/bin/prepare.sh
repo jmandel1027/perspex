@@ -40,8 +40,8 @@ build_proto() {
 }
 
 build_linux() {
-  output="$outputPath/$app"
-  src="$srcPath/$app/$pkgFile"
+  output="${outputPath}/${app}"
+  src="${srcPath}/${app}/${pkgFile}"
 
   echo "Building: ${app}"
 

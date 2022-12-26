@@ -2,53 +2,61 @@
 
 set -e
 
-function verify_hashes() {
-  branch=$(tar -cf - "${path}" | md5sum)
-
-  git checkout origin/"${GITHUB_BASE_REF}" "${path}"
+function disable_services() {
+  services=$(find services -maxdepth 1 -type d)
   
-  main=$(tar -cf - "${path}" | md5sum)
+  names=$()
+  for service in "${services[@]}"; do
+    names=$(echo "${service}" | cut -d'/' -f2-)
+  done
 
-  if [[ "${branch}" == "${main}" ]]; then
-    if [[ "${tool}" == "migrations" ]]; then
-      echo "Error: migrations have already been committed, please do not change earlier migrations."
-      exit 1;
+  read -r -a service_array <<< ${names}
+
+  for s in "${service_array[@]}"; do
+    if [[ "${s}" == "services" ]]; then
+      continue
     fi
-
-    echo "Error: Generated ${tool} code is out of phase, please commit generated code."
-    exit 1;
-  fi
-}
-
-function buf_lint() {
-  cd schemas/proto
-  ../../bin/buf lint
-  cd ../..
-}
-
-function detect_changed_services() {
-  modified_paths=$(git diff --name-only origin/"${GITHUB_BASE_REF}"...origin/"${GITHUB_HEAD_REF}" .)
-
-  for file in "${modified_paths[@]}"; do    
-    if [[ "${file}" == *"services/migration/src/perspex"* ]]; then
-      path="schemas/perspex/pkg/models"
-      tool="sqlboiler"
-      verify_hashes
-    elif [[ "${file}" == *"services/migration/src/perspex"* ]]; then
-      path="services/migration/src/perspex"
-      tool="migrations"
-      verify_hashes
-    elif [[ "${file}" == *"schemas/graphql"* ]]; then
-      path="schemas/graphql/pkg"
-      tool="gqlgen"
-      verify_hashes
-    elif [[ "${file}" == *"schemas/proto/**/*.proto"* ]]; then
-      path="schemas/proto/goproto"
-      tool="buf"
-      verify_hashes
-      buf_lint
+    
+    tilt_var=$(echo "TILT_${s}_ENABLED" | tr "[:lower:]" "[:upper:]")
+    if ! [[ "${local}" == "true" ]]; then
+      echo "${tilt_var}=false"
     else
-      echo "Generated code is up to date"
+      echo "${tilt_var}=false" >> "${GITHUB_ENV}" 
+    fi
+  done
+
+  exit 0;
+}
+
+function changed_services() {
+  if ! [[ "${local}" == "true" ]]; then
+    current_branch=$(git rev-parse --abbrev-ref HEAD)
+    modified_services=$(git diff --name-only origin/main...origin/"${current_branch}" services \
+      | grep -E "^(services)" \
+      | awk -F "/" '{print $1"/"$2}' \
+      | sort -u \
+      | tr '\n' ' ' \
+      | tr -s ' ')
+  else
+    modified_services=$(git diff --name-only origin/"${GITHUB_BASE_REF}"...origin/"${GITHUB_HEAD_REF}" services \
+      | grep -E "^(services)" \
+      | awk -F "/" '{print $1"/"$2}' \
+      | sort -u \
+      | tr '\n' ' ' \
+      | tr -s ' ')
+  fi
+ 
+  for service in "${modified_services[@]}"; do
+    name=$(echo "${service}" | cut -d'/' -f2- | sed -e 's/\ *$//g')     
+    service_name=$(echo "${name}" | tr '[:lower:]' '[:upper:]')
+    if ! [[ "${local}" == "true" ]]; then
+      echo "TILT_${service_name}_ENABLED=true"
+      echo "TILT_${service_name}_IMAGE_TARGET=deployable" 
+      bin/yq eval -i ".${service}.enabled = ${TILT_BACKEND_ENABLED}" infrastructure/tilt/values-dev.yaml
+    else
+      echo "TILT_${service_name}_ENABLED=true" >> "${GITHUB_ENV}"
+      echo "TILT_${service_name}_IMAGE_TARGET=deployable"  >> "${GITHUB_ENV}"
+      bin/yq eval -i ".${service}.enabled = ${TILT_BACKEND_ENABLED}" infrastructure/tilt/values.yaml
     fi
   done
 
@@ -56,22 +64,32 @@ function detect_changed_services() {
 }
 
 function display_help() {
-    echo "This script will run a database migration validation service"
+    echo "This script manages our release processes for images and helm charts."
     echo ""
     echo "Parameters:"
-    echo "    -l | --lint             Lint to verify codegen changes have been committed."
+    echo "    -l                      Run in local mode."
+    echo "    -ds                     Disable All Services."
+    echo "    -ds                     Filter for changed Services."
     echo "    -h                      Display this help message."
     echo "Usage:"
-    echo "   bin/codegen-linter.sh -l"
-    echo "   bin/codegen-linter.sh -h"
+    echo "   bin/release.sh -l -ds"
+    echo "   bin/release.sh -ds"
+    echo "   bin/release.sh -l -s"
+    echo "   bin/release.sh -s"
+    echo "   bin/release.sh -h"
 }
 
 main() {
   while [[ "$#" -gt 0 ]]; do 
     case $1 in
-      -l | --lint )
-        lint_codegen
-        shift
+      -l | --local )
+        local=true
+        ;;
+      -ds | --disable-services )
+        disable_services
+        ;;
+      -s | --services )
+        changed_services
         ;;
       -h | --help )
         display_help
