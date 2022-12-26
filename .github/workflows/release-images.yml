@@ -1,4 +1,4 @@
-name: codegen-linter
+name: release-images
 on:
   pull_request:
     types: [opened, synchronize, edited, reopened]
