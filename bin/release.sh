@@ -38,7 +38,7 @@ function changed_services() {
       | tr '\n' ' ' \
       | tr -s ' ')
   else
-    modified_services=$(git diff --name-only origin/"${GITHUB_BASE_REF}"...origin/"${GITHUB_HEAD_REF}" services \
+    modified_services=$(git diff --name-only origin/"${GITHUB_BASE_REF}" -- origin/"${GITHUB_HEAD_REF}" services \
       | grep -E "^(services)" \
       | awk -F "/" '{print $1"/"$2}' \
       | sort -u \
