@@ -26,7 +26,6 @@ jobs:
         id: set-environment-variables
         run: |
           echo "TILT_REMOTE_CLUSTER=false" >> ${GITHUB_ENV}
-          echo "TILT_BACKEND_IMAGE_TARGET=deployable" >> ${GITHUB_ENV}
 
       - name: Disable all services
         id: disable-all-services
