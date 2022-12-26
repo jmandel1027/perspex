@@ -84,15 +84,19 @@ main() {
     case $1 in
       -l | --local )
         local=true
+        shift
         ;;
       -r | --remote )
         local=false
+        shift
         ;;
       -ds | --disable-services )
         disable_services
+        shift
         ;;
       -s | --services )
         changed_services
+        shift
         ;;
       -h | --help )
         display_help
