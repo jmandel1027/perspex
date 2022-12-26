@@ -27,7 +27,7 @@ jobs:
         run: |
           echo "TILT_REMOTE_CLUSTER=false" >> ${GITHUB_ENV}
           echo "TILT_POSTGRES_ENABLED=false" >> ${GITHUB_ENV}
-          bin/yq eval -i '.postgres.enabled = "${TILT_POSTGRES_ENABLED}"' infrastructure/perspex/values.yaml
+          bin/yq eval -i '.postgres.enabled = "${TILT_POSTGRES_ENABLED}"' infrastructure/charts/perspex/values.yaml
 
       - name: Disable all services
         id: disable-all-services
