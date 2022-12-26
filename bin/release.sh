@@ -85,6 +85,9 @@ main() {
       -l | --local )
         local=true
         ;;
+      -r | --remote )
+        local=false
+        ;;
       -ds | --disable-services )
         disable_services
         ;;

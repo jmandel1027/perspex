@@ -32,12 +32,12 @@ jobs:
       - name: Disable all services
         id: disable-all-services
         run: |
-          bin/release.sh -ds
+          bin/release.sh -r -ds
 
       - name: Enable Changed services
         id: enable-changed-services
         run: |
-          bin/release.sh -s
+          bin/release.sh -r -s
 
       - name: Run helm dependency update
         run: |
