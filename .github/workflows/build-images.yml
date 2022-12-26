@@ -1,4 +1,4 @@
-name: release-images
+name: build-images
 on:
   pull_request:
     types: [opened, synchronize, edited, reopened]
@@ -26,6 +26,8 @@ jobs:
         id: set-environment-variables
         run: |
           echo "TILT_REMOTE_CLUSTER=false" >> ${GITHUB_ENV}
+          echo "TILT_POSTGRES_ENABLED=false" >> ${GITHUB_ENV}
+          bin/yq eval -i '.postgres.enabled = "${TILT_POSTGRES_ENABLED}"' infrastructure/tilt/values.yaml
 
       - name: Disable all services
         id: disable-all-services
