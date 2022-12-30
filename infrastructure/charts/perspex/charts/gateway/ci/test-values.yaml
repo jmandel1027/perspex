@@ -1,9 +1,0 @@
-image:
-  repository: localhost:5000/gateway
-  tag: latest
-
-envFrom:
-  enabled: true
-
-canary:
-  enabled: true

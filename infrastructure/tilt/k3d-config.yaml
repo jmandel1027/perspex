@@ -5,6 +5,7 @@ metadata:
 servers: 1
 agents: 2
 kubeAPI:
+#  host: "perspex.us"
   hostIP: "127.0.0.1"
   hostPort: "6550"
 options:
@@ -27,3 +28,8 @@ registries:
       "registry.local":
         endpoint:
           - http://registry.local:5000
+hostAliases:
+  - ip: 1.2.3.4
+    hostnames: 
+      - perspex.us
+      - api.perspex.us

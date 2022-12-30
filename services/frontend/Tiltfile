@@ -1,0 +1,23 @@
+load("ext://restart_process", "docker_build_with_restart")
+
+image_repo = os.getenv("TILT_IMAGE_REPO", default="registry.local:5000")
+image_target = os.getenv("TILT_FRONTEND_IMAGE_TARGET", default="tilt")
+
+docker_build(
+  "{image_repo}/frontend".format(image_repo=image_repo),
+  context=".",
+  dockerfile="Dockerfile",
+  target=image_target,
+  live_update=[
+    fall_back_on(["next.config.js"]),
+    sync('app', '/mnt/app'),
+    sync('public', '/mnt/public'),
+    sync('styles', '/mnt/styles'),
+  ]
+)
+
+k8s_resource(
+  workload="frontend",
+  resource_deps=["backend"],
+  labels=["frontend"],
+)

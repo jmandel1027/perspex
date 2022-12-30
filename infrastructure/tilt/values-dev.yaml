@@ -69,6 +69,42 @@ backend:
           - path: /api
     tls: []
 
+frontend:
+  enabled: true
+  image:
+    repository: "registry.local:5000/frontend"
+    pullPolicy: Always
+  # Because we can't patch the SA after chart-testing starts the install, we need to use the default SA
+  serviceAccount:
+    create: false
+  # Basically set dummy secrets so the backend starts
+  secretsManager:
+    enabled: false
+    secretName: "local-secrets"
+  healthcheck:
+    liveness:
+      enabled: false
+    readiness:
+      enabled: false
+  traefik:
+    enabled: false
+    path: "/api"
+    host: "localhost"
+    # Middlewares managed in flux as they're shared in most cases
+    entrypoints:
+      - web
+    # Should adhere to Traefik's Rule kind spec
+    additionalRoutes: []
+  ingress:
+    enabled: false
+    annotations: {}
+    hosts:
+      - host: localhost
+        paths:
+          - path: /api
+    tls: []
+
+
 migration:
   enabled: true
   image:

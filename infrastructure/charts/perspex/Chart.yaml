@@ -8,8 +8,8 @@ dependencies:
 - name: backend
   condition: backend.enabled
   version: 0.1.0
-- name: gateway
-  condition: gateway.enabled
+- name: frontend
+  condition: frontend.enabled
   version: 0.1.0
 - name: postgresql
   repository: https://charts.bitnami.com/bitnami
