@@ -87,8 +87,8 @@ frontend:
     readiness:
       enabled: false
   traefik:
-    enabled: false
-    path: "/api"
+    enabled: true
+    path: "/"
     host: "localhost"
     # Middlewares managed in flux as they're shared in most cases
     entrypoints:
@@ -96,12 +96,12 @@ frontend:
     # Should adhere to Traefik's Rule kind spec
     additionalRoutes: []
   ingress:
-    enabled: false
+    enabled: true
     annotations: {}
     hosts:
       - host: localhost
         paths:
-          - path: /api
+          - path: /
     tls: []
 
 

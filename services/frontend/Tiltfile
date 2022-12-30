@@ -3,6 +3,14 @@ load("ext://restart_process", "docker_build_with_restart")
 image_repo = os.getenv("TILT_IMAGE_REPO", default="registry.local:5000")
 image_target = os.getenv("TILT_FRONTEND_IMAGE_TARGET", default="tilt")
 
+local_resource(
+  "generate-frontend-protobufs",
+  "bin/prepare.sh -bp",
+  trigger_mode=TRIGGER_MODE_MANUAL,
+  labels=["frontend"],
+  auto_init=False,
+)
+
 docker_build(
   "{image_repo}/frontend".format(image_repo=image_repo),
   context=".",
