@@ -1,0 +1,9 @@
+image:
+  repository: localhost:5000/frontend
+  tag: latest
+
+envFrom:
+  enabled: true
+
+canary:
+  enabled: true

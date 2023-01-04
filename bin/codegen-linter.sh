@@ -47,6 +47,9 @@ function lint_codegen() {
       tool="buf"
       verify_hashes
       buf_lint
+      path="schemas/proto/tsproto"
+      verify_hashes
+      buf_lint
     else
       echo "Generated code is up to date"
     fi

@@ -1,0 +1,6 @@
+{{ $name := include "frontend.name" . }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $name }}-scripts
+data:

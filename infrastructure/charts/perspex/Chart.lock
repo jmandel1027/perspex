@@ -2,11 +2,11 @@ dependencies:
 - name: backend
   repository: ""
   version: 0.1.0
-- name: gateway
+- name: frontend
   repository: ""
   version: 0.1.0
 - name: postgresql
   repository: https://charts.bitnami.com/bitnami
   version: 12.1.2
-digest: sha256:35ebd21314ff4781fa9a4c470ea65506567a9138eda9ca1629a341508034ebba
-generated: "2022-12-21T21:32:18.107552-05:00"
+digest: sha256:ee136a68124163dcd3bdea831234713c9cd5dc0845a82045fcc255e71dcd0b07
+generated: "2022-12-29T18:10:13.224709-05:00"

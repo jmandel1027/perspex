@@ -18,7 +18,7 @@ if remote_cluster == True :
 
 services={
   "backend":   os.getenv("TILT_BACKEND_ENABLED", default="true"),
-  "gateway":   os.getenv("TILT_GATEWAY_ENABLED", default="false"),
+  "frontend":   os.getenv("TILT_FRONTEND_ENABLED", default="true"),
   "migration": os.getenv("TILT_MIGRATION_ENABLED", default="true"),
   "postgres":  os.getenv("TILT_POSTGRES_ENABLED", default="true"),
   "traefik": os.getenv("TILT_TRAEFIK_ENABLED", default="true"),
@@ -35,7 +35,7 @@ perspex = helm(
   values=values_file,
   set=[
     "backend.enabled={s}".format(s=services["backend"]),
-    "gateway.enabled={s}".format(s=services["gateway"]),
+    "frontend.enabled={s}".format(s=services["frontend"]),
     "migration.enabled={s}".format(s=services["migration"]),
     "postgres.enabled={s}".format(s=services["postgres"]),
   ]
@@ -50,8 +50,8 @@ k8s_yaml(perspex)
 if services["backend"] == "true": 
   include('services/backend/Tiltfile')
 
-if services["gateway"] == "true": 
-  include('services/gateway/Tiltfile')
+if services["frontend"] == "true": 
+  include('services/frontend/Tiltfile')
 
 if services["migration"] == "true": 
   include("services/migration/Tiltfile")
