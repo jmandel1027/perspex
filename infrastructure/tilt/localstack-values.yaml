@@ -1,0 +1,14 @@
+
+enableStartupScripts: true
+startupScriptContent: |
+  #!/usr/bin/env bash
+  export AWS_ACCESS_KEY_ID=test
+  export AWS_SECRET_ACCESS_KEY=test
+
+  pool_id=$(awslocal cognito-idp create-user-pool --pool-name perspex | jq -rc ".UserPool.Id")
+  client_id=$(awslocal cognito-idp create-user-pool-client --user-pool-id $pool_id --client-name perspex-client | jq -rc ".UserPoolClient.ClientId")
+    
+  echo "poolID: ${pool_id}"
+  echo "clientID: ${client_id}"
+
+

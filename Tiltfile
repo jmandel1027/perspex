@@ -11,6 +11,7 @@ values_file="infrastructure/tilt/values-dev.yaml"
 
 allow_k8s_contexts(k8s_context)
 namespace_create(deploy_namespace)
+namespace_create("localstack")
 
 if remote_cluster == True :
   docker_login_cmd="aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 450613976047.dkr.ecr.us-east-1.amazonaws.com"
@@ -19,6 +20,7 @@ if remote_cluster == True :
 services={
   "backend":   os.getenv("TILT_BACKEND_ENABLED", default="true"),
   "frontend":   os.getenv("TILT_FRONTEND_ENABLED", default="true"),
+  "localstack": os.getenv("TILT_LOCALSTACK_ENABLED", default="true"),
   "migration": os.getenv("TILT_MIGRATION_ENABLED", default="true"),
   "postgres":  os.getenv("TILT_POSTGRES_ENABLED", default="true"),
   "traefik": os.getenv("TILT_TRAEFIK_ENABLED", default="true"),
@@ -70,3 +72,20 @@ if services["traefik"] == "true":
     values="infrastructure/tilt/traefik-values.yaml",
   )
   k8s_resource(workload="traefik", labels=["traefik"], port_forwards=[port_forward(9000, 9000, name="traefik")])
+
+if services["localstack"] == 'true':
+  helm_remote(
+    'localstack',
+    namespace='localstack',
+    repo_name='localstack',
+    repo_url='https://helm.localstack.cloud',
+    release_name='localstack',
+    version='0.5.2',
+    values="infrastructure/tilt/localstack-values.yaml",
+    set=[
+        'extraEnvVars[0].name=DEFAULT_REGION',
+        'extraEnvVars[0].value=us-east-1',
+        'enableStartupScripts=true'
+    ]
+  )
+  k8s_resource(workload='localstack', labels=["localstack"])
